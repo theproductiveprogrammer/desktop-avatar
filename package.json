@@ -1,0 +1,19 @@
+{
+  "name": "desktop-avatar",
+  "version": "0.1.0",
+  "description": "The new/server version of the Salesbox Desktop Avatar",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theproductiveprogrammer/desktop-avatar.git"
+  },
+  "author": "charles.lobo@gmail.com",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/theproductiveprogrammer/desktop-avatar/issues"
+  },
+  "homepage": "https://github.com/theproductiveprogrammer/desktop-avatar#readme"
+}
