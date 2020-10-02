@@ -4,7 +4,7 @@
   "description": "The new/server version of the Salesbox Desktop Avatar",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/theproductiveprogrammer/desktop-avatar/issues"
   },
-  "homepage": "https://github.com/theproductiveprogrammer/desktop-avatar#readme"
+  "homepage": "https://github.com/theproductiveprogrammer/desktop-avatar#readme",
+  "devDependencies": {
+    "electron": "^10.1.3"
+  }
 }
