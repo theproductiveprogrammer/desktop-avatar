@@ -6,6 +6,8 @@ This is the new version of the Salesbox Desktop Avatar - a local application tha
 
 ## QuickStart
 
-1. Login as your Salesbox User
-2. Watch the Avatar Perform tasks for you (- done -)
+1. Login with your [Salesbox](https://salesbox.ai) User
+2. Watch the Avatar Perform tasks for you
+
+Done!
 
