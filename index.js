@@ -4,8 +4,8 @@ const path = require('path')
 
 const db = require('./db.js')
 
-function createWindow() {
-  const mainWindow = new BrowserWindow({
+function createMainWin() {
+  const win = new BrowserWindow({
     width: 1300,
     height: 800,
     webPreferences: {
@@ -14,7 +14,7 @@ function createWindow() {
     backgroundColor: "#0490f9",
   })
 
-  mainWindow.loadFile("default.html")
+  loadWin("main.html", win)
 }
 
 app.whenReady().then(() => {
@@ -40,10 +40,10 @@ function setupUI() {
   setMenu()
 
   app.on("activate", () => {
-    if(BrowserWindow.getAllWindows().length == 0) createWindow()
+    if(BrowserWindow.getAllWindows().length == 0) createMainWin()
   })
 
-  createWindow()
+  createMainWin()
 }
 
 /*    way/
@@ -66,7 +66,7 @@ function setMenu() {
         { type: 'separator' },
         {
           label: 'Settings',
-          click: () => settingsWindow()
+          click: () => createSettingsWin()
         }
       ]
     },
@@ -76,8 +76,8 @@ function setMenu() {
   Menu.setApplicationMenu(menu)
 }
 
-function settingsWindow() {
-  const settingsWindow = new BrowserWindow({
+function createSettingsWin() {
+  const win = new BrowserWindow({
     width: 600,
     height: 600,
     webPreferences: {
@@ -86,6 +86,23 @@ function settingsWindow() {
     backgroundColor: "#0f1627",
   })
 
-  if(process.env.PARCEL_WATCH) settingsWindow.loadURL("http://localhost:3000")
-  else settingsWindow.loadFile("pub/settings.html")
+  loadWin("settings.html", win)
+}
+
+/*    problem/
+ * In dev mode we want to use the parcel development server so we can
+ * have hot-reloading and all that good stuff but for testing/production
+ * we want to load the generated files directly.
+ *
+ *    way/
+ * We expect the PARCEL_DEV environment variable to be set and use it to
+ * either connect to the parcel development server or to pick up the
+ * generated files
+ */
+function loadWin(name, win) {
+  if(process.env.PARCEL_DEV) {
+    win.loadURL(`http://localhost:3000/${name}`)
+  } else {
+    win.loadFile(`pub/${name}`)
+  }
 }
