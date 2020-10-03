@@ -23,11 +23,7 @@ app.whenReady().then(() => {
       dialog.showErrorBox("DB", err.toString())
       app.quit()
     } else {
-      setMenu()
-      createWindow()
-      app.on("activate", () => {
-        if(BrowserWindow.getAllWindows().length == 0) createWindow()
-      })
+      setupUI()
     }
   })
 })
@@ -35,6 +31,20 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if(process.platform != "darwin") app.quit()
 })
+
+/*    way/
+ * Set up the main menu, load the main window when user clicks the app
+ * and start by showing the main window
+ */
+function setupUI() {
+  setMenu()
+
+  app.on("activate", () => {
+    if(BrowserWindow.getAllWindows().length == 0) createWindow()
+  })
+
+  createWindow()
+}
 
 /*    way/
  * create a template containing most of the default menu items along
