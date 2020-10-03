@@ -76,5 +76,5 @@ function settingsWindow() {
     backgroundColor: "#0f1627",
   })
 
-  settingsWindow.loadFile("settings.html")
+  settingsWindow.loadFile("pub/settings.html")
 }

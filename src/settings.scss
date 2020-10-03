@@ -1,0 +1,23 @@
+@import "./base.css";
+
+$width: 600px;
+$height: 600px;
+
+body {
+  font-size: 16px;
+  line-height: 16px;
+  color: #0f1627;
+}
+#cont {
+  width: $width * 0.9;
+  margin: 0 auto;
+  margin-top: 16px;
+  border-radius: 4px;
+  background: #efefef;
+  height: $height * 0.9;
+  padding: ($height * 0.05) ($width * 0.05);
+}
+.title {
+  font-size: 32px;
+  font-weight: bold;
+}

@@ -4,7 +4,8 @@
   "description": "The new/server version of the Salesbox Desktop Avatar",
   "main": "index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "parcel": "parcel build src/settings.html -d pub --public-url=./"
   },
   "repository": {
     "type": "git",
@@ -17,9 +18,13 @@
   },
   "homepage": "https://github.com/theproductiveprogrammer/desktop-avatar#readme",
   "devDependencies": {
-    "electron": "^10.1.3"
+    "electron": "^10.1.3",
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.26.11"
   },
   "dependencies": {
+    "@tpp/dux": "^4.0.4",
+    "@tpp/htm-x": "^3.3.0",
     "kafjs": "^1.1.1"
   }
 }
