@@ -1,6 +1,8 @@
 'use strict'
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, dialog } = require('electron')
 const path = require('path')
+
+const db = require('./db.js')
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -16,9 +18,16 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  createWindow()
-  app.on("activate", () => {
-    if(BrowserWindow.getAllWindows().length == 0) createWindow()
+  db.start(err => {
+    if(err) {
+      dialog.showErrorBox("DB", err.toString())
+      app.quit()
+    } else {
+      createWindow()
+      app.on("activate", () => {
+        if(BrowserWindow.getAllWindows().length == 0) createWindow()
+      })
+    }
   })
 })
 
