@@ -25,6 +25,6 @@
   "dependencies": {
     "@tpp/dux": "^4.0.4",
     "@tpp/htm-x": "^3.3.0",
-    "kafjs": "^1.1.1"
+    "kafjs": "^1.1.2"
   }
 }
