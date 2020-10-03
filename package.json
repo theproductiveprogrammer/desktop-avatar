@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-    "parcel": "parcel build src/settings.html -d pub --public-url=./"
+    "parcel": "parcel build src/settings.html -d pub --public-url=./",
+    "dev":"parcel -p 3000 watch src/settings.html -d pub  & PARCEL_WATCH=1 npm start"
   },
   "repository": {
     "type": "git",

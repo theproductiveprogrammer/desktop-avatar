@@ -76,5 +76,6 @@ function settingsWindow() {
     backgroundColor: "#0f1627",
   })
 
-  settingsWindow.loadFile("pub/settings.html")
+  if(process.env.PARCEL_WATCH) settingsWindow.loadURL("http://localhost:3000")
+  else settingsWindow.loadFile("pub/settings.html")
 }
