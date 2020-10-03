@@ -12,7 +12,7 @@ function createWindow() {
     backgroundColor: "#0490f9",
   })
 
-  mainWindow.loadFile("index.html")
+  mainWindow.loadFile("default.html")
 }
 
 app.whenReady().then(() => {
