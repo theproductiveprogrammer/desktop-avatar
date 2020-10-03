@@ -30,9 +30,8 @@ function startKaf(cb) {
     if(err) {
       if(err.code === "EADDRINUSE") {
         setTimeout(start, 5 * 1000)
-        cb()
-      }
-      else {
+        cb && cb()
+      } else {
         if(cb) cb(err)
         else console.error(err)
       }
