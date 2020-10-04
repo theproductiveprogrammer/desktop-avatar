@@ -47,4 +47,14 @@ $height: 500px;
   input:active {
     outline: none;
   }
+
+  .submit {
+    width: 100%;
+    text-align: center;
+    margin-top: 32px;
+    padding: 12px;
+    background: $deepblue;
+    color: white;
+    cursor: pointer;
+  }
 }

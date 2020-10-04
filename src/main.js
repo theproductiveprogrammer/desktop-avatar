@@ -33,10 +33,13 @@ function login(cont, cb) {
     placeholder: "Password"
   })
 
+  let submit = h(".submit", {tabindex:0}, "Login")
+
 
   form.c(
     title,
-    inputs.c( name, pw )
+    inputs.c( name, pw ),
+    submit
   )
 
 }
