@@ -38,7 +38,7 @@ function messagePane(logname, cont) {
 
   db.get(logname, msgs => {
     msgs.forEach(msg => {
-      messages.appendChild(h(".msg", JSON.stringify(msg)))
+      messages.appendChild(msg_1(msg))
     })
   }, (err, end) => {
     if(err) console.error(err)
@@ -46,8 +46,32 @@ function messagePane(logname, cont) {
     return 500
   })
 
-
   return messages
+
+  function msg_1(m) {
+    let tm = ""
+    let dt = ""
+    let t = new Date(m.t)
+    if(t) {
+      const mons = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+      ]
+      tm = p2(t.getHours()) + ":" + p2(t.getMinutes())
+      dt = t.getDate() + "/" + mons[t.getMonth()]
+    }
+    let msg = m.msg || ""
+    let err = m.err || ""
+    return h(".log").c(
+      h(".time", tm), h(".date", dt),
+      h(".msg", msg), h(".err", err)
+    )
+  }
+
+  function p2(v) {
+    if(v < 10) return "0"+v;
+    return v
+  }
 }
 
 /*    way/
