@@ -1,0 +1,61 @@
+'use strict'
+const req = require("@tpp/req")
+
+const PORT = 7749
+
+/*    way/
+ * get a set of messages from the log file pass to the processor and ask
+ * the scheduler how/when to continue
+ */
+function get(log, processor, scheduler) {
+  let from = 1
+  let u = `http://localhost:${PORT}/get/${log}?from=`
+  get_1()
+
+  function get_1() {
+    let uu = u + from
+    req.get(uu, (err, resp, status, hdrval) => {
+      let tm = 0
+      if(hdrval) {
+        let hdrs = req.headers(hdrval)
+        let last = hdrs["x-kafjs-lastmsgsent"]
+        if(last) {
+          try {
+            last = parseInt(last)
+            if(!isNaN(last)) from = last + 1
+          } catch(e) {
+            tm = scheduler(err)
+          }
+        }
+      }
+      if(err) tm = scheduler(err)
+      if(status != 200) tm = scheduler(`get: responded with ${status}`)
+      try {
+        if(resp && resp.length) processor(resp)
+        if(!resp || resp.length == 0) tm = scheduler(null, true)
+      } catch(e) {
+        tm = scheduler(e)
+      }
+
+      if(tm) setTimeout(get_1, tm)
+    })
+  }
+}
+
+/*    way/
+ * post the message to the requested log file, retrying
+ * until successful
+ */
+function put(msg, log) {
+  let u = `http://localhost:${PORT}/put/${log}`
+  req.post(u, msg, (err, resp, status) => {
+    if(err) console.error(err)
+    if(status == 200) return
+    setTimeout(() => put(msg, log), 2 * 1000)
+  })
+}
+
+module.exports = {
+  put,
+  get,
+}

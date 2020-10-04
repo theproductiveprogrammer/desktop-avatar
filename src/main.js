@@ -2,6 +2,8 @@
 const { ipcRenderer } = window.require('electron')
 const { h } = require('@tpp/htm-x')
 
+const db = require('./db.js')
+
 import "./main.scss"
 
 /*    understand/
@@ -13,14 +15,17 @@ function main() {
     console.log(userinfo)
   })
 
-  let messages = messagePane(cont)
-  toolbar(messages, cont)
+  ipcRenderer.invoke("get-logname").then(name => {
+    let messages = messagePane(name, cont)
+    toolbar(messages, cont)
+  })
+
 }
 
 /*    way/
  * draw the message pane and show messages
  */
-function messagePane(cont) {
+function messagePane(logname, cont) {
   let messages = h('.messages')
   cont.appendChild(messages)
 
@@ -30,6 +35,16 @@ function messagePane(cont) {
   }, "X")
 
   messages.c(title, closebtn)
+
+  db.get(logname, msgs => {
+    msgs.forEach(msg => {
+      messages.appendChild(h(".msg", JSON.stringify(msg)))
+    })
+  }, (err, end) => {
+    if(err) console.error(err)
+    if(end) return 5 * 1000
+    return 500
+  })
 
 
   return messages

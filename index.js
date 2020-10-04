@@ -3,6 +3,16 @@ const {app,BrowserWindow,dialog,Menu,ipcMain}=require('electron')
 const path = require('path')
 
 const db = require('./db.js')
+const logger = require('./logger.js')
+
+
+ipcMain.handle("show-settings", () => {
+  createSettingsWin()
+})
+
+ipcMain.handle("get-logname", async () => {
+  return logger.name()
+})
 
 function createMainWin() {
   const win = new BrowserWindow({
@@ -17,7 +27,7 @@ function createMainWin() {
 }
 
 app.whenReady().then(() => {
-  db.start(err => {
+  db.start(logger, err => {
     if(err) {
       dialog.showErrorBox("DB", err.toString())
       app.quit()
@@ -94,18 +104,14 @@ function createSettingsWin() {
  * we want to load the generated files directly.
  *
  *    way/
- * We expect the PARCEL_DEV environment variable to be set and use it to
+ * We expect the PARSEL_PORT environment variable to be set and use it to
  * either connect to the parcel development server or to pick up the
  * generated files
  */
 function loadWin(name, win) {
-  if(process.env.PARCEL_DEV) {
-    win.loadURL(`http://localhost:3000/${name}`)
+  if(process.env.PARCEL_PORT) {
+    win.loadURL(`http://localhost:${process.env.PARCEL_PORT}/${name}`)
   } else {
     win.loadFile(`pub/${name}`)
   }
 }
-
-ipcMain.handle("show-settings", () => {
-  createSettingsWin()
-})
