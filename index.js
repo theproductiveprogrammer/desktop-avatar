@@ -5,7 +5,6 @@ const path = require('path')
 const db = require('./db.js')
 const logger = require('./logger.js')
 
-
 ipcMain.handle("show-settings", () => {
   createSettingsWin()
 })
@@ -92,7 +91,7 @@ function createSettingsWin() {
     webPreferences: {
       nodeIntegration: false,
     },
-    backgroundColor: "#0f1627",
+    backgroundColor: "#fff",
   })
 
   loadWin("settings.html", win)

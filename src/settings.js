@@ -15,7 +15,6 @@ function main() {
 
   let form = h(".form")
   cont.appendChild(form)
-
 }
 
 main()
