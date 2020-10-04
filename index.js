@@ -1,5 +1,5 @@
 'use strict'
-const {app,BrowserWindow,dialog,Menu}=require('electron')
+const {app,BrowserWindow,dialog,Menu,ipcMain}=require('electron')
 const path = require('path')
 
 const db = require('./db.js')
@@ -105,3 +105,7 @@ function loadWin(name, win) {
     win.loadFile(`pub/${name}`)
   }
 }
+
+ipcMain.handle("show-settings", () => {
+  createSettingsWin()
+})

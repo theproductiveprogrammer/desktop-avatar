@@ -1,4 +1,5 @@
 'use strict'
+const { ipcRenderer } = window.require('electron')
 const { h } = require('@tpp/htm-x')
 
 import "./main.scss"
@@ -11,6 +12,46 @@ function main() {
   login(cont, userinfo => {
     console.log(userinfo)
   })
+
+  let messages = messagePane(cont)
+  toolbar(messages, cont)
+}
+
+/*    way/
+ * draw the message pane and show messages
+ */
+function messagePane(cont) {
+  let messages = h('.messages')
+  cont.appendChild(messages)
+
+  let title = h(".title", "Messages")
+  let closebtn = h(".btn", {
+    onclick: () => messages.classList.remove("visible")
+  }, "X")
+
+  messages.c(title, closebtn)
+
+
+  return messages
+}
+
+/*    way/
+ * put a "settings" and "hamburger" button
+ */
+function toolbar(messages, cont) {
+  let tb = h(".toolbar")
+  let settings = h("img.settings", {
+    src: "./settings.svg",
+    onclick: () => ipcRenderer.invoke("show-settings")
+  })
+  let hamburger = h("img.hamburger", {
+    src: "./hamburger.svg",
+    onclick: () => messages.classList.add("visible")
+  })
+
+  cont.appendChild(tb)
+  tb.c(settings, hamburger)
+
 }
 
 /*    way/
@@ -33,8 +74,7 @@ function login(cont, cb) {
     placeholder: "Password"
   })
 
-  let submit = h(".submit", {tabindex:0}, "Login")
-
+  let submit = h(".submit", "Login")
 
   form.c(
     title,

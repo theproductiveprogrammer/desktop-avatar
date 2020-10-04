@@ -1,17 +1,77 @@
 @import "./base.css";
 @import "./common.scss";
 
-$width: 400px;
-$height: 500px;
+$loginWidth: 400px;
+$loginHeight: 500px;
+
+$msgWidth: 300px;
+$msgHeight: 500px;
 
 body {
   background: url("./background.jpg");
 }
 
+.toolbar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  .settings {
+    width: 24px;
+    opacity: 0.5;
+    cursor: pointer;
+  }
+  .settings:hover {
+    opacity: 1;
+  }
+  .hamburger {
+    width: 24px;
+    cursor: pointer;
+    margin-left:8px;
+    opacity: 0.2;
+  }
+  .hamburger:hover {
+    opacity: 0.8;
+  }
+}
+
+.messages {
+  width: $msgWidth;
+  height: $msgHeight;
+  background: $bgwhite;
+  position: fixed;
+  top: 0;
+  left: -300px;
+  transition: all 300ms ease-out;
+  z-index: 100;
+
+  .btn {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    cursor: pointer;
+    color: $bgwhite;
+    padding-left: 32px;
+  }
+  .title {
+    padding: 6px 12px;
+    font-variant: all-small-caps;
+    font-weight: 600;
+    border-bottom: 1px solid $grey;
+    background: $deepblue;
+    color: $bgwhite;
+  }
+}
+.messages.visible {
+  left: 0;
+}
+
+
 .loginForm {
+  position: relative;
   margin: 128px auto;
-  width: $width;
-  height: $height;
+  width: $loginWidth;
+  height: $loginHeight;
   background: $bgwhite;
   border-radius: 8px;
   padding: 32px;
@@ -62,4 +122,5 @@ body {
     color: white;
     cursor: pointer;
   }
+
 }
