@@ -91,7 +91,7 @@ function createSettingsWin() {
     webPreferences: {
       nodeIntegration: false,
     },
-    backgroundColor: "#fff",
+    backgroundColor: "#0490f9",
   })
 
   loadWin("settings.html", win)

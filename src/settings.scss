@@ -25,3 +25,11 @@ body {
   padding-bottom: 32px;
   border-bottom: 1px solid;
 }
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+#cont {
+  animation: fadein ease-out 500ms;
+}
