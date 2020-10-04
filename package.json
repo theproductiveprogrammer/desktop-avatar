@@ -4,6 +4,8 @@
   "description": "The new/server version of the Salesbox Desktop Avatar",
   "scripts": {
     "start": "electron .",
+    "clean": "rm -rf pub",
+    "build": "npm run clean && npm run parcel-build",
     "copy": "mkdir -p pub && cp src/*.svg pub/",
     "with-parcel": "PARCEL_PORT=3001 electron .",
     "parcel-build": "npm run copy && parcel build src/*.html --dist-dir pub --public-url=./",
