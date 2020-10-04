@@ -11,7 +11,6 @@ function createMainWin() {
     webPreferences: {
       nodeIntegration: true,
     },
-    backgroundColor: "#0490f9",
   })
 
   loadWin("main.html", win)
