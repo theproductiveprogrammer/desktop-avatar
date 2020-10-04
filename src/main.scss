@@ -4,6 +4,10 @@
 $width: 400px;
 $height: 500px;
 
+body {
+  background: url("./background.jpg");
+}
+
 .loginForm {
   margin: 128px auto;
   width: $width;
