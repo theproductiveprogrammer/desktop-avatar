@@ -12,6 +12,10 @@ function main() {
 
   let title = h(".title", "Settings")
   cont.appendChild(title)
+
+  let form = h(".form")
+  cont.appendChild(form)
+
 }
 
 main()
