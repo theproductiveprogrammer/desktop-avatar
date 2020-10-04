@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-    "parcel": "parcel build src/*.html -d pub --public-url=./",
-    "dev":"parcel -p 3000 src/*.html -d pub  & PARCEL_DEV=1 npm start"
+    "with-parcel": "PARCEL_DEV=1 electron .",
+    "parcel-build": "parcel build src/*.html ---dist-dir pub --public-url=./",
+    "parcel-watch": "parcel serve -p 3000 src/*.html --dist-dir pub"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,7 @@
   "homepage": "https://github.com/theproductiveprogrammer/desktop-avatar#readme",
   "devDependencies": {
     "electron": "^10.1.3",
-    "parcel-bundler": "^1.12.4",
+    "parcel": "^2.0.0-beta.1",
     "sass": "^1.26.11"
   },
   "dependencies": {
