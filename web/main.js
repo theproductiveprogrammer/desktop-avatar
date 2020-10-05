@@ -34,11 +34,13 @@ function messagePane(logname, cont) {
     onclick: () => messages.classList.remove("visible")
   }, "X")
 
-  messages.c(title, closebtn)
+  let logs = h(".logs")
+
+  messages.c(title, closebtn, logs)
 
   db.get(logname, msgs => {
     msgs.forEach(msg => {
-      messages.appendChild(msg_1(msg))
+      logs.appendChild(msg_1(msg))
     })
   }, (err, end) => {
     if(err) console.error(err)

@@ -36,14 +36,20 @@ body {
 }
 
 .messages {
+  background: $bgwhite;
   width: $msgWidth;
   height: $msgHeight;
-  background: $bgwhite;
+  overflow: hidden;
   position: fixed;
   top: 0;
   left: -300px;
   transition: all 300ms ease-out;
   z-index: 100;
+
+  .logs {
+    height: $msgHeight - 24px;
+    overflow: scroll;
+  }
 
   .btn {
     position: absolute;
