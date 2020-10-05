@@ -43,6 +43,7 @@ function messagePane(logname, cont) {
   db.get(logname, msgs => {
     msgs.forEach(msg => {
       logs.appendChild(msg_1(msg))
+      logs.scrollTop = logs.scrollHeight;
     })
   }, (err, end) => {
     if(err) console.error(err)
@@ -65,7 +66,7 @@ function messagePane(logname, cont) {
       dt = t.getDate() + "/" + mons[t.getMonth()]
     }
     let msg = m.msg || ""
-    let err = m.err || ""
+    let err = m.err ? h('.padded', m.err) : ""
     return h(".log").c(
       h(".time", tm), h(".date", dt),
       h(".msg", msg), h(".err", err)
