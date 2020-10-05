@@ -88,22 +88,43 @@ function get(log, processor, scheduler) {
   }
 }
 
-/*    way/
- * post the message to the requested log file, retrying
- * until successful
+/*    understand/
+ * put the logs in the order they come in and retry until sucessful
  */
-function put(msg, log) {
+let PENDING = []
+let sending
+function sendPending() {
+  if(sending || !PENDING || !PENDING.length) return
+  sending = true
+
+  let m = PENDING[0]
+
   let options = {
     hostname: "localhost",
     port: PORT,
-    path: `/put/${log}`,
+    path: `/put/${m.log}`,
     method: "POST",
   }
-  send(options, msg, (status, err, resp) => {
-    if(err) console.error(err)
-    if(status == 200) return
-    setTimeout(() => put(msg, log), 2 * 1000)
+  send(options, m.msg, (status, err, resp) => {
+    sending = false
+
+    if(status != 200 && !err) err = `responded with status: ${status}`
+    if(err) {
+      console.error(err)
+      setTimeout(sendPending, 2 * 1000)
+    } else {
+      PENDING.shift()
+      sendPending()
+    }
   })
+}
+
+/*    way/
+ * add the message to the put queue and kick off the sending process
+ */
+function put(msg, log) {
+  PENDING.push({ log, msg })
+  sendPending()
 }
 
 /*    way/
