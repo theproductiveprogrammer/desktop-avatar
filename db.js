@@ -83,8 +83,9 @@ function get(log, processor, scheduler) {
       }
       let tm
       try {
-        let end = (data && data.length) ? false: true
-        if(!end) processor(data)
+        resp = JSON.parse(resp)
+        let end = (resp && resp.length) ? false : true
+        if(!end) processor(resp)
         tm = scheduler(null, end)
       } catch(e) {
         tm = scheduler(e)
