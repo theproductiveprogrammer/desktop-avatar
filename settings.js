@@ -9,7 +9,7 @@ const NAME = "settings"
 let settings
 function main() {
   db.get(NAME, latest => {
-    settings = latest
+    settings = latest[latest.length-1]
   }, (err, end) => {
     if(err) console.error(err)
     if(end) return 5 * 1000
