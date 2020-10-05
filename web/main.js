@@ -155,29 +155,27 @@ function login(cont, cb) {
 
   function submit_1() {
     ipcRenderer.invoke("get-settings").then(settings => {
-      if(!settings || !settings.serverURL) {
+      if(!settings || !settings.serverURL || !settings.serverURL.trim()) {
         alert("Please set the server URL in settings")
         ipcRenderer.invoke("show-settings")
         return
       }
-      let n = name.value
-      let p = pw.value
-      if(!n) {
+      let usr = name.value
+      let pwd = pw.value
+      if(!usr) {
         form.classList.add('err')
         name.focus()
         setTimeout(() => form.classList.remove('err'), 1000)
         return
       }
-      if(!p) {
+      if(!pwd) {
         form.classList.add('err')
         pw.focus()
         setTimeout(() => form.classList.remove('err'), 1000)
         return
       }
-      req.post(settings.serverURL, {
-        name: n,
-        pw: p
-      }, (err, resp, status) => {
+      let u = dappURL(settings.serverURL)
+      req.post(u, { usr, pwd }, (err, resp, status) => {
         if(status != 200 && !err) {
           err = `login: response status: ${status}`
           if(resp) err += " " + resp
@@ -193,6 +191,16 @@ function login(cont, cb) {
     })
   }
 
+}
+
+function dappURL(u) {
+  u = u.trim()
+  if(!u.startsWith("http")) {
+    if(u[0] == "/") u = "http:/" + u
+    else u = "http://" + u
+  }
+  if(!u.endsWith("/")) u += "/"
+  return u + "dapp"
 }
 
 main()

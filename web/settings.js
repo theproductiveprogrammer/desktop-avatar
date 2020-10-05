@@ -23,7 +23,7 @@ function main() {
   cont.appendChild(form)
 
   let svr = h("input.svr", {
-    placeholder: "Server URL",
+    placeholder: "https://app3.salesbox.ai",
   })
 
   let submit = h(".submit", {
