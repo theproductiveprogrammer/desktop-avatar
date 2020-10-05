@@ -4,6 +4,7 @@ const path = require('path')
 
 const db = require('./db.js')
 const logger = require('./logger.js')
+const settings = require('./settings.js')
 
 ipcMain.handle("show-settings", () => {
   createSettingsWin()
@@ -11,6 +12,10 @@ ipcMain.handle("show-settings", () => {
 
 ipcMain.handle("get-logname", async () => {
   return logger.name()
+})
+
+ipcMain.handle("get-settings", async () => {
+  return settings.get()
 })
 
 function createMainWin() {

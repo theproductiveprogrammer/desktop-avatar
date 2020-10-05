@@ -113,7 +113,26 @@ function login(cont, cb) {
     placeholder: "Password"
   })
 
-  let submit = h(".submit", "Login")
+  let submit = h(".submit", {
+    tabstop: 0,
+    onclick: login_1,
+    onkeydown: () => {
+
+      if(e.keyCode == 13
+        || e.key == "Enter"
+        || e.code == "Enter") {
+        e.preventDefault()
+        login_1()
+      }
+      if(e.keyCode == 32
+        || e.key == "Space"
+        || e.code == "Space") {
+        e.preventDefault()
+        login_1()
+      }
+
+    },
+  },"Login")
 
   form.c(
     title,
@@ -121,7 +140,29 @@ function login(cont, cb) {
     submit
   )
 
+
+  function login_1() {
+    ipcRenderer.invoke("get-settings").then(settings => {
+      if(!settings || !settings.serverURL) {
+        alert("Please set the server URL in settings")
+        ipcRenderer.invoke("show-settings")
+        return
+      }
+      let n = name.value
+      let p = pw.value
+      if(!n) {
+        name.focus()
+        return
+      }
+      if(!p) {
+        pw.focus()
+        return
+      }
+    })
+  }
+
 }
+
 
 
 main()
