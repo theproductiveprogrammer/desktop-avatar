@@ -5,7 +5,12 @@ const db = require('./db.js')
  * We need a logfile to hold the messages of our current
  * run without interfering with other concurrent runs
  */
-const LOG = `log-${(new Date()).toISOString()}-${process.pid}`
+const LOG = genName()
+
+function genName() {
+  let n = `log-${(new Date()).toISOString()}-${process.pid}`
+  return n.replace(/[/:\\*&^%$#@!()]/g, "_")
+}
 
 function name() { return LOG }
 
