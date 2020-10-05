@@ -44,6 +44,13 @@ function messagePane(logname, cont) {
     msgs.forEach(msg => {
       logs.appendChild(msg_1(msg))
       logs.scrollTop = logs.scrollHeight;
+      if(msg.err) {
+        let cl = messages.classList
+        if(!cl.contains("visible")) {
+          cl.add("visible")
+          setTimeout(() => cl.remove("visible"), 1000)
+        }
+      }
     })
   }, (err, end) => {
     if(err) console.error(err)
@@ -156,11 +163,15 @@ function login(cont, cb) {
       let n = name.value
       let p = pw.value
       if(!n) {
+        form.classList.add('err')
         name.focus()
+        setTimeout(() => form.classList.remove('err'), 1000)
         return
       }
       if(!p) {
+        form.classList.add('err')
         pw.focus()
+        setTimeout(() => form.classList.remove('err'), 1000)
         return
       }
       req.post(settings.serverURL, {
