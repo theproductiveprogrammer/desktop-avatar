@@ -114,9 +114,9 @@ function login(cont, cb) {
   })
 
   let submit = h(".submit", {
-    tabstop: 0,
+    tabindex: 0,
     onclick: login_1,
-    onkeydown: () => {
+    onkeydown: e => {
 
       if(e.keyCode == 13
         || e.key == "Enter"
