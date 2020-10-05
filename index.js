@@ -18,8 +18,11 @@ ipcMain.handle("get-settings", async () => {
   return settings.get()
 })
 
+let wins = {}
+
 function createMainWin() {
-  const win = new BrowserWindow({
+  if(wins.main) return wins.main.focus()
+  wins.main = new BrowserWindow({
     width: 1300,
     height: 800,
     webPreferences: {
@@ -27,7 +30,9 @@ function createMainWin() {
     },
   })
 
-  loadWin("main.html", win)
+  wins.main.on("close", () => wins.main = null)
+
+  loadWin("main.html", wins.main)
 }
 
 app.whenReady().then(() => {
@@ -92,7 +97,8 @@ function setMenu() {
 }
 
 function createSettingsWin() {
-  const win = new BrowserWindow({
+  if(wins.settings) return wins.settings.focus()
+  wins.settings = new BrowserWindow({
     width: 600,
     height: 600,
     webPreferences: {
@@ -101,7 +107,9 @@ function createSettingsWin() {
     backgroundColor: "#0490f9",
   })
 
-  loadWin("settings.html", win)
+  wins.settings.on("close", () => wins.settings = null)
+
+  loadWin("settings.html", wins.settings)
 }
 
 /*    problem/
