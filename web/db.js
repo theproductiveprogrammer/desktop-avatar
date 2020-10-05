@@ -15,7 +15,6 @@ function get(log, processor, scheduler) {
   function get_1() {
     let uu = u + from
     req.get(uu, (err, resp, status, hdrval) => {
-      let tm = 0
       if(hdrval) {
         let hdrs = req.headers(hdrval)
         let last = hdrs["x-kafjs-lastmsgsent"]
@@ -24,19 +23,26 @@ function get(log, processor, scheduler) {
             last = parseInt(last)
             if(!isNaN(last)) from = last + 1
           } catch(e) {
-            tm = scheduler(err)
+            let tm = scheduler(err)
+            if(tm) setTimeout(get_1, tm)
+            return
           }
         }
       }
-      if(err) tm = scheduler(err)
-      if(status != 200) tm = scheduler(`get: responded with ${status}`)
+      if(status != 200 && !err) err = `get: responded with ${status}`
+      if(err) {
+        let tm = scheduler(err)
+        if(tm) setTimeout(get_1, tm)
+        return
+      }
+      let tm
       try {
-        if(resp && resp.length) processor(resp)
-        if(!resp || resp.length == 0) tm = scheduler(null, true)
+        let end = (resp && resp.length) ? false : true
+        if(!end) processor(resp)
+        tm = scheduler(null, end)
       } catch(e) {
         tm = scheduler(e)
       }
-
       if(tm) setTimeout(get_1, tm)
     })
   }

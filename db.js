@@ -61,7 +61,6 @@ function get(log, processor, scheduler) {
   function get_1() {
     options.path = p + from
     send(options, null, (status, err, resp, headers) => {
-      let tm = 0
       if(headers) {
         let last = headers["x-kafjs-lastmsgsent"]
         if(last) {
@@ -69,20 +68,26 @@ function get(log, processor, scheduler) {
             last = parseInt(last)
             if(!isNaN(last)) from = last + 1
           } catch(e) {
-            tm = scheduler(err)
+            let tm = scheduler(err)
+            if(tm) setTimeout(get_1, tm)
+            return
           }
         }
       }
-      if(err) tm = scheduler(err)
-      if(status != 200) tm = scheduler(`get: responded with ${status}`)
+      if(status != 200 && !err)  err = `get: responded with ${status}`
+      if(err) {
+        let tm = scheduler(err)
+        if(tm) setTimeout(get_1, tm)
+        return
+      }
+      let tm
       try {
-        let data = JSON.parse(resp)
-        if(data && data.length) processor(data)
-        if(!data || data.length == 0) tm = scheduler(null, true)
+        let end = (data && data.length) ? false: true
+        if(!end) processor(data)
+        tm = scheduler(null, end)
       } catch(e) {
         tm = scheduler(e)
       }
-
       if(tm) setTimeout(get_1, tm)
     })
   }
