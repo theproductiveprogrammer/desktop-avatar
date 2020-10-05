@@ -50,14 +50,15 @@ function startKaf(logger, cb) {
  * the scheduler how/when to continue
  */
 function get(log, processor, scheduler) {
-  let p = `get/${log}?from=`
+  let from = 1
+  let p = `/get/${log}?from=`
   let options = {
     hostname: "localhost",
     port: PORT,
     method: "GET",
   }
+  get_1()
 
-  let from = 1
   function get_1() {
     options.path = p + from
     send(options, null, (status, err, resp, headers) => {
