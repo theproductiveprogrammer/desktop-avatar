@@ -22,7 +22,10 @@ function err(msg, e) {
     if(!e) msg = { err: msg}
     else msg = { msg }
   }
-  if(e) msg.err = e.stack ? e.stack : e.toString()
+  if(e) {
+    if(e.stack) msg.err = e.stack
+    else msg.err = JSON.stringify(e)
+  }
   msg.t = (new Date()).toISOString()
   db.put(msg, LOG)
 }
