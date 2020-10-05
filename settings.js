@@ -7,7 +7,7 @@ const NAME = "settings"
  * we periodically get the settings from our saved info
  */
 let settings
-function main() {
+function start() {
   db.get(NAME, latest => {
     settings = latest[latest.length-1]
   }, (err, end) => {
@@ -26,8 +26,8 @@ function set(settings) {
   db.put(settings, NAME)
 }
 
-
 module.exports = {
   get,
   set,
+  start,
 }

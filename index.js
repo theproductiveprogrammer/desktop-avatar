@@ -33,6 +33,7 @@ function createMainWin() {
 app.whenReady().then(() => {
   db.start(logger, err => {
     logger.log(`Logging to ${logger.name()}`)
+    settings.start()
     if(err) {
       dialog.showErrorBox("DB", err.toString())
       app.quit()
