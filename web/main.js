@@ -115,20 +115,20 @@ function login(cont, cb) {
 
   let submit = h(".submit", {
     tabindex: 0,
-    onclick: login_1,
+    onclick: submit_1,
     onkeydown: e => {
 
       if(e.keyCode == 13
         || e.key == "Enter"
         || e.code == "Enter") {
         e.preventDefault()
-        login_1()
+        submit_1()
       }
       if(e.keyCode == 32
         || e.key == "Space"
         || e.code == "Space") {
         e.preventDefault()
-        login_1()
+        submit_1()
       }
 
     },
@@ -141,7 +141,7 @@ function login(cont, cb) {
   )
 
 
-  function login_1() {
+  function submit_1() {
     ipcRenderer.invoke("get-settings").then(settings => {
       if(!settings || !settings.serverURL) {
         alert("Please set the server URL in settings")
