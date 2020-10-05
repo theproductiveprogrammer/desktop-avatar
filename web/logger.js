@@ -28,7 +28,7 @@ function err(msg, e) {
   }
   if(e) {
     if(e.stack) msg.err == e.stack
-    else if(e.response) msg.err = JSON.stringify(e.response)
+    else if(e.response) msg.err = unhtml(e.response)
     else msg.err = JSON.stringify(e)
   }
   msg.t = (new Date()).toISOString()
@@ -42,6 +42,20 @@ function get(cb) {
     return 500
   })
 }
+
+/*    understand/
+ * sometimes the response is a HTML document so we try to remove all the
+ * HTML to be just left with the message text
+ */
+function unhtml(txt) {
+  if(typeof txt !== "string") return JSON.stringify(txt)
+  let e = document.createElement("div")
+  txt = txt.replace(/<head>[\s\S]*<\/head>/, "")
+  e.innerHTML = txt
+  txt = e.innerText
+  return txt.trim()
+}
+
 
 module.exports = {
   name,
