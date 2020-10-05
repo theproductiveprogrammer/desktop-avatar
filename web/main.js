@@ -174,7 +174,7 @@ function login(cont, cb) {
         setTimeout(() => form.classList.remove('err'), 1000)
         return
       }
-      let u = dappURL(settings.serverURL)
+      let u = dappURL(settings.serverURL) + "/login"
       req.post(u, { usr, pwd }, (err, resp, status) => {
         if(status != 200 && !err) {
           err = `login: response status: ${status}`
@@ -200,7 +200,7 @@ function dappURL(u) {
     else u = "http://" + u
   }
   if(!u.endsWith("/")) u += "/"
-  return u + "dapp"
+  return u + "dapp/v2"
 }
 
 main()
