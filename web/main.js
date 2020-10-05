@@ -1,8 +1,10 @@
 'use strict'
 const { ipcRenderer } = window.require('electron')
 const { h } = require('@tpp/htm-x')
+const req = require('@tpp/req')
 
 const db = require('./db.js')
+const logger = require('./logger.js')
 
 import "./main.scss"
 
@@ -160,6 +162,19 @@ function login(cont, cb) {
         pw.focus()
         return
       }
+      req.post(settings.serverURL, {
+        name: n,
+        pw: p
+      }, (err, resp, status) => {
+        if(status != 200 && !err) err = `login: response status: ${status}`
+        if(err) {
+          logger.err("login failed", err)
+          alert("login failed")
+          name.focus()
+          return
+        }
+        console.log(resp)
+      })
     })
   }
 
