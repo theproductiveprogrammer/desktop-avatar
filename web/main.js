@@ -178,7 +178,10 @@ function login(cont, cb) {
         name: n,
         pw: p
       }, (err, resp, status) => {
-        if(status != 200 && !err) err = `login: response status: ${status}`
+        if(status != 200 && !err) {
+          err = `login: response status: ${status}`
+          if(resp) err += " " + resp
+        }
         if(err) {
           logger.err("login failed", err)
           alert("login failed")
@@ -191,7 +194,5 @@ function login(cont, cb) {
   }
 
 }
-
-
 
 main()
