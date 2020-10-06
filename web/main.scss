@@ -174,3 +174,14 @@ body {
 .loginForm.err {
   animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
 }
+
+.page {
+  background: $bgwhite;
+  width: 100%;
+
+  .header {
+    background: $darkblue;
+    width: 100%;
+    height: 48px;
+  }
+}

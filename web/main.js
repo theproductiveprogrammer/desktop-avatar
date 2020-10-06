@@ -226,7 +226,13 @@ function loginPage(cont, cb) {
 }
 
 function showMain(ui, cont) {
+  let page = h('.page')
+  cont.appendChild(page)
 
+  let header = h('.header')
+  page.c(
+    header
+  )
 }
 
 function dappURL(u) {
