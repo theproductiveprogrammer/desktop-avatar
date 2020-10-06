@@ -231,13 +231,24 @@ function showMain(ui, cont) {
 
   let header = h('.header')
 
-  let userpane = user_pane_1()
-
-
   page.c(
     header,
-    userpane,
+    user_pane_1(),
+    msg_pane_1(),
+    report_pane_1()
   )
+
+  function msg_pane_1() {
+    let cont = h('.msgpane')
+
+
+    return cont
+  }
+
+  function report_pane_1() {
+    let cont = h('.reportpane')
+    return cont
+  }
 
   function user_pane_1() {
     let cont = h('.userpane')

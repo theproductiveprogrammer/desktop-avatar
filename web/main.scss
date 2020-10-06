@@ -182,7 +182,7 @@ body {
 }
 
 .page {
-  background: $bgwhite;
+  background: #f0f3f4;
   width: 100%;
   height: $pageHeight;
   overflow: scroll;
@@ -193,7 +193,27 @@ body {
     height: $headerHeight;
   }
 
+  .msgpane {
+    float: left;
+    margin-left: 1%;
+    width: 45%;
+    height: $pageHeight - $headerHeight;
+    background: $bgwhite;
+    overflow: scroll;
+    border-right: 2px solid #edf1f2;
+    border-left: 2px solid #edf1f2;
+  }
+
+  .reportpane {
+    float: right;
+    width: 38%;
+    height: $pageHeight - $headerHeight;
+    background: #f6f8f8;
+    overflow: scroll;
+  }
+
   .userpane {
+    float: left;
     width: 15%;
     height: $pageHeight - $headerHeight;
     background: $deepblue;
