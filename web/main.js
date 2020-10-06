@@ -13,11 +13,11 @@ import "./main.scss"
  */
 function main() {
   let cont = document.getElementById("cont")
-  login(cont, userinfo => {
-    showMain(userinfo, cont)
-  })
-
   ipcRenderer.invoke("get-logname").then(name => {
+    login(cont, userinfo => {
+      showMain(name, userinfo, cont)
+    })
+
     let messages = messagePane(name, cont)
     toolbar(messages, cont)
   })
@@ -225,7 +225,7 @@ function loginPage(cont, cb) {
 
 }
 
-function showMain(ui, cont) {
+function showMain(logname, ui, cont) {
   let page = h('.page')
   cont.appendChild(page)
 
@@ -240,9 +240,24 @@ function showMain(ui, cont) {
 
   function msg_pane_1() {
     let cont = h('.msgpane')
-
+    db.get(logname, msgs => {
+      msgs.forEach(msg => {
+        cont.add(msg_1(msg))
+        cont.scrollTop = cont.scrollHeight;
+      })
+    })
 
     return cont
+  }
+
+  function msg_1(msg) {
+    let botmsg = h(".botmsg")
+    let txt = h(".txt", msg.msg)
+    let icon = h("img.boticon", {
+      src: "./bothead.png",
+    })
+    botmsg.c(icon, txt, h(".clearfix"))
+    return botmsg
   }
 
   function report_pane_1() {
@@ -276,7 +291,7 @@ function showMain(ui, cont) {
     ipcRenderer.invoke("set-userinfo", null).then(ui => {
       cont.removeChild(page)
       login(cont, userinfo => {
-        showMain(userinfo, cont)
+        showMain(logname, userinfo, cont)
       })
     })
   }

@@ -6,7 +6,7 @@
     "start": "electron .",
     "clean": "rm -rf pub",
     "build": "npm run clean && npm run parcel-build",
-    "copy": "mkdir -p pub && cp web/*.svg pub/",
+    "copy": "mkdir -p pub && cp web/*.svg web/*.png pub/",
     "with-parcel": "PARCEL_PORT=3001 electron .",
     "parcel-build": "npm run copy && parcel build web/*.html --dist-dir pub --public-url=./",
     "parcel-watch": "npm run copy && parcel serve -p 3001 web/*.html --dist-dir pub"
