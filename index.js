@@ -6,6 +6,8 @@ const db = require('./db.js')
 const logger = require('./logger.js')
 const settings = require('./settings.js')
 
+const workflow = require('./workflow.js')
+
 ipcMain.handle("show-settings", () => {
   createSettingsWin()
 })
@@ -18,14 +20,14 @@ ipcMain.handle("get-settings", async () => {
   return settings.get()
 })
 
-let userinfo
+let state = {}
 ipcMain.handle("set-userinfo", async (e, ui) => {
-  userinfo = ui
-  return userinfo
+  state.userinfo = ui
+  return state.userinfo
 })
 
 ipcMain.handle("get-userinfo", async () => {
-  return userinfo
+  return state.userinfo
 })
 
 let wins = {}
@@ -48,12 +50,13 @@ function createMainWin() {
 
 app.whenReady().then(() => {
   db.start(logger, err => {
-    logger.log(`Logging to ${logger.name()}`)
-    settings.start()
     if(err) {
       dialog.showErrorBox("DB", err.toString())
       app.quit()
     } else {
+      logger.log(`Logging to ${logger.name()}`)
+      settings.start()
+      workflow.start(state, logger)
       setupUI()
     }
   })

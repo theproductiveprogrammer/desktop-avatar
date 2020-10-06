@@ -35,6 +35,18 @@ function err(msg, e) {
   db.put(msg, LOG)
 }
 
+function botMsg(msg) {
+  msg = { botsays: msg }
+  msg.t = (new Date()).toISOString()
+  db.put(msg, LOG)
+}
+
+function svrMsg(msg) {
+  msg = { svrsays: msg }
+  msg.t = (new Date()).toISOString()
+  db.put(msg, LOG)
+}
+
 function get(cb) {
   db.get(LOG, cb, (err, end) => {
     if(err) console.log(err)
@@ -48,5 +60,7 @@ module.exports = {
   log,
   err,
   msg,
+  botMsg,
+  svrMsg,
   get,
 }

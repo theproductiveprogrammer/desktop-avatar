@@ -203,6 +203,21 @@ body {
     border-left: 2px solid #edf1f2;
     background: linear-gradient($bgwhite, #f7f7ff);
 
+    .svrmsg {
+      width: 40%;
+      margin-left: 55%;
+      margin-bottom: 50px;
+      animation: slideInRight 600ms ease-in-out;
+      text-align: right;
+      background: lighten($deepblue, 30%);
+      background: linear-gradient(45deg, lighten($deepblue, 30%), lighten($deepblue, 40%));
+      padding: 24px 16px;
+      padding-right: 18px;
+      border-radius: 12px;
+      color: $bgwhite;
+      box-shadow: 1px 1px 1px 0 lighten($deepblue, 20%);
+    }
+
     .botmsg {
       width: 85%;
       margin: 24px;
@@ -221,6 +236,7 @@ body {
         border-radius: 8px;
         padding: 24px 16px;
         background: lighten($salesblue,30%);
+        background: linear-gradient(45deg, lighten($salesblue, 35%), lighten($salesblue,30%));
         border: 1px solid lighten($salesblue, 30%);
         box-shadow: 1px 1px 2px 0 lighten($salesblue, 40%);
         color: #334;
@@ -294,6 +310,19 @@ body {
 @keyframes slideIn {
   0%{
         transform: skewX(70deg) translateX(-100px);
+        opacity: 0;
+    }
+    50%{
+        transform: skew(0deg);
+    }
+    100%{
+        transform: skew(0deg) translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+  0%{
+        transform: skewX(-70deg) translateX(100px);
         opacity: 0;
     }
     50%{

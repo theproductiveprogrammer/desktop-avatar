@@ -42,13 +42,16 @@ function messagePane(logname, cont) {
 
   db.get(logname, msgs => {
     msgs.forEach(msg => {
-      logs.appendChild(msg_1(msg))
-      logs.scrollTop = logs.scrollHeight;
-      if(msg.err) {
-        let cl = messages.classList
-        if(!cl.contains("visible")) {
-          cl.add("visible")
-          setTimeout(() => cl.remove("visible"), 1000)
+      let m = msg_1(msg)
+      if(m) {
+        logs.appendChild(msg_1(msg))
+        logs.scrollTop = logs.scrollHeight;
+        if(msg.err) {
+          let cl = messages.classList
+          if(!cl.contains("visible")) {
+            cl.add("visible")
+            setTimeout(() => cl.remove("visible"), 1000)
+          }
         }
       }
     })
@@ -61,6 +64,7 @@ function messagePane(logname, cont) {
   return messages
 
   function msg_1(m) {
+    if(!m.msg && !m.err) return
     let tm = ""
     let dt = ""
     let t = new Date(m.t)
@@ -242,22 +246,36 @@ function showMain(logname, ui, cont) {
     let cont = h('.msgpane')
     db.get(logname, msgs => {
       msgs.forEach(msg => {
-        cont.add(msg_1(msg))
-        cont.scrollTop = cont.scrollHeight;
+        let m = msg_1(msg)
+        if(m) {
+          cont.add(m)
+          cont.scrollTop = cont.scrollHeight;
+        }
       })
+    }, (err, end) => {
+      if(err) console.error(err)
+      if(end) return 5 * 1000
+      return 500
     })
 
     return cont
   }
 
   function msg_1(msg) {
+    if(msg.botsays) return botsays_1(msg)
+    if(msg.svrsays) return svrsays_1(msg)
+  }
+  function botsays_1(msg) {
     let botmsg = h(".botmsg")
-    let txt = h(".txt", msg.msg)
+    let txt = h(".txt", msg.botsays)
     let icon = h("img.boticon", {
       src: "./bothead.png",
     })
     botmsg.c(icon, txt, h(".clearfix"))
     return botmsg
+  }
+  function svrsays_1(msg) {
+    return h(".svrmsg", msg.svrsays)
   }
 
   function report_pane_1() {
