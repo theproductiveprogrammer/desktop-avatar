@@ -1,6 +1,10 @@
 'use strict'
 
+let started
 function start(state, logger) {
+  if(started) return
+  started = true
+
   ui_poll_1(state, logger)
 
   function ui_poll_1(state, logger) {

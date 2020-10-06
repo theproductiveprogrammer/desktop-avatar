@@ -23,6 +23,7 @@ ipcMain.handle("get-settings", async () => {
 let state = {}
 ipcMain.handle("set-userinfo", async (e, ui) => {
   state.userinfo = ui
+  workflow.start(state, logger)
   return state.userinfo
 })
 
@@ -56,7 +57,6 @@ app.whenReady().then(() => {
     } else {
       logger.log(`Logging to ${logger.name()}`)
       settings.start()
-      workflow.start(state, logger)
       setupUI()
     }
   })

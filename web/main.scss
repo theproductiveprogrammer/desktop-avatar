@@ -332,3 +332,12 @@ body {
         transform: skew(0deg) translateX(0);
     }
 }
+
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.page {
+  animation: fadein ease-out 500ms;
+}
