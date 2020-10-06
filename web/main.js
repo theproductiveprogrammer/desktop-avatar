@@ -118,11 +118,27 @@ function login(cont, cb) {
   let inputs = h(".inputs")
   let name = h("input.name", {
     autofocus: true,
-    placeholder: "Email or Username"
+    placeholder: "Email or Username",
+    onkeydown: e => {
+      if(e.keyCode == 13
+        || e.key == "Enter"
+        || e.code == "Enter") {
+        e.preventDefault()
+        pw.focus()
+      }
+    },
   })
   let pw = h("input.name", {
     type: "password",
-    placeholder: "Password"
+    placeholder: "Password",
+    onkeydown: e => {
+      if(e.keyCode == 13
+        || e.key == "Enter"
+        || e.code == "Enter") {
+        e.preventDefault()
+        submit_1()
+      }
+    },
   })
 
   let submit = h(".submit", {
