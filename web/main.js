@@ -5,6 +5,7 @@ const req = require('@tpp/req')
 
 const db = require('./db.js')
 const logger = require('./logger.js')
+const dh = require('../display-helpers.js')
 
 import "./main.scss"
 
@@ -292,8 +293,8 @@ function showMain(logname, ui, cont) {
 
   function user_pane_1() {
     let cont = h('.userpane')
-    let icon = h('.usericon', name_1(ui)[0])
-    let name = h('.name', name_1(ui))
+    let icon = h('.usericon', dh.userName(ui)[0])
+    let name = h('.name', dh.userName(ui))
     let tenant = h('.tenant', ui.tenant)
     let email = h('.email', ui.email)
     let linkedin = h('.linkedin', ui.linkedin)
@@ -321,15 +322,6 @@ function showMain(logname, ui, cont) {
     })
   }
 
-  function name_1(ui) {
-    if(!ui) return "(no user)"
-    if(ui.firstName && ui.lastName) {
-      return ui.firstName + " " + ui.lastName
-    }
-    if(ui.firstName) return ui.firstName
-    if(ui.lastName) return ui.lastName
-    return "(no name)"
-  }
 }
 
 function dappURL(u) {
