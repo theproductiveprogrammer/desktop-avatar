@@ -18,6 +18,16 @@ ipcMain.handle("get-settings", async () => {
   return settings.get()
 })
 
+let userinfo
+ipcMain.handle("set-userinfo", async (e, ui) => {
+  userinfo = ui
+  return userinfo
+})
+
+ipcMain.handle("get-userinfo", async () => {
+  return userinfo
+})
+
 let wins = {}
 
 function createMainWin() {

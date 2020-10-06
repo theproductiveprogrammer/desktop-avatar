@@ -14,7 +14,7 @@ import "./main.scss"
 function main() {
   let cont = document.getElementById("cont")
   login(cont, userinfo => {
-    console.log(userinfo)
+    showMain(userinfo, cont)
   })
 
   ipcRenderer.invoke("get-logname").then(name => {
@@ -106,12 +106,21 @@ function toolbar(messages, cont) {
 }
 
 /*    way/
+ * get the user info, and - if none - show the login page
+ */
+function login(cont, cb) {
+  ipcRenderer.invoke("get-userinfo").then(ui => {
+    if(ui) cb(ui)
+    else loginPage(cont, cb)
+  })
+}
+
+/*    way/
  * show the login page in the given container, and - after
  * login, send the details back using the callback.
  */
-function login(cont, cb) {
+function loginPage(cont, cb) {
   let form = h(".loginForm")
-  cont.innerHTML = ""
   cont.appendChild(form)
 
   let title = h(".title", "Login")
@@ -202,10 +211,21 @@ function login(cont, cb) {
           name.focus()
           return
         }
-        console.log(resp)
+        show_main_1(resp)
       })
     })
   }
+
+  function show_main_1(resp) {
+    ipcRenderer.invoke("set-userinfo", resp).then(ui => {
+      cont.removeChild(form)
+      cb(ui)
+    })
+  }
+
+}
+
+function showMain(ui, cont) {
 
 }
 
