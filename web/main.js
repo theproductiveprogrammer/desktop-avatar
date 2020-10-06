@@ -247,12 +247,27 @@ function showMain(ui, cont) {
     let email = h('.email', ui.email)
     let linkedin = h('.linkedin', ui.linkedin)
 
+    let logout = h('.logout', {
+      onclick: logout_1,
+    }, "Logout")
+
+
     cont.c(icon, name, tenant,
       h(".clearfix"),
-      email, linkedin
+      email, linkedin,
+      logout
     )
 
     return cont
+  }
+
+  function logout_1() {
+    ipcRenderer.invoke("set-userinfo", null).then(ui => {
+      cont.removeChild(page)
+      login(cont, userinfo => {
+        showMain(userinfo, cont)
+      })
+    })
   }
 
   function name_1(ui) {
