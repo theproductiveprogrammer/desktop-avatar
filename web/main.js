@@ -209,6 +209,9 @@ function loginPage(cont, cb) {
           err = `login: response status: ${status}`
           if(resp) err += " " + resp
         }
+        if(invalid_1(resp) && !err) {
+          err = `login: invalid response: ${JSON.stringify(resp)}`
+        }
         if(err) {
           logger.err("login failed", err)
           alert("login failed")
@@ -225,6 +228,10 @@ function loginPage(cont, cb) {
       cont.removeChild(form)
       cb(ui)
     })
+  }
+
+  function invalid_1(resp) {
+    return !resp || !resp.authKey
   }
 
 }
