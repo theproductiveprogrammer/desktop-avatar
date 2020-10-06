@@ -230,9 +230,40 @@ function showMain(ui, cont) {
   cont.appendChild(page)
 
   let header = h('.header')
+
+  let userpane = user_pane_1()
+
+
   page.c(
-    header
+    header,
+    userpane,
   )
+
+  function user_pane_1() {
+    let cont = h('.userpane')
+    let icon = h('.usericon', name_1(ui)[0])
+    let name = h('.name', name_1(ui))
+    let tenant = h('.tenant', ui.tenant)
+    let email = h('.email', ui.email)
+    let linkedin = h('.linkedin', ui.linkedin)
+
+    cont.c(icon, name, tenant,
+      h(".clearfix"),
+      email, linkedin
+    )
+
+    return cont
+  }
+
+  function name_1(ui) {
+    if(!ui) return "(no user)"
+    if(ui.firstName && ui.lastName) {
+      return ui.firstName + " " + ui.lastName
+    }
+    if(ui.firstName) return ui.firstName
+    if(ui.lastName) return ui.lastName
+    return "(no name)"
+  }
 }
 
 function dappURL(u) {
