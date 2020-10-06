@@ -5,6 +5,7 @@ const path = require('path')
 const db = require('./db.js')
 const logger = require('./logger.js')
 const settings = require('./settings.js')
+const store = require('./store.js')
 
 const workflow = require('./workflow.js')
 
@@ -20,15 +21,13 @@ ipcMain.handle("get-settings", async () => {
   return settings.get()
 })
 
-let state = {}
 ipcMain.handle("set-userinfo", async (e, ui) => {
-  state.userinfo = ui
-  workflow.start(state, logger)
-  return state.userinfo
+  store.event("set/userinfo", ui)
+  return store.get("userinfo")
 })
 
 ipcMain.handle("get-userinfo", async () => {
-  return state.userinfo
+  return store.get("userinfo")
 })
 
 let wins = {}
@@ -57,6 +56,7 @@ app.whenReady().then(() => {
     } else {
       logger.log(`Logging to ${logger.name()}`)
       settings.start()
+      workflow.start(store, logger)
       setupUI()
     }
   })

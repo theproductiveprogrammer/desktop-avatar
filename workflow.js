@@ -1,23 +1,20 @@
 'use strict'
 
-let started
-function start(state, logger) {
-  if(started) return
-  started = true
-
-  ui_poll_1(state, logger)
-
-  function ui_poll_1(state, logger) {
-    if(!state.userinfo) {
-      setTimeout(() => ui_poll_1(state, logger), 3 * 1000)
+function start(store, logger) {
+  let firstLogin
+  store.react("userinfo", ui => {
+    if(ui) {
+      firstLogin = true
+      loggedIn(store, logger)
     } else {
-      startWorkflow(state, logger)
+      if(firstLogin) loggedOut(store, logger)
     }
-  }
+  })
 }
 
-function startWorkflow(state, logger) {
-  logger.botMsg(`${greeting_1()} ${name_1(state.userinfo)}`)
+function loggedIn(store, logger) {
+  let ui = store.get("userinfo")
+  logger.botMsg(`${greeting_1()} ${name_1(ui)}`)
   logger.svrMsg("Server says hello")
 
   function greeting_1() {
@@ -36,6 +33,11 @@ function startWorkflow(state, logger) {
     if(ui.lastName) return ui.lastName
     return "(no name)"
   }
+}
+
+function loggedOut(store, logger) {
+  logger.svrMsg("Server says bye")
+  logger.botMsg("Logged Out")
 }
 
 module.exports = {
