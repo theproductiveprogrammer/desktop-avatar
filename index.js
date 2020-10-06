@@ -35,6 +35,7 @@ function createMainWin() {
   wins.main = new BrowserWindow({
     width: 1300,
     height: 800,
+    resizable: false,
     webPreferences: {
       nodeIntegration: true,
     },
@@ -111,6 +112,7 @@ function createSettingsWin() {
   wins.settings = new BrowserWindow({
     width: 600,
     height: 600,
+    resizable: false,
     webPreferences: {
       nodeIntegration: false,
     },
