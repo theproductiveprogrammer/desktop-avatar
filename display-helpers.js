@@ -11,6 +11,15 @@ function userName(ui) {
 }
 
 
+function greeting() {
+  let hh = (new Date()).getHours()
+  if(hh >= 6 && hh < 12) return "Good Morning"
+  if(hh >= 12 && hh < 16) return "Good Afternoon"
+  return "Good Evening"
+}
+
+
 module.exports = {
   userName,
+  greeting,
 }
