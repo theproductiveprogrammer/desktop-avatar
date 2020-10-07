@@ -30,6 +30,10 @@ function main() {
     placeholder: "https://bitbucket.org/sbox_charles/dapp-plugins/"
   })
 
+  let userips = h("textarea.userips", {
+    placeholder: "userid = socks proxy port\n\nEg:1234 = 8746",
+  })
+
   let submit = h(".submit", {
     tabindex: 0,
     onclick: submit_1,
@@ -71,6 +75,8 @@ function main() {
     svr,
     h(".label", "Plugins URL"),
     plugins,
+    h(".label", "User IP Mapping"),
+    userips,
     submit
   )
 

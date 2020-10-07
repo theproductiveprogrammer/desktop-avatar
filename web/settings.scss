@@ -35,18 +35,23 @@ body {
     font-variant: all-small-caps;
     font-weight: bold;
   }
-  input {
+  input,textarea {
     display: block;
     margin-left: -1px;
     margin-bottom: 32px;
     border-radius: 4px;
     width: 80%;
-    height: 32px;
-    padding: 6px 12px;
     font-size: 14px;
     color: #555;
     background-color: white;
     border: 1px solid $lightgrey;
+    padding: 6px 12px;
+  }
+  input {
+    height: 32px;
+  }
+  textarea {
+    height: 128px;
   }
 
   .submit {
