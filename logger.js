@@ -36,7 +36,7 @@ function err(msg, e) {
 }
 
 function botMsg(msg) {
-  msg = { botsays: msg }
+  if(typeof msg == "string") msg = { botsays: msg }
   msg.t = (new Date()).toISOString()
   db.put(msg, LOG)
 }

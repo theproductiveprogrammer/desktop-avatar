@@ -250,6 +250,37 @@ body {
     height: $pageHeight - $headerHeight;
     background: #f6f8f8;
     overflow: scroll;
+    color: #334;
+
+    .userreport {
+      margin: 24px;
+      margin-bottom: 64px;
+      padding: 18px 24px;
+      border-radius: 2px;
+      border: 1px solid $lightgrey;
+      background: $bgwhite;
+
+      .name {
+        font-size: 32px;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid $lightgrey;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      table, th, td {
+        border: 1px solid $grey;
+        padding: 4px;
+      }
+      th {
+        height: 32px;
+        color: #777;
+      }
+    }
   }
 
   .userpane {

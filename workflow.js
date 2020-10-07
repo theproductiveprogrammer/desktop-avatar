@@ -68,19 +68,17 @@ Could not get users from the server. Please check the message log for more detai
       try {
         let users = JSON.parse(resp)
         if(!users || !users.length) {
-          logger.botMsg(`
-You don't have any other users to manage ${dh.userName(ui)}. Let's work on our own tasks!
-`)
           users = [ui]
         } else {
-          logger.botMsg(`
-We've got ${users.length} users to manage. Let's keep track of them in the report pane on our right.
-`)
           users = [ui].concat(users)
         }
-        logger.msg({
-          t: (new Date()).toISOString(),
-          users: users.map(u => u.id),
+        let msg = `We've got ${users.length} users to manage. We'll keep track of all of us in the report pane on our right.`
+        if(users.length == 1) {
+          msg = `You don't have any other users to manage ${dh.userName(ui)}. Let's work on our own tasks!`
+        }
+        logger.botMsg({
+          botsays: msg,
+          users: users.map(u => u.id)
         })
         store.event("set/users", users)
 

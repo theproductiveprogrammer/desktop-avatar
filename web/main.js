@@ -242,12 +242,13 @@ function showMain(logname, ui, cont) {
   cont.appendChild(page)
 
   let header = h('.header')
+  let reportpane = h('.reportpane')
 
   page.c(
     header,
     user_pane_1(),
     msg_pane_1(),
-    report_pane_1()
+    reportpane
   )
 
   let msglist = []
@@ -257,7 +258,7 @@ function showMain(logname, ui, cont) {
     db.get(logname, msgs => {
       msgs.forEach(msg => {
         let m = msg_1(msg)
-        if(m) msglist.push(m)
+        if(m) msglist.push(msg)
         show_msglist_1(cont)
       })
     }, (err, end) => {
@@ -273,14 +274,18 @@ function showMain(logname, ui, cont) {
   function show_msglist_1(cont) {
     if(showing_msglist) return
     showing_msglist = true
+
+    let users
     show_first_1()
 
     function show_first_1() {
       if(msglist.length == 0) {
         showing_msglist = false
+        if(users) show_report_1(users, reportpane)
       } else {
-        let m = msglist.shift()
-        cont.add(m)
+        let msg = msglist.shift()
+        if(msg.users) users = msg.users
+        cont.add(msg_1(msg))
         cont.scrollTop = cont.scrollHeight;
         let delay = Math.random() * 2 * 1000 + 1000
         setTimeout(() => show_first_1(), delay)
@@ -305,10 +310,32 @@ function showMain(logname, ui, cont) {
     return h(".svrmsg", msg.svrsays)
   }
 
-  function report_pane_1() {
-    let cont = h('.reportpane')
+  function show_report_1(users, cont) {
+    cont.innerHTML = ""
+    ipcRenderer.invoke("get-users").then(uis => {
+      uis.map(ui => cont.add(user_table_1(ui)))
+    })
+  }
+
+  function user_table_1(ui) {
+    let cont = h(".userreport")
+
+    let name = h(".name", dh.userName(ui))
+    let tbl = h("table")
+    let hdr = h("tr", [
+      h("th", "Task"),
+      h("th", "Success"),
+      h("th", "Failure"),
+    ])
+
+    cont.c(
+      name,
+      tbl.c(hdr)
+    )
+
     return cont
   }
+
 
   function user_pane_1() {
     let cont = h('.userpane')

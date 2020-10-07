@@ -30,6 +30,10 @@ ipcMain.handle("get-userinfo", async () => {
   return store.get("userinfo")
 })
 
+ipcMain.handle("get-users", async () => {
+  return store.get("users")
+})
+
 let wins = {}
 
 function createMainWin() {
