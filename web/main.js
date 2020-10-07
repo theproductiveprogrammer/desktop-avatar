@@ -45,7 +45,7 @@ function messagePane(logname, cont) {
     msgs.forEach(msg => {
       let m = msg_1(msg)
       if(m) {
-        logs.appendChild(msg_1(msg))
+        logs.appendChild(m)
         logs.scrollTop = logs.scrollHeight;
         if(msg.err) {
           let cl = messages.classList
