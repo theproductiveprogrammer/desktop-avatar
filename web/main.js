@@ -282,7 +282,8 @@ function showMain(logname, ui, cont) {
         let m = msglist.shift()
         cont.add(m)
         cont.scrollTop = cont.scrollHeight;
-        setTimeout(() => show_first_1(), 1000)
+        let delay = Math.random() * 2 * 1000 + 1000
+        setTimeout(() => show_first_1(), delay)
       }
     }
   }
