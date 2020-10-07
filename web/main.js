@@ -321,6 +321,7 @@ function showMain(logname, ui, cont) {
     let cont = h(".userreport")
 
     let name = h(".name", dh.userName(ui))
+    let id = h(".id", ui.id)
     let tbl = h("table")
     let hdr = h("tr", [
       h("th", "Task"),
@@ -330,7 +331,8 @@ function showMain(logname, ui, cont) {
 
     cont.c(
       name,
-      tbl.c(hdr)
+      tbl.c(hdr),
+      id
     )
 
     return cont

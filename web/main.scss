@@ -280,6 +280,15 @@ body {
         height: 32px;
         color: #777;
       }
+
+      .id {
+        font-size: 0.7em;
+        font-weight: bold;
+        border-top: 1px solid $lightgrey;
+        margin-top: 12px;
+        text-align: right;
+        color: #777;;
+      }
     }
   }
 
