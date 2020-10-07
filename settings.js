@@ -6,19 +6,14 @@ const NAME = "settings"
 /*    understand/
  * we periodically get the settings from our saved info
  */
-let settings
-function start() {
+function start(store) {
   db.get(NAME, latest => {
-    settings = latest[latest.length-1]
+    store.event("set/settings", latest[latest.length-1])
   }, (err, end) => {
     if(err) console.error(err)
     if(end) return 5 * 1000
     return 500
   })
-}
-
-function get() {
-  return settings
 }
 
 function set(settings) {
@@ -27,7 +22,6 @@ function set(settings) {
 }
 
 module.exports = {
-  get,
   set,
   start,
 }

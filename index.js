@@ -18,7 +18,7 @@ ipcMain.handle("get-logname", async () => {
 })
 
 ipcMain.handle("get-settings", async () => {
-  return settings.get()
+  return store.get("settings")
 })
 
 ipcMain.handle("set-userinfo", async (e, ui) => {
@@ -55,7 +55,7 @@ app.whenReady().then(() => {
       app.quit()
     } else {
       logger.log(`Logging to ${logger.name()}`)
-      settings.start()
+      settings.start(store)
       workflow.start(store, logger)
       setupUI()
     }

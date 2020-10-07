@@ -5,6 +5,8 @@ const store = dux.createStore(reducer, {})
 
 function reducer(state, type, payload) {
   switch(type) {
+    case "set/settings":
+      return { ...state, settings: payload }
     case "set/userinfo":
       return { ...state, userinfo: payload }
     default:
