@@ -73,11 +73,25 @@ function main() {
       svr.focus()
       return
     }
+    if(!valid_1(svrURL)) {
+      alert("Invalid server URL")
+      svr.focus()
+      return
+    }
     if(!settings) settings = {}
     settings.t = (new Date()).toISOString()
     settings.serverURL = svrURL
     db.put(settings, NAME)
     window.close()
+  }
+
+  function valid_1(u) {
+    try {
+      u = new URL(u)
+      return u.protocol == "http:" || u.protocol == "https:"
+    } catch(e) {
+      return false
+    }
   }
 
 }
