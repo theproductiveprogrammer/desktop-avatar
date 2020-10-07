@@ -2,8 +2,7 @@
 const kaf = require('kafjs')
 const loc = require('./loc.js')
 const util = require('./util.js')
-
-const http = require('http')
+const req = require('./req.js')
 
 const PORT = 7749
 
@@ -61,7 +60,7 @@ function get(log, processor, scheduler) {
 
   function get_1() {
     options.path = p + from
-    send(options, null, (status, err, resp, headers) => {
+    req.send(options, null, (status,err,resp,headers) => {
       if(headers) {
         let last = headers["x-kafjs-lastmsgsent"]
         if(last) {
@@ -112,7 +111,7 @@ function sendPending() {
     path: `/put/${m.log}`,
     method: "POST",
   }
-  send(options, m.msg, (status, err, resp) => {
+  req.send(options, m.msg, (status, err, resp) => {
     sending = false
 
     if(status != 200 && !err) err = `responded with status: ${status}`
@@ -132,39 +131,6 @@ function sendPending() {
 function put(msg, log) {
   PENDING.push({ log, msg })
   sendPending()
-}
-
-/*    way/
- * send the request to the server, handling all the events correctly so
- * that the callback is only invoked once.
- */
-function send(options, data, cb) {
-  let req = http.request(options, res => {
-    let body = []
-    res.on("data", chunk => body.push(chunk))
-    res.on("end", () => {
-      callback_1(null, Buffer.concat(body), res.statusCode, res.headers)
-    })
-    if(options.timeout) {
-      req.setTimeout(options.timeout, () => {
-        callback_1("request timeout")
-        req.abort()
-      })
-    }
-    res.on("error", callback_1)
-    res.on("close", () => callback_1("connection closed"))
-  })
-
-  if(data) req.write(JSON.stringify(data))
-  req.end()
-
-  let completed
-  function callback_1(err, data, status, headers) {
-    if(completed) return
-    completed = true
-
-    cb(status, err, data, headers)
-  }
 }
 
 module.exports = {
