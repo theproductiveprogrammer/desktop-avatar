@@ -73,16 +73,20 @@ You don't have any other users to manage ${dh.userName(ui)}. Let's work on our o
 `)
           users = [ui]
         } else {
+          logger.botMsg(`
+We've got ${users.length} users to manage. Let's keep track of them in the report pane on our right.
+`)
           users = [ui].concat(users)
         }
         logger.msg({
           t: (new Date()).toISOString(),
-
+          users: users.map(u => u.id),
         })
         store.event("set/users", users)
 
       } catch(e) {
-        logger.err("getUsers response error", err)
+        console.log(resp.toString())
+        logger.err("getUsers response error", e)
         logger.botMsg(`The server's response did not make sense to me. Please check the message log for more details`)
       }
     }
