@@ -250,15 +250,15 @@ function showMain(logname, ui, cont) {
     report_pane_1()
   )
 
+  let msglist = []
+
   function msg_pane_1() {
     let cont = h('.msgpane')
     db.get(logname, msgs => {
       msgs.forEach(msg => {
         let m = msg_1(msg)
-        if(m) {
-          cont.add(m)
-          cont.scrollTop = cont.scrollHeight;
-        }
+        if(m) msglist.push(m)
+        show_msglist_1(cont)
       })
     }, (err, end) => {
       if(err) console.error(err)
@@ -267,6 +267,24 @@ function showMain(logname, ui, cont) {
     })
 
     return cont
+  }
+
+  let showing_msglist
+  function show_msglist_1(cont) {
+    if(showing_msglist) return
+    showing_msglist = true
+    show_first_1()
+
+    function show_first_1() {
+      if(msglist.length == 0) {
+        showing_msglist = false
+      } else {
+        let m = msglist.shift()
+        cont.add(m)
+        cont.scrollTop = cont.scrollHeight;
+        setTimeout(() => show_first_1(), 1000)
+      }
+    }
   }
 
   function msg_1(msg) {
