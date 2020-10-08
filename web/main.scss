@@ -2,5 +2,9 @@
 @import "./common.scss";
 
 body {
+  font-family:"Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: $salesblue;
   background: url("./background.jpg");
+  overflow: scroll;
 }
+

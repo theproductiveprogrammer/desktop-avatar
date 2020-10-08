@@ -5,11 +5,16 @@ $lightgrey: #e7ecee;
 $grey: #ccc;
 $deepblue: #0747a6;
 
-body {
-  font-family:"Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: $salesblue;
-  overflow: scroll;
-}
+
+$loginWidth: 400px;
+$loginHeight: 500px;
+
+$msgWidth: 300px;
+$msgHeight: 500px;
+
+$pageHeight: 780px;
+$headerHeight: 48px;
+
 
 @keyframes shake {
   10%, 90% {

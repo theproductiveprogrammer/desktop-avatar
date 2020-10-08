@@ -15,7 +15,6 @@ module.exports = (LOGNAME, withdump) => {
     } else {
       msg = { t, e }
     }
-    return msg
     kc.put(msg, LOGNAME)
   }
 

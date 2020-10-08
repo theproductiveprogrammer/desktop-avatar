@@ -17,7 +17,7 @@ function show(store) {
     onclick: () => store.event("logview/show")
   })
 
-  cont.appendChild(tb)
+  store.get("e").appendChild(tb)
   tb.c(settings, hamburger)
 }
 

@@ -28,8 +28,12 @@ function get(log, processor, scheduler) {
         if(!isNaN(last)) from = last + 1
       }
       if(err) return schedule_1(err)
-      if(resp && !Array.isArray(resp.body)) {
-        return schedule_1({ err: "bad response", resp })
+      if(resp) {
+        if(!Array.isArray(resp.body)) {
+          return schedule_1({ err: "bad response", resp })
+        } else {
+          resp = resp.body
+        }
       }
       let end = (resp && resp.length) ? false : true
       if(!end) processor(resp)
