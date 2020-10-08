@@ -1,7 +1,7 @@
 'use strict'
 const { h } = require('@tpp/htm-x')
 
-const db = require('./db.js')
+const kc = require('../kafclient.js')
 
 import "./settings.scss"
 
@@ -55,20 +55,7 @@ function main() {
     },
   }, "Submit")
 
-
-  db.get(NAME, latest => {
-    settings = latest[latest.length-1]
-  }, (err, end) => {
-    if(err) console.error(err)
-    if(end) {
-      if(settings) {
-        svr.value = settings.serverURL || null
-        plugins.value = settings.pluginURL || null
-      }
-      return 0
-    }
-    return 1
-  })
+  load_setting_info_1()
 
   form.c(
     h(".label", "Server URL"),
@@ -79,6 +66,22 @@ function main() {
     userips,
     submit
   )
+
+  function load_setting_info_1() {
+    kc.get(NAME, latest => {
+      settings = latest[latest.length-1]
+    }, (err, end) => {
+      if(err) console.error(err)
+      if(end) {
+        if(settings) {
+          svr.value = settings.serverURL || null
+          plugins.value = settings.pluginURL || null
+        }
+        return 0
+      }
+      return 10
+    })
+  }
 
   function submit_1() {
     let svrURL = svr.value
@@ -101,7 +104,7 @@ function main() {
     settings.t = (new Date()).toISOString()
     settings.serverURL = svrURL
     settings.pluginURL = pluginURL || undefined
-    db.put(settings, NAME)
+    kc.put(settings, NAME)
     window.close()
   }
 

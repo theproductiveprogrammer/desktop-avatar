@@ -1,0 +1,24 @@
+.toolbar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  .settings {
+    width: 24px;
+    opacity: 0.5;
+    cursor: pointer;
+  }
+  .settings:hover {
+    opacity: 1;
+  }
+  .hamburger {
+    width: 24px;
+    cursor: pointer;
+    margin-left:8px;
+    opacity: 0.2;
+  }
+  .hamburger:hover {
+    opacity: 0.8;
+  }
+}
+

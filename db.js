@@ -1,18 +1,16 @@
 'use strict'
 const kaf = require('kafjs')
+const kc = require('./kafclient.js')
 const loc = require('./loc.js')
 const util = require('./util.js')
-const req = require('./req.js')
-
-const PORT = 7749
 
 /*    way/
  * ensure that the database directory exists then start the kaf db
  */
-function start(logger, cb) {
+function start(log, cb) {
   util.ensureExists(loc.db(), err => {
     if(err) cb(err)
-    else startKaf(logger, cb)
+    else startKaf(log, cb)
   })
 }
 
@@ -27,8 +25,8 @@ function start(logger, cb) {
  * again after sometime - just in case the existing instance is shut
  * down.
  */
-function startKaf(logger, cb) {
-  kaf.startServer(PORT, loc.db(), err => {
+function startKaf(log, cb) {
+  kaf.startServer(kc.PORT, loc.db(), err => {
     if(err) {
       if(err.code === "EADDRINUSE") {
         setTimeout(start, 5 * 1000)
@@ -38,103 +36,12 @@ function startKaf(logger, cb) {
         else console.error(err)
       }
     } else {
-      logger.log("Started DB Server")
+      log("db/started")
       cb && cb()
     }
   })
 }
 
-/*    way/
- * get a set of messages from the log file pass to the processor and ask
- * the scheduler how/when to continue
- */
-function get(log, processor, scheduler) {
-  let from = 1
-  let p = `/get/${log}?from=`
-  let options = {
-    hostname: "localhost",
-    port: PORT,
-    method: "GET",
-  }
-  get_1()
-
-  function get_1() {
-    options.path = p + from
-    req.send(options, null, (status,err,resp,headers) => {
-      if(headers) {
-        let last = headers["x-kafjs-lastmsgsent"]
-        if(last) {
-          try {
-            last = parseInt(last)
-            if(!isNaN(last)) from = last + 1
-          } catch(e) {
-            let tm = scheduler(err)
-            if(tm) setTimeout(get_1, tm)
-            return
-          }
-        }
-      }
-      if(status != 200 && !err)  err = `get: responded with ${status}`
-      if(err) {
-        let tm = scheduler(err)
-        if(tm) setTimeout(get_1, tm)
-        return
-      }
-      let tm
-      try {
-        resp = JSON.parse(resp)
-        let end = (resp && resp.length) ? false : true
-        if(!end) processor(resp)
-        tm = scheduler(null, end)
-      } catch(e) {
-        tm = scheduler(e)
-      }
-      if(tm) setTimeout(get_1, tm)
-    })
-  }
-}
-
-/*    understand/
- * put the logs in the order they come in and retry until sucessful
- */
-let PENDING = []
-let sending
-function sendPending() {
-  if(sending || !PENDING || !PENDING.length) return
-  sending = true
-
-  let m = PENDING[0]
-
-  let options = {
-    hostname: "localhost",
-    port: PORT,
-    path: `/put/${m.log}`,
-    method: "POST",
-  }
-  req.send(options, m.msg, (status, err, resp) => {
-    sending = false
-
-    if(status != 200 && !err) err = `responded with status: ${status}`
-    if(err) {
-      console.error(err)
-      setTimeout(sendPending, 2 * 1000)
-    } else {
-      PENDING.shift()
-      sendPending()
-    }
-  })
-}
-
-/*    way/
- * add the message to the put queue and kick off the sending process
- */
-function put(msg, log) {
-  PENDING.push({ log, msg })
-  sendPending()
-}
-
 module.exports = {
   start,
-  put,
-  get,
 }

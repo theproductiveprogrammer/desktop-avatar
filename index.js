@@ -1,81 +1,103 @@
 'use strict'
-const {app,BrowserWindow,dialog,Menu,ipcMain}=require('electron')
 const path = require('path')
 
+const {
+  app,
+  BrowserWindow,
+  dialog,
+  Menu,
+  ipcMain
+} = require('electron')
+
 const db = require('./db.js')
-const logger = require('./logger.js')
-const settings = require('./settings.js')
+const kc = require('./kafclient.js')
+const lg = require('./logger.js')
 const store = require('./store.js')
 
 const workflow = require('./workflow.js')
 
-ipcMain.handle("show-settings", () => {
-  createSettingsWin()
-})
+/*    understand/
+ * main entry point into our program - called
+ * when electron is ready
+ */
+function onReady() {
+  const log = lg(generateName(), process.env.SALESBOX_DUMP)
 
-ipcMain.handle("get-logname", async () => {
-  return logger.name()
-})
-
-ipcMain.handle("get-settings", async () => {
-  return store.get("settings")
-})
-
-ipcMain.handle("set-userinfo", async (e, ui) => {
-  store.event("set/userinfo", ui)
-  return store.get("userinfo")
-})
-
-ipcMain.handle("get-userinfo", async () => {
-  return store.get("userinfo")
-})
-
-ipcMain.handle("get-users", async () => {
-  return store.get("users")
-})
-
-let wins = {}
-
-function createMainWin() {
-  if(wins.main) return wins.main.focus()
-  wins.main = new BrowserWindow({
-    width: 1300,
-    height: 800,
-    resizable: false,
-    webPreferences: {
-      nodeIntegration: true,
-    },
-  })
-
-  wins.main.on("close", () => wins.main = null)
-
-  loadWin("main.html", wins.main)
-}
-
-app.whenReady().then(() => {
-  db.start(logger, err => {
+  db.start(log, err => {
     if(err) {
       dialog.showErrorBox("DB", err.toString())
       app.quit()
     } else {
-      logger.log(`Logging to ${logger.name()}`)
-      settings.start(store)
-      workflow.start(store, logger)
+      log("app/info", `Logging to ${log.getName()}`)
+
+      setupIPC(log)
       setupUI()
+      setupPolling(store)
+
+      workflow.start(store, log)
     }
   })
-})
+}
+
+app.whenReady().then(onReady)
 
 app.on('window-all-closed', () => {
   if(process.platform != "darwin") app.quit()
 })
+
+
+/*    understand/
+ * We need a logfile to hold the messages of our current
+ * run without interfering with other concurrent runs
+ */
+function generateName() {
+  let n = `log-${(new Date()).toISOString()}-${process.pid}`
+  return n.replace(/[/:\\*&^%$#@!()]/g, "_")
+}
+
+function setupPolling(store) {
+  kc.get("settings", latest => {
+    store.event("set/settings", latest[latest.length-1])
+  }, (err, end) => {
+    if(err) console.error(err)
+    if(end) return 5 * 1000
+    return 500
+  })
+}
+
+function setupIPC(log) {
+  ipcMain.handle("show-settings", () => {
+    createSettingsWin()
+  })
+
+  ipcMain.handle("get-logname", async () => {
+    return log.getName()
+  })
+
+  ipcMain.handle("get-settings", async () => {
+    return store.get("settings")
+  })
+
+  ipcMain.handle("set-userinfo", async (e, ui) => {
+    store.event("set/userinfo", ui)
+    return store.get("userinfo")
+  })
+
+  ipcMain.handle("get-userinfo", async () => {
+    return store.get("userinfo")
+  })
+
+  ipcMain.handle("get-users", async () => {
+    return store.get("users")
+  })
+}
 
 /*    way/
  * Set up the main menu, load the main window when user clicks the app
  * and start by showing the main window
  */
 function setupUI() {
-  setMenu()
+  setupMenu()
 
   app.on("activate", () => {
     if(BrowserWindow.getAllWindows().length == 0) createMainWin()
@@ -88,7 +110,7 @@ function setupUI() {
  * create a template containing most of the default menu items along
  * with our items then set it as our application menu
  */
-function setMenu() {
+function setupMenu() {
   let template = [
     { role: 'appMenu' },
     { role: 'fileMenu' },
@@ -112,6 +134,29 @@ function setMenu() {
   ]
   let menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
+}
+
+
+let wins = {}
+
+function createMainWin() {
+  if(wins.main) return wins.main.focus()
+  wins.main = new BrowserWindow({
+    width: 1300,
+    height: 800,
+    resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, "preload-main.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+    },
+    backgroundColor: "#0490f9",
+  })
+
+  wins.main.on("close", () => wins.main = null)
+
+  loadWin("main.html", wins.main)
 }
 
 function createSettingsWin() {

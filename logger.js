@@ -1,66 +1,31 @@
 'use strict'
-const db = require('./db.js')
+const kc = require('./kafclient.js')
 
-/*    understand/
- * We need a logfile to hold the messages of our current
- * run without interfering with other concurrent runs
- */
-const LOG = genName()
+module.exports = (LOGNAME, withdump) => {
 
-function genName() {
-  let n = `log-${(new Date()).toISOString()}-${process.pid}`
-  return n.replace(/[/:\\*&^%$#@!()]/g, "_")
-}
-
-function name() { return LOG }
-
-function msg(o) { db.put(o, LOG) }
-
-function log(msg) {
-  if(typeof msg == "string") msg = { msg }
-  msg.t = (new Date()).toISOString()
-  db.put(msg, LOG)
-}
-
-function err(msg, e) {
-  if(typeof msg == "string") {
-    if(!e) msg = { err: msg}
-    else msg = { msg }
+  function log(e, data) {
+    let msg
+    let t = (new Date()).toISOString()
+    if(data) {
+      if(data instanceof Error) {
+        msg = { t, e, data: data.stack }
+      } else {
+        msg = { t, e, data }
+      }
+    } else {
+      msg = { t, e }
+    }
+    return msg
+    kc.put(msg, LOGNAME)
   }
-  if(e) {
-    if(e.stack) msg.err = e.stack
-    else msg.err = JSON.stringify(e)
+
+  log.getName = () => LOGNAME
+
+  if(withdump) {
+    log.dump = log
+  } else {
+    log.dump = () => true /* silently eat */
   }
-  msg.t = (new Date()).toISOString()
-  db.put(msg, LOG)
-}
 
-function botMsg(msg) {
-  if(typeof msg == "string") msg = { botsays: msg }
-  msg.t = (new Date()).toISOString()
-  db.put(msg, LOG)
-}
-
-function svrMsg(msg) {
-  msg = { svrsays: msg }
-  msg.t = (new Date()).toISOString()
-  db.put(msg, LOG)
-}
-
-function get(cb) {
-  db.get(LOG, cb, (err, end) => {
-    if(err) console.log(err)
-    if(end) return 5 * 1000
-    return 500
-  })
-}
-
-module.exports = {
-  name,
-  log,
-  err,
-  msg,
-  botMsg,
-  svrMsg,
-  get,
+  return log
 }
