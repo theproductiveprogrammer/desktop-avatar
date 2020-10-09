@@ -93,7 +93,7 @@ function show(store) {
         return
       }
       let u = dappURL(serverURL) + "/login"
-      log.trace("login/request", usr)
+      log.trace("login/request", { usr })
       req.post(u, { usr, pwd }, (err, resp) => {
         if(err) {
           log("err/login", err)
