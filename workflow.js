@@ -7,6 +7,7 @@ function start(store, log) {
   let prev
 
   store.react("userinfo", ui => {
+    if(!ui) return
     let curr = {
       ui,
       store: store.fork()
