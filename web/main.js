@@ -16,9 +16,11 @@ import "./main.scss"
  */
 function main() {
   let cont = document.getElementById("cont")
-  window.store = store_(window.logname.name, cont)
-  showUI(window.store)
-  fetchLogs(window.store)
+  window.get.logname().then(({name,DEBUG}) => {
+    window.store = store_(name, DEBUG, cont)
+    showUI(window.store)
+    fetchLogs(window.store)
+  })
 }
 
 function showUI(store) {
