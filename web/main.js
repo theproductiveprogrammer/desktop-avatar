@@ -4,8 +4,8 @@ const dux = require('@tpp/dux')
 const store_ = require('./store.js')
 const kc = require('../kafclient.js')
 
-const logview = require('./logview.js')
 const toolbar = require('./toolbar.js')
+const logview = require('./logview.js')
 const login = require('./login.js')
 const home = require('./home.js')
 
