@@ -1,7 +1,7 @@
 'use strict'
 const kc = require('./kafclient.js')
 
-module.exports = (LOGNAME, withdump) => {
+module.exports = (LOGNAME, traceOn) => {
 
   function log(e, data) {
     let msg
@@ -18,12 +18,23 @@ module.exports = (LOGNAME, withdump) => {
     kc.put(msg, LOGNAME)
   }
 
+  function trace(e, data) {
+    if(!data && typeof e === "object") {
+      data = e
+      e = ""
+    }
+    if(!e) e = "trace/"
+    else if(typeof e !== 'object') e = `trace/${e}`
+    log(e, data)
+  }
+
+
   log.getName = () => LOGNAME
 
-  if(withdump) {
-    log.dump = log
+  if(traceOn) {
+    log.trace = trace
   } else {
-    log.dump = () => true /* silently eat */
+    log.trace = () => true /* silently eat */
   }
 
   return log

@@ -50,7 +50,7 @@ function startWorkflow(log, ctx) {
             next_1(5000)
           } else {
             log("workflow/gotUsers", { num: users.length })
-            log.dump("workflow/gotUsers", users)
+            log.trace("workflow/gotUsers", users)
             store.event("set/users", users)
             next_1(100)
           }

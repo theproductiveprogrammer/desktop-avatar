@@ -21,7 +21,7 @@ const workflow = require('./workflow.js')
  * when electron is ready
  */
 function onReady() {
-  const log = lg(generateName(), process.env.SALESBOX_DUMP)
+  const log = lg(generateName(), process.env.DEBUG)
 
   db.start(log, err => {
     if(err) {
