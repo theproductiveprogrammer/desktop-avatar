@@ -57,10 +57,10 @@ function show(store) {
     let errcls = ""
     if(msg.startsWith("err/")) errcls = ".err"
     let data = m.data || ""
-    if(data && typeof data == "object") data = JSON.stringify(data)
+    if(data && typeof data == "object") data = JSON.stringify(data, 0, 2)
     data = data ? h('.padded', data) : ""
     return h(".log").c(
-      h(".time", tm), h(".date", dt),
+      h(".date", dt), h(".time", tm),
       h(`.msg${errcls}`, msg), h(`.data${errcls}`, data)
     )
   }
