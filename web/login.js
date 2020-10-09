@@ -8,9 +8,10 @@ import "./login.scss"
 
 function show(store) {
   let log = lg(store.get("logname"), store.get("DEBUG"))
+  let e = store.get("e")
 
   let form = h(".loginForm")
-  cont.appendChild(form)
+  e.appendChild(form)
 
   let title = h(".title", "Login")
   let inputs = h(".inputs")
