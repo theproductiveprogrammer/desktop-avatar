@@ -32,7 +32,7 @@ function show(store) {
       loglist.appendChild(m)
       loglist.scrollTop = loglist.scrollHeight;
       if(logs[i].e.startsWith("err/")) {
-        let cl = messages.classList
+        let cl = logview.classList
         if(!cl.contains("visible")) {
           cl.add("visible")
           setTimeout(() => cl.remove("visible"), 1000)
