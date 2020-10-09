@@ -77,7 +77,6 @@ function setupIPC(log) {
 
   ipcMain.handle("set-userinfo", async (e, ui) => {
     store.event("set/userinfo", ui)
-    return store.get("userinfo")
   })
 
   ipcMain.handle("get-userinfo", async () => {
