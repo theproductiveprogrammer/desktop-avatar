@@ -1,7 +1,9 @@
 'use strict'
 const dux = require('@tpp/dux')
 
-const store = dux.createStore(reducer, {})
+const store = dux.createStore(reducer, {
+  settings: {},
+})
 
 function reducer(state, type, payload) {
   switch(type) {
