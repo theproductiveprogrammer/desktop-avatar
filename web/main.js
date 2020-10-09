@@ -38,7 +38,9 @@ function showUI(store) {
 }
 
 function fetchLogs(store) {
-  kc.get(store.get("logname"), logs => {
+  let logs = []
+  kc.get(store.get("logname"), latest => {
+    logs = logs.concat(latest)
     store.event("logs/set", logs)
   }, (err, end) => {
     if(err) console.error(err)
