@@ -68,7 +68,7 @@ function setupIPC(log) {
   })
 
   ipcMain.handle("get-logname", async () => {
-    return log.getName()
+    return { name: log.getName(), DEBUG: process.env.DEBUG }
   })
 
   ipcMain.handle("get-settings", async () => {
