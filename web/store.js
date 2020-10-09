@@ -9,12 +9,14 @@ function reducer(state, type, payload) {
       return { ...state, logviewOpen: false }
     case "logs/set":
       return { ...state, logs: payload }
+    case "ui/set":
+      return { ...state, ui: payload }
     default:
       console.error("WARNING(store.js):UNHANDLED STATE")
       return state
   }
 }
 
-module.exports = (logname, e) => {
-  return dux.createStore(reducer, { logname, e })
+module.exports = (logname, DEBUG, e) => {
+  return dux.createStore(reducer, { logname, DEBUG, e })
 }
