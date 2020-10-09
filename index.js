@@ -1,18 +1,11 @@
 'use strict'
-const path = require('path')
-
-const {
-  app,
-  BrowserWindow,
-  dialog,
-  Menu,
-  ipcMain
-} = require('electron')
+const { app, dialog, Menu, ipcMain } = require('electron')
 
 const db = require('./db.js')
 const kc = require('./kafclient.js')
 const lg = require('./logger.js')
 const store = require('./store.js')
+const wins = require('./wins.js')
 
 const workflow = require('./workflow.js')
 
@@ -67,7 +60,11 @@ function setupPolling(store) {
 
 function setupIPC(log) {
   ipcMain.handle("show-settings", () => {
-    createSettingsWin()
+    wins.Settings()
+  })
+
+  ipcMain.handle("close-settings", () => {
+    wins.closeSettings()
   })
 
   ipcMain.handle("get-logname", async () => {
@@ -100,10 +97,10 @@ function setupUI() {
   setupMenu()
 
   app.on("activate", () => {
-    if(BrowserWindow.getAllWindows().length == 0) createMainWin()
+    if(wins.None()) wins.Main()
   })
 
-  createMainWin()
+  wins.Main()
 }
 
 /*    way/
@@ -126,7 +123,7 @@ function setupMenu() {
         { type: 'separator' },
         {
           label: 'Settings',
-          click: () => createSettingsWin()
+          click: () => wins.Settings()
         }
       ]
     },
@@ -134,62 +131,4 @@ function setupMenu() {
   ]
   let menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
-}
-
-
-let wins = {}
-
-function createMainWin() {
-  if(wins.main) return wins.main.focus()
-  wins.main = new BrowserWindow({
-    width: 1300,
-    height: 800,
-    resizable: false,
-    webPreferences: {
-      preload: path.join(__dirname, "preload-main.js"),
-      nodeIntegration: false,
-      contextIsolation: true,
-      sandbox: true,
-    },
-    backgroundColor: "#0490f9",
-  })
-
-  wins.main.on("close", () => wins.main = null)
-
-  loadWin("main.html", wins.main)
-}
-
-function createSettingsWin() {
-  if(wins.settings) return wins.settings.focus()
-  wins.settings = new BrowserWindow({
-    width: 600,
-    height: 600,
-    resizable: false,
-    webPreferences: {
-      nodeIntegration: false,
-    },
-    backgroundColor: "#0490f9",
-  })
-
-  wins.settings.on("close", () => wins.settings = null)
-
-  loadWin("settings.html", wins.settings)
-}
-
-/*    problem/
- * In dev mode we want to use the parcel development server so we can
- * have hot-reloading and all that good stuff but for testing/production
- * we want to load the generated files directly.
- *
- *    way/
- * We expect the PARSEL_PORT environment variable to be set and use it to
- * either connect to the parcel development server or to pick up the
- * generated files
- */
-function loadWin(name, win) {
-  if(process.env.PARCEL_PORT) {
-    win.loadURL(`http://localhost:${process.env.PARCEL_PORT}/${name}`)
-  } else {
-    win.loadFile(`pub/${name}`)
-  }
 }
