@@ -2,6 +2,7 @@
 const { h } = require('@tpp/htm-x')
 
 const kc = require('../kafclient.js')
+const lg = require('../logger.js')
 
 import "./settings.scss"
 
@@ -11,8 +12,34 @@ const NAME = "settings"
  * Main entry point
  */
 function main() {
-  let settings
+  window.get.logname().then(({name,DEBUG}) => {
+    let log = lg(name, DEBUG)
+    log.trace("settings/load")
+    loadSettings(log, (err, settings) => {
+      if(err) log("err/settings/load", err)
+      else show(settings, log)
+    })
+  })
+}
 
+function loadSettings(log, cb) {
+  let settings = {}
+  kc.get(NAME, latest => {
+    settings = latest[latest.length-1]
+  }, (err, end) => {
+    if(err) {
+      cb(err)
+      return 0
+    }
+    if(end) {
+      cb(null, settings)
+      return 0
+    }
+    return 10
+  })
+}
+
+function show(settings, log) {
   let cont = document.getElementById("cont")
   cont.innerHTML = ""
 
@@ -24,14 +51,17 @@ function main() {
 
   let svr = h("input.svr", {
     placeholder: "https://app3.salesbox.ai",
+    value: settings.serverURL || "",
   })
 
   let plugins = h("input.plugins", {
-    placeholder: "https://bitbucket.org/sbox_charles/dapp-plugins/"
+    placeholder: "https://bitbucket.org/sbox_charles/dapp-plugins/",
+    value: settings.plugins || "",
   })
 
   let userips = h("textarea.userips", {
     placeholder: "userid = socks proxy port\n\nEg:1234 = 8746",
+    value: settings.userips || "",
   })
 
   let submit = h(".submit", {
@@ -55,8 +85,6 @@ function main() {
     },
   }, "Submit")
 
-  load_setting_info_1()
-
   form.c(
     h(".label", "Server URL"),
     svr,
@@ -66,22 +94,6 @@ function main() {
     userips,
     submit
   )
-
-  function load_setting_info_1() {
-    kc.get(NAME, latest => {
-      settings = latest[latest.length-1]
-    }, (err, end) => {
-      if(err) console.error(err)
-      if(end) {
-        if(settings) {
-          svr.value = settings.serverURL || null
-          plugins.value = settings.pluginURL || null
-        }
-        return 0
-      }
-      return 10
-    })
-  }
 
   function submit_1() {
     let svrURL = svr.value
@@ -100,12 +112,12 @@ function main() {
       plugins.focus()
       return
     }
-    if(!settings) settings = {}
     settings.t = (new Date()).toISOString()
     settings.serverURL = svrURL
-    settings.pluginURL = pluginURL || undefined
+    settings.pluginURL = pluginURL
+    log.trace("settings/saving", settings)
     kc.put(settings, NAME)
-    window.close()
+    setTimeout(() => window.thisWin.close(), 2 * 1000)
   }
 
   function valid_1(u) {
