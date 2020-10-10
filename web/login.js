@@ -102,15 +102,16 @@ function show(store) {
           name.focus()
           return
         }
-        if(invalid_1(resp)) {
+        let ui = resp.body
+        if(invalid_1(ui)) {
           log("err/login/resp/invalid", resp)
           alert("Login failed")
           name.focus()
           return
         }
         log("login/done", { id:ui.id, usr })
-        window.set.ui(resp)
-        store.event("ui/set", resp)
+        window.set.ui(ui)
+        store.event("ui/set", ui)
       })
     })
   }
