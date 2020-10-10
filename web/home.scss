@@ -1,0 +1,203 @@
+@import "./common.scss";
+
+.page {
+  background: #f0f3f4;
+  width: 100%;
+  height: $pageHeight;
+  overflow: scroll;
+
+  .header {
+    background: $darkblue;
+    width: 100%;
+    height: $headerHeight;
+  }
+
+  .msgpane {
+    float: left;
+    margin-left: 1%;
+    width: 45%;
+    height: $pageHeight - $headerHeight;
+    overflow: scroll;
+    border-right: 2px solid #edf1f2;
+    border-left: 2px solid #edf1f2;
+    background: linear-gradient($bgwhite, #f7f7ff);
+
+    .svrmsg {
+      width: 40%;
+      margin-left: 55%;
+      margin-bottom: 50px;
+      animation: slideInRight 600ms ease-in-out;
+      text-align: center;
+      background: lighten($deepblue, 30%);
+      background: linear-gradient(45deg, lighten($deepblue, 30%), lighten($deepblue, 40%));
+      padding: 24px 16px;
+      padding-right: 18px;
+      border-radius: 12px;
+      color: $bgwhite;
+      box-shadow: 1px 1px 1px 0 lighten($deepblue, 20%);
+    }
+
+    .botmsg {
+      width: 85%;
+      margin: 24px;
+      margin-bottom: 50px;
+      animation: slideIn 600ms ease-in-out;
+
+      img {
+        display: inline-block;
+        width: 48px;
+        margin-right: 32px;
+        transform: translateY(-6px);
+      }
+      .txt {
+        width: 80%;
+        display: inline-block;
+        border-radius: 8px;
+        padding: 24px 16px;
+        background: lighten($salesblue,30%);
+        background: linear-gradient(45deg, lighten($salesblue, 35%), lighten($salesblue,30%));
+        border: 1px solid lighten($salesblue, 30%);
+        box-shadow: 1px 1px 2px 0 lighten($salesblue, 40%);
+        color: #334;
+      }
+    }
+  }
+
+  .reportpane {
+    float: right;
+    width: 38%;
+    height: $pageHeight - $headerHeight;
+    background: #f6f8f8;
+    overflow: scroll;
+    color: #334;
+
+    .userreport {
+      margin: 24px;
+      margin-bottom: 64px;
+      padding: 18px 24px;
+      border-radius: 2px;
+      border: 1px solid $lightgrey;
+      background: $bgwhite;
+
+      .name {
+        font-size: 32px;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid $lightgrey;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      table, th, td {
+        border: 1px solid $grey;
+        padding: 4px;
+      }
+      th {
+        height: 32px;
+        color: #777;
+      }
+
+      .id {
+        font-size: 0.7em;
+        font-weight: bold;
+        border-top: 1px solid $lightgrey;
+        margin-top: 12px;
+        text-align: right;
+        color: #777;;
+      }
+
+    }
+  }
+
+  .userpane {
+    float: left;
+    width: 15%;
+    height: $pageHeight - $headerHeight;
+    background: $deepblue;
+    padding: 1em;
+
+    $iconsz: 64px;
+    .usericon {
+      float: left;
+      width: $iconsz;
+      height: $iconsz;
+      line-height: $iconsz;
+      font-size: $iconsz / 2;
+      text-align: center;
+      border: 1px solid;
+      background: $bgwhite;
+      border-radius: $iconsz / 2;
+      margin-right: $iconsz / 6;
+    }
+    .name {
+      margin-top: $iconsz / 6;
+      color: $bgwhite;
+    }
+    .tenant {
+      margin-top: 4px;
+      color: $bgwhite;
+    }
+    .email {
+      margin-top: 4px;
+      color: $bgwhite;
+      font-size: 0.8em;
+      text-align: center;
+    }
+
+    .logout {
+      width: 80%;
+      text-align: center;
+      margin: 0 auto;
+      margin-top: 32px;
+      padding: 8px;
+      background: $salesblue;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+    .logout:hover {
+      background: lighten($salesblue, 5%);
+      color: $bgwhite;
+      box-shadow: 0 0 1px 0 white;
+    }
+
+  }
+}
+
+@keyframes slideIn {
+  0%{
+        transform: skewX(70deg) translateX(-100px);
+        opacity: 0;
+    }
+    50%{
+        transform: skew(0deg);
+    }
+    100%{
+        transform: skew(0deg) translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+  0%{
+        transform: skewX(-70deg) translateX(100px);
+        opacity: 0;
+    }
+    50%{
+        transform: skew(0deg);
+    }
+    100%{
+        transform: skew(0deg) translateX(0);
+    }
+}
+
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.page {
+  animation: fadein ease-out 500ms;
+}

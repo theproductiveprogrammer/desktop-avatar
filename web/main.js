@@ -44,7 +44,7 @@ function showUI(log, store) {
 
     curr.store = store.fork()
     if(!ui) curr.page = login.e(log, curr.store)
-    else curr.page = home.e(log, curr.store)
+    else curr.page = home.e(ui, log, curr.store)
 
     main.c(curr.page)
   })
