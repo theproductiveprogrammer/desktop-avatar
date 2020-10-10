@@ -193,11 +193,18 @@
     }
 }
 
-
 @keyframes fadein {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+@keyframes fadeout {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 .page {
   animation: fadein ease-out 500ms;
+}
+.page.bye {
+  animation: fadeout ease-in 300ms;
+  opacity: 0;
 }

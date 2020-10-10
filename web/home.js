@@ -118,7 +118,10 @@ function e(ui, log, store) {
     let linkedin = h('.linkedin', ui.linkedin)
 
     let logout = h('.logout', {
-      onclick: () => alert("TBD")
+      onclick: () => {
+        page.classList.add("bye")
+        setTimeout(() => store.event("ui/set"), 350)
+      }
     }, "Logout")
 
 
