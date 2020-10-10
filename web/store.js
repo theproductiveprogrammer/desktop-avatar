@@ -13,6 +13,8 @@ function reducer(state, type, payload) {
       return { ...state, logs: payload }
     case "ui/set":
       return { ...state, ui: payload }
+    case "settings/set":
+      return { ...state, settings: payload }
     default:
       console.error("WARNING(store.js):UNHANDLED STATE")
       return state

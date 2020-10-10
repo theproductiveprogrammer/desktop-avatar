@@ -22,7 +22,7 @@ function main() {
   window.get.logname().then(({name,DEBUG}) => {
     let log = lg(name, DEBUG)
     showUI(log, store)
-    fetchLogs(log, store)
+    setupPolling(log, store)
   })
 }
 
@@ -49,6 +49,21 @@ function showUI(log, store) {
     main.c(curr.page)
   })
 
+}
+
+function setupPolling(log, store) {
+  fetchSettings(log, store)
+  fetchLogs(log, store)
+}
+
+function fetchSettings(log, store) {
+  kc.get("settings", latest => {
+    store.event("settings/set", latest[latest.length-1])
+  }, (err, end) => {
+    if(err) console.error(err)
+    if(end) return 5 * 1000
+    return 500
+  })
 }
 
 function fetchLogs(log, store) {

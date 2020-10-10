@@ -64,50 +64,47 @@ function e(log, store) {
   return form
 
   function submit_1() {
-    window.get.settings().then(settings => {
-      let serverURL = settings.serverURL
-      if(!serverURL || !serverURL.trim()) {
-        log.trace("err/login/emptyServerURL")
-        alert("Please set the server URL in settings")
-        window.show.settings()
-        return
-      }
-      let usr = name.value
-      let pwd = pw.value
-      if(!usr) {
-        log.trace("err/login/emptyName")
-        form.classList.add('err')
+    let serverURL = store.get("settings.serverURL")
+    if(!serverURL || !serverURL.trim()) {
+      log.trace("err/login/emptyServerURL")
+      alert("Please set the server URL in settings")
+      window.show.settings()
+      return
+    }
+    let usr = name.value
+    let pwd = pw.value
+    if(!usr) {
+      log.trace("err/login/emptyName")
+      form.classList.add('err')
+      name.focus()
+      setTimeout(() => form.classList.remove('err'), 1000)
+      return
+    }
+    if(!pwd) {
+      log.trace("err/login/emptyPassword")
+      form.classList.add('err')
+      pw.focus()
+      setTimeout(() => form.classList.remove('err'), 1000)
+      return
+    }
+    let u = dappURL(serverURL) + "/login"
+    log.trace("login/request", { usr })
+    req.post(u, { usr, pwd }, (err, resp) => {
+      if(err) {
+        log("err/login", err)
+        alert("Login failed")
         name.focus()
-        setTimeout(() => form.classList.remove('err'), 1000)
         return
       }
-      if(!pwd) {
-        log.trace("err/login/emptyPassword")
-        form.classList.add('err')
-        pw.focus()
-        setTimeout(() => form.classList.remove('err'), 1000)
+      let ui = resp.body
+      if(invalid_1(ui)) {
+        log("err/login/resp/invalid", resp)
+        alert("Login failed")
+        name.focus()
         return
       }
-      let u = dappURL(serverURL) + "/login"
-      log.trace("login/request", { usr })
-      req.post(u, { usr, pwd }, (err, resp) => {
-        if(err) {
-          log("err/login", err)
-          alert("Login failed")
-          name.focus()
-          return
-        }
-        let ui = resp.body
-        if(invalid_1(ui)) {
-          log("err/login/resp/invalid", resp)
-          alert("Login failed")
-          name.focus()
-          return
-        }
-        log("login/done", { id:ui.id, usr })
-        window.set.ui(ui)
-        store.event("ui/set", ui)
-      })
+      log("login/done", { id:ui.id, usr })
+      store.event("ui/set", ui)
     })
   }
 

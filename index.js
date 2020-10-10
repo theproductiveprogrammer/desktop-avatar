@@ -4,10 +4,7 @@ const { app, dialog, Menu, ipcMain } = require('electron')
 const db = require('./db.js')
 const kc = require('./kafclient.js')
 const lg = require('./logger.js')
-const store = require('./store.js')
 const wins = require('./wins.js')
-
-const workflow = require('./workflow.js')
 
 /*    understand/
  * main entry point into our program - called
@@ -25,9 +22,6 @@ function onReady() {
 
       setupIPC(log)
       setupUI()
-      setupPolling(store)
-
-      workflow.start(store, log)
     }
   })
 }
@@ -48,16 +42,6 @@ function generateName() {
   return n.replace(/[/:\\*&^%$#@!()]/g, "_")
 }
 
-function setupPolling(store) {
-  kc.get("settings", latest => {
-    store.event("set/settings", latest[latest.length-1])
-  }, (err, end) => {
-    if(err) console.error(err)
-    if(end) return 5 * 1000
-    return 500
-  })
-}
-
 function setupIPC(log) {
   ipcMain.handle("show-settings", () => {
     wins.Settings()
@@ -69,22 +53,6 @@ function setupIPC(log) {
 
   ipcMain.handle("get-logname", async () => {
     return { name: log.getName(), DEBUG: process.env.DEBUG }
-  })
-
-  ipcMain.handle("get-settings", async () => {
-    return store.get("settings")
-  })
-
-  ipcMain.handle("set-userinfo", async (e, ui) => {
-    store.event("set/userinfo", ui)
-  })
-
-  ipcMain.handle("get-userinfo", async () => {
-    return store.get("userinfo")
-  })
-
-  ipcMain.handle("get-users", async () => {
-    return store.get("users")
   })
 }
 
