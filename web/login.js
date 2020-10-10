@@ -112,6 +112,7 @@ function show(store) {
         log("login/done", { id:ui.id, usr })
         window.set.ui(ui)
         store.event("ui/set", ui)
+        e.removeChild(form)
       })
     })
   }
