@@ -86,13 +86,16 @@ function startWorkflow(log, ctx) {
 function getUsers(serverURL, ui, cb) {
   let p = serverURL
   if(!p.endsWith("/")) p += "/"
-  p += "/dapp/v2/myusers"
+  p += "dapp/v2/myusers"
 
   req.post(p, {
     id: ui.id,
     seed: ui.seed,
     authKey: ui.authKey
-  }, cb)
+  }, (err, resp) => {
+    if(err) cb(err)
+    else cb(null, resp.body)
+  })
 }
 
 module.exports = {
