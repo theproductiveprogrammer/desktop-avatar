@@ -2,16 +2,10 @@
 const { h } = require('@tpp/htm-x')
 const req = require('@tpp/req')
 
-const lg = require('../logger.js')
-
 import "./login.scss"
 
-function show(store) {
-  let log = lg(store.get("logname"), store.get("DEBUG"))
-  let e = store.get("e")
-
+function e(log, store) {
   let form = h(".loginForm")
-  e.appendChild(form)
 
   let title = h(".title", "Login")
   let inputs = h(".inputs")
@@ -67,6 +61,7 @@ function show(store) {
     submit
   )
 
+  return form
 
   function submit_1() {
     window.get.settings().then(settings => {
@@ -112,7 +107,6 @@ function show(store) {
         log("login/done", { id:ui.id, usr })
         window.set.ui(ui)
         store.event("ui/set", ui)
-        e.removeChild(form)
       })
     })
   }
@@ -134,5 +128,5 @@ function dappURL(u) {
 }
 
 module.exports = {
-  show
+  e
 }

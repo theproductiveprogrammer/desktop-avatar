@@ -1,8 +1,10 @@
 'use strict'
+const { h } = require('@tpp/htm-x')
 
-function show(store) {
+function e(store) {
+  return h("h1", "Home")
 }
 
 module.exports = {
-  show
+  e
 }

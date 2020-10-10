@@ -6,7 +6,7 @@ import "./toolbar.scss"
 /*    way/
  * put a "settings" and "hamburger" button
  */
-function show(store) {
+function e(log, store) {
   let tb = h(".toolbar")
   let settings = h("img.settings", {
     src: "./settings.svg",
@@ -17,10 +17,11 @@ function show(store) {
     onclick: () => store.event("logview/show")
   })
 
-  store.get("e").appendChild(tb)
   tb.c(settings, hamburger)
+
+  return tb
 }
 
 module.exports = {
-  show
+  e
 }

@@ -1,6 +1,8 @@
 'use strict'
 const dux = require('@tpp/dux')
 
+const store = dux.createStore(reducer, {})
+
 function reducer(state, type, payload) {
   switch(type) {
     case "logview/show":
@@ -17,6 +19,4 @@ function reducer(state, type, payload) {
   }
 }
 
-module.exports = (logname, DEBUG, e) => {
-  return dux.createStore(reducer, { logname, DEBUG, e })
-}
+module.exports = store

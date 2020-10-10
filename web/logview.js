@@ -3,9 +3,8 @@ const { h } = require('@tpp/htm-x')
 
 import "./logview.scss"
 
-function show(store) {
+function e(log, store) {
   let logview = h('.logview')
-  store.get("e").appendChild(logview)
 
   let title = h(".title", "Messages")
   let closebtn = h(".btn", {
@@ -41,6 +40,8 @@ function show(store) {
     }
   })
 
+  return logview
+
   function msg_1(m) {
     let tm = ""
     let dt = ""
@@ -72,5 +73,5 @@ function show(store) {
 }
 
 module.exports = {
-  show
+  e
 }
