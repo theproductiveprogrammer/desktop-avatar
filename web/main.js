@@ -1,4 +1,5 @@
 'use strict'
+const { h } = require('@tpp/htm-x')
 const dux = require('@tpp/dux')
 
 const store_ = require('./store.js')
@@ -15,7 +16,8 @@ import "./main.scss"
  * main entry point - it all starts here
  */
 function main() {
-  let cont = document.getElementById("cont")
+  let cont = h("#cont")
+  document.body.appendChild(cont)
   window.get.logname().then(({name,DEBUG}) => {
     window.store = store_(name, DEBUG, cont)
     showUI(window.store)
