@@ -9,7 +9,9 @@ function e(ui, log, store) {
   let page = h('.page')
 
   let header = h('.header')
-  let reportpane = h('.reportpane')
+  let reportpane = h('.reportpane').c(
+    h('.title', "Work Reports")
+  )
 
   page.c(
     header,

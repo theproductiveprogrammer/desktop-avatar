@@ -72,6 +72,15 @@
     overflow: scroll;
     color: #334;
 
+    .title {
+      font-size: 1.2em;
+      font-weight: thin;
+      padding: 12px 32px;
+      margin: 0;
+      background: $bgwhite;
+      border: 1px solid $lightgrey;
+    }
+
     .userreport {
       margin: 24px;
       margin-bottom: 64px;
