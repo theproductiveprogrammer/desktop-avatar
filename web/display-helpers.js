@@ -10,6 +10,10 @@ function userName(ui) {
   return "(no name)"
 }
 
+function timeZone(ui) {
+  return ui.timeZone || "GMT"
+}
+
 
 function greeting() {
   let hh = (new Date()).getHours()
@@ -22,4 +26,5 @@ function greeting() {
 module.exports = {
   userName,
   greeting,
+  timeZone,
 }

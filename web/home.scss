@@ -137,15 +137,16 @@
       margin-top: $iconsz / 6;
       color: $bgwhite;
     }
-    .tenant {
+    .tz {
+      font-size: 0.6em;
       margin-top: 4px;
       color: $bgwhite;
     }
     .email {
-      margin-top: 4px;
+      margin-top: 6px;
       color: $bgwhite;
       font-size: 0.8em;
-      text-align: center;
+      padding-left: 0px;
     }
 
     .logout {

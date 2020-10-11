@@ -78,7 +78,7 @@ function e(ui, log, store) {
     let cont = h('.userpane')
     let icon = icon_1(ui)
     let name = h('.name', dh.userName(ui))
-    let tenant = h('.tenant', ui.tenant)
+    let tz = h('.tz', dh.timeZone(ui))
     let email = h('.email', ui.email)
     let linkedin = h('.linkedin', ui.linkedin)
 
@@ -90,7 +90,7 @@ function e(ui, log, store) {
     }, "Logout")
 
 
-    cont.c(icon, name, tenant,
+    cont.c(icon, name, tz,
       h(".clearfix"),
       email, linkedin,
       logout
