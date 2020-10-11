@@ -14,6 +14,7 @@ function start(log, store) {
 function sayHi(log, store, ui) {
   if(!ui) return
   store.event("msg/add", {
+    t: (new Date()).toISOString(),
     from: ui.id,
     txt: `${dh.greeting()} ${dh.userName(ui)}`
   })

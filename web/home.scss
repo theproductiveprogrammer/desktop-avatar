@@ -7,9 +7,15 @@
   overflow: scroll;
 
   .header {
-    background: $darkblue;
+    background: $colorDark;
     width: 100%;
     height: $headerHeight;
+
+    img {
+      padding-left: 1em;
+      height: $headerHeight - 16px;
+      padding-top: 12px;
+    }
   }
 
   .msgpane {
@@ -21,20 +27,66 @@
     border-right: 2px solid #edf1f2;
     border-left: 2px solid #edf1f2;
     background: linear-gradient($bgwhite, #f7f7ff);
+    color: $colorText;
 
-    .svrmsg {
-      width: 40%;
-      margin-left: 55%;
-      margin-bottom: 50px;
-      animation: slideInRight 600ms ease-in-out;
+    .title {
+      font-weight: 700;
       text-align: center;
-      background: lighten($deepblue, 30%);
-      background: linear-gradient(45deg, lighten($deepblue, 30%), lighten($deepblue, 40%));
-      padding: 24px 16px;
-      padding-right: 18px;
-      border-radius: 12px;
-      color: $bgwhite;
-      box-shadow: 1px 1px 1px 0 lighten($deepblue, 20%);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      margin-top: 2rem;
+    }
+    .subtitle {
+      font-size: 1.8rem;
+      margin-bottom: 4rem;
+      font-weight: 500;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .msgblock {
+      overflow: scroll;
+      height: $pageHeight - $headerHeight - 200px;
+    }
+
+    .msg {
+      position: relative;
+      font-size: 0.9rem;
+      border-bottom: 1px solid $colorBorder;
+      padding-bottom: 1rem;
+      margin: 1.4rem 2rem;
+      animation: slideIn 600ms ease-in-out;
+
+      img {
+        display: block;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        position: absolute;
+        top: 0px;
+        left: 1rem;
+      }
+      .name,
+      .txt {
+        padding: 0;
+        width: 55%;
+        margin-left: 4.5rem;
+      }
+      .txt {
+        line-height: 1.4rem;
+        font-weight: 400;
+      }
+      .name {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .tm {
+        position: absolute;
+        top: 0;
+        right: 3rem;
+        font-size: 0.8rem;
+        color: $colorFaded;
+      }
     }
 
     .botmsg {
@@ -158,7 +210,9 @@
       padding-left: 0px;
     }
 
-    .logout {
+
+
+    .logoutx {
       width: 80%;
       text-align: center;
       margin: 0 auto;
@@ -169,7 +223,7 @@
       color: white;
       cursor: pointer;
     }
-    .logout:hover {
+    .logoutx:hover {
       background: lighten($salesblue, 5%);
       color: $bgwhite;
       box-shadow: 0 0 1px 0 white;

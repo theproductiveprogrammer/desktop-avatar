@@ -14,7 +14,9 @@ function e(ui, log, store) {
   )
 
   page.c(
-    header,
+    header.c(
+      h("img", { src: "./salesboxai-logo.png" })
+    ),
     user_pane_1(),
     msg_pane_1(),
     reportpane
@@ -26,12 +28,19 @@ function e(ui, log, store) {
 
   function msg_pane_1() {
     let cont = h('.msgpane')
+    let msgblock = h('.msgblock')
+
+    cont.c(
+      h('.title', `${dh.greeting()} ${dh.userName(ui)}`),
+      h('.subtitle', "Let's get started!"),
+      msgblock
+    )
 
     let shown = 0
     store.react('msgs', msgs => {
       for(let i = shown;i < msgs.length;i++) {
         let msg = msg_1(msgs[i])
-        if(msg) cont.add(msg)
+        if(msg) msgblock.add(msg)
       }
       shown = msgs.length
     })
@@ -39,12 +48,42 @@ function e(ui, log, store) {
   }
 
   function msg_1(msg) {
-    let r = h(".botmsg")
+    let r = h(".msg")
+    let name = h(".name", dh.userName(ui))
     let txt = h(".txt", msg.txt)
-    let src = ui.logo || "./bothead.png"
+    let src = ui.logo || "./default-user-image.png"
     let icon = h("img.boticon", { src })
-    r.c(icon, txt, h(".clearfix"))
+    let tm = h(".tm", get_tm_1(msg.t))
+    r.c(icon, name, tm, txt, h(".clearfix"))
     return r
+  }
+
+  function get_tm_1(t) {
+    t = new Date(t).getTime()
+    let secs = Math.floor((new Date().getTime() - t)/1000)
+    let diff = secs / 31536000;
+
+    if (diff > 1) {
+      return Math.floor(diff) + " years ago"
+    }
+
+    diff = secs / 2592000;
+    if(diff > 1) {
+      return Math.floor(diff) + " months ago"
+    }
+    diff = secs / 86400;
+    if(diff > 1) {
+      return Math.floor(diff) + " days ago"
+    }
+    diff = secs / 3600;
+    if(diff > 1) {
+    return Math.floor(diff) + " hours ago"
+    }
+    diff = secs / 60;
+    if(diff > 1) {
+      return Math.floor(diff) + " minutes ago"
+    }
+    return Math.floor(secs) + " seconds ago"
   }
 
   function show_report_1(users, cont) {
@@ -84,7 +123,7 @@ function e(ui, log, store) {
     let email = h('.email', ui.email)
     let linkedin = h('.linkedin', ui.linkedin)
 
-    let logout = h('.logout', {
+    let logout = h('.logout.btn', {
       onclick: () => {
         page.classList.add("bye")
         setTimeout(() => store.event("ui/set"), 350)
