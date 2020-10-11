@@ -1,4 +1,5 @@
 'use strict'
+const marked = require('marked')
 
 function userName(ui) {
   if(!ui) return "(no user)"
@@ -32,9 +33,14 @@ function greeting() {
   return "Good Evening"
 }
 
+function md(txt) {
+  return marked(txt)
+}
+
 
 module.exports = {
   userName,
   greeting,
   timeZone,
+  md,
 }
