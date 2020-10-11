@@ -39,9 +39,8 @@ function e(ui, log, store) {
   function msg_1(msg) {
     let r = h(".botmsg")
     let txt = h(".txt", msg.txt)
-    let icon = h("img.boticon", {
-      src: "./bothead.png",
-    })
+    let src = ui.logo || "./bothead.png"
+    let icon = h("img.boticon", { src })
     r.c(icon, txt, h(".clearfix"))
     return r
   }
@@ -77,7 +76,7 @@ function e(ui, log, store) {
 
   function user_pane_1() {
     let cont = h('.userpane')
-    let icon = h('.usericon', dh.userName(ui)[0])
+    let icon = icon_1(ui)
     let name = h('.name', dh.userName(ui))
     let tenant = h('.tenant', ui.tenant)
     let email = h('.email', ui.email)
@@ -98,6 +97,13 @@ function e(ui, log, store) {
     )
 
     return cont
+  }
+
+  function icon_1(ui) {
+    return h('.usericon', dh.userName(ui)[0])
+    /*
+    if(ui.logo) return h('img.usericon', { src: ui.logo})
+    else return h('.usericon', dh.userName(ui)[0])*/
   }
 
 }

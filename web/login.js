@@ -104,6 +104,7 @@ function e(log, store) {
         return
       }
       log("login/done", { id:ui.id, usr })
+      log.trace("login/info", ui)
       store.event("ui/set", ui)
     })
   }
