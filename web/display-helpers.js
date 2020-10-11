@@ -28,6 +28,7 @@ function anEmoji(keyword) {
       options.push(`:${k}:`)
     }
   }
+  if(!options.length) return ""
   return options[Math.floor(Math.random()*options.length)]
 }
 
