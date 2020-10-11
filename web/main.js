@@ -33,11 +33,20 @@ function showUI(log, store) {
   document.body.appendChild(cont)
 
   let main = h('.main')
+  let footer = h('.footer',
+    h('span', [
+      "POWERED BY ",
+      h("a", {
+        href: "http://salesboxai.com",
+      }, "http://salesboxai.com")
+    ])
+  )
 
   cont.c(
     toolbar.e(log, store),
     logview.e(log, store),
-    main
+    main,
+    footer,
   )
 
   let curr = {}

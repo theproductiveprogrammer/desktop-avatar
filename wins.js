@@ -1,6 +1,6 @@
 'use strict'
 const path = require('path')
-const { BrowserWindow } = require('electron')
+const { BrowserWindow, shell } = require('electron')
 
 let wins = {}
 
@@ -20,6 +20,11 @@ function createMainWin() {
   })
 
   wins.main.on("close", () => wins.main = null)
+
+  wins.main.webContents.on("will-navigate", (e, url) => {
+    e.preventDefault()
+    shell.openExternal(url)
+  })
 
   loadWin("main.html", wins.main)
 }
