@@ -10,6 +10,7 @@ const toolbar = require('./toolbar.js')
 const logview = require('./logview.js')
 const login = require('./login.js')
 const home = require('./home.js')
+const avatar = require('./avatar.js')
 
 import "./main.scss"
 
@@ -23,6 +24,7 @@ function main() {
     let log = lg(name, DEBUG)
     showUI(log, store)
     setupPolling(log, store)
+    avatar.start(log, store)
   })
 }
 

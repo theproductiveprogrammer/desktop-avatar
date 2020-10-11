@@ -1,7 +1,7 @@
 'use strict'
 const dux = require('@tpp/dux')
 
-const store = dux.createStore(reducer, {})
+const store = dux.createStore(reducer, { msgs: [] })
 
 function reducer(state, type, payload) {
   switch(type) {
@@ -15,6 +15,8 @@ function reducer(state, type, payload) {
       return { ...state, ui: payload }
     case "settings/set":
       return { ...state, settings: payload }
+    case "msg/add":
+      return { ...state, msgs: state.msgs.concat(payload) }
     default:
       console.error("WARNING(store.js):UNHANDLED STATE")
       return state
