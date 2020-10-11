@@ -27,7 +27,7 @@
     "sass": "^1.26.11"
   },
   "dependencies": {
-    "@tpp/dux": "^4.0.4",
+    "@tpp/dux": "^4.0.5",
     "@tpp/htm-x": "^3.4.0",
     "@tpp/req": "^3.1.2",
     "kafjs": "^1.2.2",
