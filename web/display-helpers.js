@@ -24,7 +24,9 @@ function anEmoji(keyword) {
   let options = []
   for(let k in emoji.lib) {
     let c = emoji.lib[k]
-    if(c.keywords.indexOf(keyword)!=-1) options.push(c.char)
+    if(c.keywords.indexOf(keyword)!=-1) {
+      options.push(`:${k}:`)
+    }
   }
   return options[Math.floor(Math.random()*options.length)]
 }
@@ -55,13 +57,18 @@ function md(txt) {
  * equivalents
  */
 function emojify(txt) {
-  console.log(txt)
   let rx = /:[a-z_]*:/g
   return txt.replace(rx, sc => {
     let e = sc.substring(1, sc.length-1)
     if(!emoji.lib[e]) return sc
     return "&#" + emoji.lib[e].char.codePointAt(0) + ";"
   })
+}
+
+function isJustEmojis(txt) {
+  let rx = /:[a-z_]*:/g
+  txt = txt.replace(rx, "")
+  return !txt.trim()
 }
 
 module.exports = {
@@ -72,4 +79,5 @@ module.exports = {
   emojify,
   smiley,
   anEmoji,
+  isJustEmojis,
 }

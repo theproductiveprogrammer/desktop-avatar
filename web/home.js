@@ -50,7 +50,7 @@ function e(ui, log, store) {
   function msg_1(msg) {
     let r = h(".msg")
     let name = h(".name", dh.userName(ui))
-    let txt = h(".txt", dh.md(dh.emojify(msg.txt)))
+    let txt = txt_1(msg)
     let src = ui.logo || "./default-user-image.png"
     let icon = h("img.boticon", { src })
     let tm = h(".tm")
@@ -62,6 +62,13 @@ function e(ui, log, store) {
     })
 
     return r
+  }
+
+  function txt_1(msg) {
+    let txt = dh.md(dh.emojify(msg.txt))
+    let cls = ".txt"
+    if(dh.isJustEmojis(msg.txt)) cls += ".just-emojis"
+    return h(cls, txt)
   }
 
   function get_tm_1(t, n) {
