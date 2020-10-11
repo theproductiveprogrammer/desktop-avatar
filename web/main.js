@@ -24,6 +24,7 @@ function main() {
     let log = lg(name, DEBUG)
     showUI(log, store)
     setupPolling(log, store)
+    setupTimer(log, store)
     avatar.start(log, store)
   })
 }
@@ -65,6 +66,13 @@ function showUI(log, store) {
 function setupPolling(log, store) {
   fetchSettings(log, store)
   fetchLogs(log, store)
+}
+
+function setupTimer(log, store) {
+  store.event("timer/tick", new Date())
+  setInterval(() => {
+    store.event("timer/tick", new Date())
+  }, 15000)
 }
 
 function fetchSettings(log, store) {

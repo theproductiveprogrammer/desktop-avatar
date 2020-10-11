@@ -53,14 +53,22 @@ function e(ui, log, store) {
     let txt = h(".txt", dh.md(msg.txt))
     let src = ui.logo || "./default-user-image.png"
     let icon = h("img.boticon", { src })
-    let tm = h(".tm", get_tm_1(msg.t))
+    let tm = h(".tm")
     r.c(icon, name, tm, txt, h(".clearfix"))
+
+    store.react("now", n => {
+      let tm_ = get_tm_1(msg.t, n)
+      if(tm) tm.c(tm_)
+    })
+
     return r
   }
 
-  function get_tm_1(t) {
+  function get_tm_1(t, n) {
+    if(!n) return ""
     t = new Date(t).getTime()
-    let secs = Math.floor((new Date().getTime() - t)/1000)
+    let secs = Math.floor((n.getTime() - t)/1000)
+    if(secs < 1) return "1 second ago"
     let diff = secs / 31536000;
 
     if (diff > 1) {
