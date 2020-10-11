@@ -50,7 +50,7 @@ function e(ui, log, store) {
   function msg_1(msg) {
     let r = h(".msg")
     let name = h(".name", dh.userName(ui))
-    let txt = h(".txt", dh.md(msg.txt))
+    let txt = h(".txt", dh.md(dh.emojify(msg.txt)))
     let src = ui.logo || "./default-user-image.png"
     let icon = h("img.boticon", { src })
     let tm = h(".tm")

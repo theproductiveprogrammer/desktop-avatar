@@ -1,5 +1,6 @@
 'use strict'
 const marked = require('marked')
+const emoji = require('emojilib')
 
 function userName(ui) {
   if(!ui) return "(no user)"
@@ -15,6 +16,18 @@ function timeZone(ui) {
   return ui.timeZone || "GMT"
 }
 
+function smiley() {
+  return anEmoji("smile")
+}
+
+function anEmoji(keyword) {
+  let options = []
+  for(let k in emoji.lib) {
+    let c = emoji.lib[k]
+    if(c.keywords.indexOf(keyword)!=-1) options.push(c.char)
+  }
+  return options[Math.floor(Math.random()*options.length)]
+}
 
 function greeting() {
   let greetings = [
@@ -37,10 +50,26 @@ function md(txt) {
   return marked(txt)
 }
 
+/*    outcome/
+ * Find emoji shortcodes and replace them with the HTML
+ * equivalents
+ */
+function emojify(txt) {
+  console.log(txt)
+  let rx = /:[a-z_]*:/g
+  return txt.replace(rx, sc => {
+    let e = sc.substring(1, sc.length-1)
+    if(!emoji.lib[e]) return sc
+    return "&#" + emoji.lib[e].char.codePointAt(0) + ";"
+  })
+}
 
 module.exports = {
   userName,
   greeting,
   timeZone,
   md,
+  emojify,
+  smiley,
+  anEmoji,
 }

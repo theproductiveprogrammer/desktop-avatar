@@ -30,6 +30,7 @@
     "@tpp/dux": "^4.0.5",
     "@tpp/htm-x": "^3.4.0",
     "@tpp/req": "^3.1.2",
+    "emojilib": "^2.4.0",
     "kafjs": "^1.2.2",
     "marked": "^1.2.0",
     "striptags": "^3.1.1"
