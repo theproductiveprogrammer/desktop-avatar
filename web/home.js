@@ -66,32 +66,34 @@ function e(ui, log, store) {
 
   function get_tm_1(t, n) {
     if(!n) return ""
+
+    let r_1 = (d, v) => {
+      d = Math.floor(d)
+      if(d != 1) v += "s"
+      return `${d} ${v} ago`
+    }
+
     t = new Date(t).getTime()
     let secs = Math.floor((n.getTime() - t)/1000)
-    if(secs < 1) return "1 second ago"
-    let diff = secs / 31536000;
 
-    if (diff > 1) {
-      return Math.floor(diff) + " years ago"
-    }
+    if(secs < 1) return r_1(1, "second")
+
+    let diff = secs / 31536000;
+    if(diff > 1) return r_1(diff, "year")
 
     diff = secs / 2592000;
-    if(diff > 1) {
-      return Math.floor(diff) + " months ago"
-    }
+    if(diff > 1) return r_1(diff, "month")
+
     diff = secs / 86400;
-    if(diff > 1) {
-      return Math.floor(diff) + " days ago"
-    }
+    if(diff > 1) return r_1(diff, "day")
+
     diff = secs / 3600;
-    if(diff > 1) {
-    return Math.floor(diff) + " hours ago"
-    }
+    if(diff > 1) return r_1(diff, "hour")
+
     diff = secs / 60;
-    if(diff > 1) {
-      return Math.floor(diff) + " minutes ago"
-    }
-    return Math.floor(secs) + " seconds ago"
+    if(diff > 1) return r_1(diff, "minute")
+
+    return r_1(secs, "second")
   }
 
   function show_report_1(users, cont) {
