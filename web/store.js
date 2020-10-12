@@ -19,6 +19,8 @@ function reducer(state, type, payload) {
       return { ...state, msgs: state.msgs.concat(payload) }
     case "timer/tick":
       return { ...state, now: payload }
+    case "users/set":
+      return { ...state, users: payload }
     default:
       console.error("WARNING(store.js):UNHANDLED STATE", type)
       return state

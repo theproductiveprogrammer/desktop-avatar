@@ -1,4 +1,6 @@
 'use strict'
+const req = require('@tpp/req')
+
 const dh = require('./display-helpers.js')
 
 const flow = {
@@ -6,6 +8,10 @@ const flow = {
 
   main: [
     sayHi,
+    "Let's get to work today :fire:",
+    dh.smiley(),
+    "First let me check which users I am assigned to work for",
+    getUsers,
   ],
 
   exit: [
@@ -67,7 +73,8 @@ function run(script, log, store) {
       }
       newMsg(obj, store, log)
       if(obj.script) flow.runptr = { n: obj.script, ndx: 0 }
-      setTimeout(run_, 1000)
+      let tmo = Math.random() * 4000 + 1000
+      setTimeout(run_, tmo)
     }
   }
 }
@@ -83,6 +90,34 @@ function newMsg(msg, store, log) {
 function sayHi(vars, store) {
   vars.ui = store.get('ui')
   return `${dh.greeting()} ${dh.userName(vars.ui)}`
+}
+
+function getUsers(vars, store, log, cb) {
+  log("avatar/gettingusers")
+  let serverURL = store.get("settings.serverURL")
+  let p = serverURL
+  if(!p.endsWith("/")) p += "/"
+  p += "dapp/v2/myusers"
+
+  req.post(p, {
+    id: vars.ui.id,
+    seed: vars.ui.seed,
+    authKey: vars.ui.authKey
+  }, (err, resp) => {
+    if(err) {
+      log("err/avatar/gettingusers", err)
+      cb("exit")
+    } else {
+      let users = resp.body
+      log("avatar/gotusers", { num: users.length })
+      log.trace("avatar/gotusers", users)
+      store.event("users/set", users)
+      cb({
+        bot: -1,
+        line: `You have ${users.length} user(s) to manage`
+      })
+    }
+  })
 }
 
 
