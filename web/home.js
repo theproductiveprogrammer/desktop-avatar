@@ -9,8 +9,10 @@ function e(ui, log, store) {
   let page = h('.page')
 
   let header = h('.header')
+  let reports = h(".reports")
   let reportpane = h('.reportpane').c(
-    h('.title', "Work Reports")
+    h('.title', "Work Reports"),
+    reports
   )
 
   page.c(
@@ -22,7 +24,36 @@ function e(ui, log, store) {
     reportpane
   )
 
+  store.react("users", uis => {
+    if(!uis) return
+    reports.innerHTML = ""
+    uis.forEach(ui => reports.add(user_table_1(ui)))
+  })
+
+
   return page
+
+  function user_table_1(ui) {
+    let cont = h(".userreport")
+
+    let name = h(".name", dh.userName(ui))
+    let id = h(".id", ui.id)
+    let tbl = h("table")
+    let hdr = h("tr", [
+      h("th", "Task"),
+      h("th", "Success"),
+      h("th", "Failure"),
+    ])
+
+    cont.c(
+      name,
+      tbl.c(hdr),
+      id
+    )
+
+    return cont
+  }
+
 
   let msglist = []
 
