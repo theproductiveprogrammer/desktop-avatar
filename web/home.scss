@@ -69,8 +69,11 @@
       .name,
       .txt {
         padding: 0;
-        width: 55%;
+        width: 80%;
         margin-left: 4.5rem;
+      }
+      .txt p:first-child {
+        width: 55%;
       }
       .txt {
         line-height: 1.4rem;
