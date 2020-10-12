@@ -102,7 +102,10 @@ function getUsers(vars, store, log, cb) {
   }, (err, resp) => {
     if(err) {
       log("err/avatar/gettingusers", err)
-      cb("exit")
+      cb({
+        line: "**Error getting users**!\n\nI will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.",
+        script: "exit"
+      })
     } else {
       let users = resp.body
       log("avatar/gotusers", { num: users.length })
