@@ -151,35 +151,6 @@ function e(ui, log, store) {
     return r_1(secs, "second")
   }
 
-  function show_report_1(users, cont) {
-    cont.innerHTML = ""
-    ipcRenderer.invoke("get-users").then(uis => {
-      uis.map(ui => cont.add(user_table_1(ui)))
-    })
-  }
-
-  function user_table_1(ui) {
-    let cont = h(".userreport")
-
-    let name = h(".name", dh.userName(ui))
-    let id = h(".id", ui.id)
-    let tbl = h("table")
-    let hdr = h("tr", [
-      h("th", "Task"),
-      h("th", "Success"),
-      h("th", "Failure"),
-    ])
-
-    cont.c(
-      name,
-      tbl.c(hdr),
-      id
-    )
-
-    return cont
-  }
-
-
   function user_pane_1() {
     let cont = h('.userpane')
     let icon = icon_1(ui)
