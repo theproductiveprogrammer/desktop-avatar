@@ -158,10 +158,8 @@ function e(ui, log, store) {
   }
 
   function icon_1(ui) {
-    return h('.usericon', dh.userName(ui)[0])
-    /*
-    if(ui.logo) return h('img.usericon', { src: ui.logo})
-    else return h('.usericon', dh.userName(ui)[0])*/
+    if(ui.pic) return h('img.usericon', { src: ui.pic })
+    else return h('.usericon', dh.userName(ui)[0])
   }
 
 }
