@@ -72,7 +72,7 @@ function setupTimer(log, store) {
   store.event("timer/tick", new Date())
   setInterval(() => {
     store.event("timer/tick", new Date())
-  }, 15000)
+  }, 4000)
 }
 
 function fetchSettings(log, store) {
