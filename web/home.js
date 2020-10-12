@@ -49,9 +49,13 @@ function e(ui, log, store) {
 
   function msg_1(msg) {
     let r = h(".msg")
-    let name = h(".name", dh.userName(ui))
+    let bot = ui
+    for(let i = 0;i < ui.bots.length;i++) {
+      if(msg.from == ui.bots[i].id) bot = ui.bots[i]
+    }
+    let name = h(".name", dh.userName(bot))
     let txt = txt_1(msg)
-    let src = ui.logo || "./default-user-image.png"
+    let src = bot.logo || "./default-user-image.png"
     let icon = h("img.boticon", { src })
     let tm = h(".tm")
     r.c(icon, name, tm, txt, h(".clearfix"))
