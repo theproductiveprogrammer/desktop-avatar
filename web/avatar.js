@@ -11,8 +11,15 @@ const flow = {
     sayHi,
     { line: "Let's get to work today :fire:", delay: 900 },
     dh.smiley(),
+    getServerURL,
     "First let me check which users I am assigned to work for...",
     getUsers,
+  ],
+
+  getserverurl: [
+    openSettingsWindow,
+    waitForServerURL,
+    RETURN,
   ],
 
   exit: [
@@ -104,6 +111,33 @@ function newMsg(msg, store, log) {
 function sayHi(vars, store) {
   vars.ui = store.get('ui')
   return `${dh.greeting()} ${dh.userName(vars.ui)}`
+}
+
+function getServerURL() {
+  let serverURL = store.get("settings.serverURL")
+  if(serverURL) return {}
+  else return {
+    line: "I need the server URL to be set so I can connect to the server.\n\nI get all sorts of information from it. Please set the serverURL for me to proceed",
+    script: "getserverurl",
+  }
+}
+
+function openSettingsWindow(vars, store, log, cb) {
+  window.show.settings()
+  return {}
+}
+
+function waitForServerURL(vars, store, log, cb) {
+  let serverURL = store.get("settings.serverURL")
+  if(serverURL) {
+    if(serverURL.endsWith("/")) {
+      serverURL = serverURL.substring(0, serverURL.length-2)
+    }
+    vars.serverURL = serverURL
+    cb()
+  } else {
+    setTimeout(() => waitForServerURL(vars, store, log, cb), 1000)
+  }
 }
 
 function getUsers(vars, store, log, cb) {
