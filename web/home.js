@@ -41,6 +41,7 @@ function e(ui, log, store) {
     let tbl = h("table")
     let hdr = h("tr", [
       h("th", "Task"),
+      h("th", "Assigned"),
       h("th", "Success"),
       h("th", "Failure"),
     ])
