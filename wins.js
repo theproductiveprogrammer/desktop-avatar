@@ -21,10 +21,16 @@ function createMainWin() {
 
   wins.main.on("close", () => wins.main = null)
 
-  wins.main.webContents.on("will-navigate", (e, url) => {
-    e.preventDefault()
-    shell.openExternal(url)
-  })
+  if(!process.env.DEBUG) {
+    /*    understand/
+     * In debug mode we use hotloading which fails
+     * when 'will-navigate is trapped
+     */
+    wins.main.webContents.on("will-navigate", (e, url) => {
+      e.preventDefault()
+      shell.openExternal(url)
+    })
+  }
 
   loadWin("main.html", wins.main)
 }
