@@ -7,7 +7,7 @@ function e(log, store) {
   let logview = h('.logview')
 
   let title = h(".title", "Messages")
-  let closebtn = h(".btn", {
+  let closebtn = h(".closebtn", {
     onclick: () => store.event("logview/hide")
   }, "X")
 

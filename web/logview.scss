@@ -7,7 +7,7 @@
   overflow: hidden;
   position: fixed;
   top: 0;
-  left: -300px;
+  right: -300px;
   transition: all 300ms ease-out;
   z-index: 100;
   border-right: 1px solid $grey;
@@ -19,7 +19,7 @@
     overflow: scroll;
   }
 
-  .btn {
+  .closebtn {
     position: absolute;
     top: 6px;
     right: 8px;
@@ -86,5 +86,5 @@
 
 }
 .logview.visible {
-  left: 0;
+  right: 0;
 }
