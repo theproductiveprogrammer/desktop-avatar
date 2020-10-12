@@ -98,11 +98,7 @@ function show(settings, log) {
   function submit_1() {
     let svrURL = svr.value
     let pluginURL = plugins.value
-    if(!svrURL) {
-      svr.focus()
-      return
-    }
-    if(!valid_1(svrURL)) {
+    if(svrURL && !valid_1(svrURL)) {
       alert("Invalid server URL")
       svr.focus()
       return
