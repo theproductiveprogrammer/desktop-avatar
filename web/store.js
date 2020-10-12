@@ -20,7 +20,7 @@ function reducer(state, type, payload) {
     case "timer/tick":
       return { ...state, now: payload }
     default:
-      console.error("WARNING(store.js):UNHANDLED STATE")
+      console.error("WARNING(store.js):UNHANDLED STATE", type)
       return state
   }
 }
