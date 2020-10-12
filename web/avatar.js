@@ -8,7 +8,7 @@ const flow = {
 
   main: [
     sayHi,
-    "Let's get to work today :fire:",
+    { line: "Let's get to work today :fire:", delay: 900 },
     dh.smiley(),
     "First let me check which users I am assigned to work for",
     getUsers,
@@ -65,16 +65,12 @@ function run(script, log, store) {
     }
 
     function run_line_1(obj) {
-      if(typeof obj == "string") {
-        obj = {
-          bot: flow.vars.BOTID,
-          line: obj,
-        }
-      }
+      if(typeof obj == "string") obj = { line: obj }
       newMsg(obj, store, log)
       if(obj.script) flow.runptr = { n: obj.script, ndx: 0 }
-      let tmo = Math.random() * 4000 + 1000
-      setTimeout(run_, tmo)
+      let delay = Math.random() * 4000 + 1000
+      if(obj.delay) delay = obj.delay
+      setTimeout(run_, delay)
     }
   }
 }
@@ -82,7 +78,7 @@ function run(script, log, store) {
 function newMsg(msg, store, log) {
   store.event("msg/add", {
     t: (new Date()).toISOString(),
-    from: msg.bot,
+    from: msg.bot || flow.vars.BOTID,
     txt: msg.line,
   })
 }
