@@ -5,6 +5,7 @@ const dh = require('./display-helpers.js')
 
 const flow = {
   vars: {},
+  stack: [],
 
   main: [
     sayHi,
@@ -39,21 +40,34 @@ function start(log, store) {
   })
 }
 
+function RETURN(vars, store, log, cb) {
+  log.trace("avatar/run/return", flow.runptr)
+  flow.runptr = flow.stack.pop()
+  return { delay: 0 }
+}
+
 function run(script, log, store) {
+  if(flow.runptr.n) {
+    flow.stack.push({
+      n: flow.runptr.n,
+      ndx: flow.runptr.ndx,
+    })
+  }
   flow.runptr = { n: script, ndx: 0 }
-  log.trace("avatar/run/started", flow.runptr)
+  log.trace("avatar/run/begin", flow.runptr)
 
   run_()
 
   function run_() {
+    log.trace("avatar/running", flow.runptr)
     let script = flow[flow.runptr.n]
     if(!script) {
-      log("err/avatar/run/noscript", flow.runptr)
+      log("err/avatar/run/noscript", flow.stack)
       return
     }
     let line = script[flow.runptr.ndx]
     if(!line) {
-      log.trace("avatar/run/ended", flow.runptr)
+      log.trace("avatar/run/fin", flow.runptr)
       return
     }
     flow.runptr.ndx++
@@ -65,12 +79,15 @@ function run(script, log, store) {
     }
 
     function run_line_1(obj) {
+      if(!obj) return run_()
       if(typeof obj == "string") obj = { line: obj }
       newMsg(obj, store, log)
-      if(obj.script) flow.runptr = { n: obj.script, ndx: 0 }
       let delay = Math.random() * 4000 + 1000
       if(obj.delay) delay = obj.delay
-      setTimeout(run_, delay)
+      if(obj.script) setTimeout(() => {
+        run(obj.script, log, store)
+      }, delay)
+      else setTimeout(run_, delay)
     }
   }
 }
