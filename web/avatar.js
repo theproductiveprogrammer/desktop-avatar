@@ -10,12 +10,12 @@ const flow = {
     sayHi,
     { line: "Let's get to work today :fire:", delay: 900 },
     dh.smiley(),
-    "First let me check which users I am assigned to work for",
+    "First let me check which users I am assigned to work for...",
     getUsers,
   ],
 
   exit: [
-    vars => `Bye ${dh.userName(vars.ui)}`
+    vars => `Bye for now ${dh.userName(vars.ui)}!`
   ],
 
   runptr: {
