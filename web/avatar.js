@@ -1,92 +1,90 @@
 'use strict'
-
 const dh = require('./display-helpers.js')
+
+const flow = {
+  vars: {},
+
+  main: [
+    sayHi,
+  ],
+
+  exit: [
+    vars => `Bye ${dh.userName(vars.ui)}`
+  ],
+
+  runptr: {
+    n: null,
+    ndx: 0
+  },
+}
 
 function start(log, store) {
   let curr
   store.react('ui', ui => {
-    if(curr && !ui) sayBye(curr, store)
+    if(curr && !ui) run("exit", log, store)
     curr = ui
-    sayHi(log, store, ui)
+    if(!ui) return
+    if(ui.bots) {
+      for(let i = 0;i < ui.bots.length;i++) {
+        if(ui.bots[i].logo) flow.vars.BOTID = ui.bots[i].id
+      }
+    }
+    run("main", log, store)
   })
 }
 
-function sayHi(log, store, ui) {
-  if(!ui) return
-  let bot = ui
-  for(let i = 0;i < ui.bots.length;i++) {
-    if(ui.bots[i].logo) bot = ui.bots[i]
+function run(script, log, store) {
+  flow.runptr = { n: script, ndx: 0 }
+  log.trace("avatar/run/started", flow.runptr)
+
+  run_()
+
+  function run_() {
+    let script = flow[flow.runptr.n]
+    if(!script) {
+      log("err/avatar/run/noscript", flow.runptr)
+      return
+    }
+    let line = script[flow.runptr.ndx]
+    if(!line) {
+      log.trace("avatar/run/ended", flow.runptr)
+      return
+    }
+    flow.runptr.ndx++
+
+    if(typeof line !== "function") run_line_1(line)
+    else {
+      let l = line(flow.vars, store, log, run_line_1)
+      if(l) run_line_1(l)
+    }
+
+    function run_line_1(obj) {
+      if(typeof obj == "string") {
+        obj = {
+          bot: flow.vars.BOTID,
+          line: obj,
+        }
+      }
+      newMsg(obj, store, log)
+      if(obj.script) flow.runptr = { n: obj.script, ndx: 0 }
+      setTimeout(run_, 1000)
+    }
   }
-  store.event("msg/add", {
-    t: (new Date()).toISOString(),
-    from: bot.id,
-    txt: `${dh.greeting()} ${dh.userName(ui)}`
-  })
-  setTimeout(() => {
-  store.event("msg/add", {
-    t: (new Date()).toISOString(),
-    from: bot.id,
-    txt: `This is a test
-
-This is a test 123
-
-This is a test123
-
-This is a test123`
-  })}, 1000)
-  setTimeout(() => {
-  store.event("msg/add", {
-    t: (new Date()).toISOString(),
-    from: bot.id,
-    txt: `This is a test
-
-:cool: :rocket:
-
-
-This is a test 123
-
-
-
-This is a test123
-
-
-
-This is a test123`
-  })}, 2000)
-  store.event("msg/add", {
-    t: (new Date()).toISOString(),
-    from: bot.id,
-    txt: dh.smiley() + dh.anEmoji("dancer"),
-  })
-  setTimeout(() => {
-  store.event("msg/add", {
-    t: (new Date()).toISOString(),
-    from: bot.id,
-    txt: `${dh.greeting()} ${dh.userName(ui)}`
-  })}, 3000)
-  setTimeout(() => {
-  store.event("msg/add", {
-    t: (new Date()).toISOString(),
-    from: bot.id,
-    txt: `This is a test
-This is a test 123
-This is a test123
-This is a test123`
-  })}, 4000)
-  setTimeout(() => {
-  store.event("msg/add", {
-    t: (new Date()).toISOString(),
-    from: bot.id,
-    txt: `${dh.greeting()} ${dh.userName(ui)}`
-  })}, 5000)
 }
 
-function sayBye(ui, store) {
+function newMsg(msg, store, log) {
   store.event("msg/add", {
-    from: ui.id,
-    txt: `Bye ${dh.userName(ui)}`
+    t: (new Date()).toISOString(),
+    from: msg.bot,
+    txt: msg.line,
   })
 }
+
+function sayHi(vars, store) {
+  vars.ui = store.get('ui')
+  return `${dh.greeting()} ${dh.userName(vars.ui)}`
+}
+
 
 module.exports = {
   start,
