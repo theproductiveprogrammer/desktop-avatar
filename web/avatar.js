@@ -76,6 +76,7 @@ function run(script, log, store) {
 }
 
 function newMsg(msg, store, log) {
+  if(!msg.line) return
   store.event("msg/add", {
     t: (new Date()).toISOString(),
     from: msg.bot || flow.vars.BOTID,
