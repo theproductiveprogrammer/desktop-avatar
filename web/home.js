@@ -24,16 +24,18 @@ function e(ui, log, store) {
     reportpane
   )
 
+  let ustore
   store.react("users", uis => {
+    if(ustore) ustore.destroy()
+    ustore = store.fork()
+    reports.c(user_table_1(ui, ustore))
     if(!uis) return
-    reports.innerHTML = ""
-    uis.forEach(ui => reports.add(user_table_1(ui)))
+    uis.forEach(ui => reports.add(user_table_1(ui, ustore)))
   })
-
 
   return page
 
-  function user_table_1(ui) {
+  function user_table_1(ui, store) {
     let cont = h(".userreport")
 
     let name = h(".name", dh.userName(ui))
@@ -51,6 +53,26 @@ function e(ui, log, store) {
       tbl.c(hdr),
       id
     )
+
+    store.react("tasks", tasks => {
+      tbl.c(hdr)
+      if(!tasks) return
+      tasks = tasks.filter(t => t.userId == ui.id)
+      let summary = {}
+      for(let i = 0;i < tasks.length;i++) {
+        let curr = tasks[i].action
+        if(!summary[curr]) summary[curr] = { assigned: 1 }
+        else summary[curr].assigned++
+      }
+      for(let action in summary) {
+        tbl.add(h("tr", [
+          h("td", action),
+          h("td", summary[action].assigned),
+          h("td", 0),
+          h("td", 0)
+        ]))
+      }
+    })
 
     return cont
   }

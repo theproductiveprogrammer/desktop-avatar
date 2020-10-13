@@ -21,6 +21,8 @@ function reducer(state, type, payload) {
       return { ...state, now: payload }
     case "users/set":
       return { ...state, users: payload }
+    case "tasks/set":
+      return { ...state, tasks: payload }
     default:
       console.error("WARNING(store.js):UNHANDLED STATE", type)
       return state

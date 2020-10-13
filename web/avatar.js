@@ -9,24 +9,29 @@ function start(log, store) {
 }
 
 const program = {
-
   main: [
+    getServerURL,
+    getUsers,
+    getTasks,
+  ],
+
+  main1: [
     sayHi,
     { chat: "Let's get to work today :fire:", wait: 900 },
     dh.smiley(),
     getServerURL,
     "First let me check which users I am assigned to work for...",
     getUsers,
-    //{ proc: dothework },
+    { proc: "dothework" },
   ],
 
-  /*
   dothework: [
+    workWorkWork,
     getTasks,
     pickUser,
     doWork,
-    { proc: dothework },
-  ],*/
+    { proc: "dothework" },
+  ],
 
   getserverurl: [
     openSettingsWindow,
@@ -45,7 +50,6 @@ const program = {
 }
 
 function sayHi(vars, store) {
-  vars.ui = store.get('ui')
   return `${dh.greeting()} ${dh.userName(vars.ui)}`
 }
 
@@ -85,11 +89,12 @@ function waitForServerURL(vars, store, log, cb) {
 function getUsers(vars, store, log, cb) {
   log("avatar/gettingusers")
   let p = `${vars.serverURL}/dapp/v2/myusers`
+  let ui = store.get('ui')
 
   req.post(p, {
-    id: vars.ui.id,
-    seed: vars.ui.seed,
-    authKey: vars.ui.authKey
+    id: ui.id,
+    seed: ui.seed,
+    authKey: ui.authKey
   }, (err, resp) => {
     if(err) {
       log("err/avatar/gettingusers", err)
@@ -110,6 +115,54 @@ function getUsers(vars, store, log, cb) {
   })
 }
 
+function getTasks(vars, store, log, cb) {
+  log("avatar/gettingtasks")
+  let p = `${vars.serverURL}/dapp/v2/tasks`
+  let ui = store.get('ui')
+
+  req.post(p, {
+    id: ui.id,
+    seed: ui.seed,
+    authKey: ui.authKey,
+    forUsers: [ ui.id ],
+  }, (err, resp) => {
+    if(err) {
+      log("err/avatar/gettingtasks", err)
+      cb({
+        chat: "**Error getting tasks**!\n\nI will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.",
+        proc: "exit"
+      })
+    } else {
+      let tasks = resp.body
+      log("avatar/gottasks", { num: tasks.length })
+      log.trace("avatar/gottasks", tasks)
+      store.event("tasks/set", tasks)
+      cb({
+        from: -1,
+        chat: `Giving you ${tasks.length} task(s) to do`
+      })
+    }
+  })
+}
+
+function pickUser() {
+  return {}
+}
+
+function doWork() {
+  return {}
+}
+
+function workWorkWork() {
+  let msgs = [
+    `Work! Work! Work! ${dh.smiley()}...`,
+    "Let's get some work from the server...",
+    "Checking the server for work to do...",
+    "Let me go check the server for some work...",
+  ]
+
+  return msgs[Math.floor(Math.random()*msgs.length)]
+}
 
 module.exports = {
   start,

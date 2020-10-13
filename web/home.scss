@@ -168,6 +168,13 @@
         height: 32px;
         color: #777;
       }
+      td {
+        height: 32px;
+        color: $colorText;
+        text-align: center;
+        font-size: 0.8em;
+      }
+
 
       .id {
         font-size: 0.7em;
