@@ -59,8 +59,13 @@ function sendPending() {
 
   let m = PENDING[0]
 
-  let u = `http://localhost:${PORT}/put/${m.log}`
-  req.post(u, m.msg, (err, resp) => {
+  let url = `http://localhost:${PORT}/put/${m.log}`
+  req.send({
+    method: "POST",
+    url,
+    data:m.msg,
+    headers: { "Content-Type": "application/json" },
+  }, (err, resp) => {
     sending = false
     if(err) {
       console.error(err)
@@ -77,6 +82,7 @@ function sendPending() {
  * add the message to the put queue and kick off the sending process
  */
 function put(msg, log) {
+  msg = JSON.stringify(msg)
   PENDING.push({ log, msg })
   sendPending()
 }
