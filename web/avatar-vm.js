@@ -171,6 +171,7 @@ function exec_(env, line, cb) {
     if(typeof obj == "string") obj = { chat: obj }
     newMsg(env, obj)
     let delay = Math.random() * 4000 + 1000
+    if(!obj.chat) delay = 0
     if(obj.wait) delay = obj.wait
     setTimeout(() => cb(obj.proc), delay)
   }
