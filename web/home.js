@@ -81,16 +81,9 @@ function e(ui, log, store) {
 
   function msg_1(msg) {
     let r = h(".msg")
-    let bot = ui
-    if(msg.from == -1) bot = serverBot()
-    else {
-      for(let i = 0;i < ui.bots.length;i++) {
-        if(msg.from == ui.bots[i].id) bot = ui.bots[i]
-      }
-    }
-    let name = h(".name", dh.userName(bot))
+    let name = h(".name", dh.userName(msg.from))
     let txt = txt_1(msg)
-    let src = bot.logo || "./default-user-image.png"
+    let src = msg.from.logo || "./default-user-image.png"
     let icon = h("img.boticon", { src })
     let tm = h(".tm")
     r.c(icon, name, tm, txt, h(".clearfix"))
@@ -103,19 +96,10 @@ function e(ui, log, store) {
     return r
   }
 
-  function serverBot() {
-    return {
-      id: -1,
-      userName: "salesbox.ai",
-      firstName: "SalesBox",
-      logo: "./bothead.png",
-    }
-  }
-
   function txt_1(msg) {
-    let txt = dh.md(dh.emojify(msg.txt))
+    let txt = dh.md(dh.emojify(msg.chat))
     let cls = ".txt"
-    if(dh.isJustEmojis(msg.txt)) cls += ".just-emojis"
+    if(dh.isJustEmojis(msg.chat)) cls += ".just-emojis"
     return h(cls, txt)
   }
 
