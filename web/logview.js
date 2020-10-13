@@ -17,6 +17,11 @@ function e(log, store) {
     title, closebtn, loglist
   )
 
+  let scrolledon = 0
+  loglist.attr({
+    onscroll: () => scrolledon = Date.now()
+  })
+
   store.react("logviewOpen", open => {
     if(open) logview.classList.add("visible")
     else logview.classList.remove("visible")
@@ -32,9 +37,13 @@ function e(log, store) {
       let m = msg_1(curr)
       if(!m) continue
       loglist.appendChild(m)
-      loglist.scrollTop = loglist.scrollHeight;
       if((now - (new Date(curr.t)).getTime()) < 12000 &&
           curr.e.startsWith("err/")) toshow = true
+    }
+    if(now - scrolledon > 30 * 1000) {
+      let old = scrolledon
+      loglist.scrollTop = loglist.scrollHeight;
+      setTimeout(() => scrolledon = old, 200)
     }
     if(toshow) {
       let cl = logview.classList
