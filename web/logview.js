@@ -25,17 +25,22 @@ function e(log, store) {
   let i = 0
   store.react("logs", logs => {
     if(!logs) return
+    let now = Date.now()
+    let toshow
     for(;i < logs.length;i++) {
-      let m = msg_1(logs[i])
+      let curr = logs[i]
+      let m = msg_1(curr)
       if(!m) continue
       loglist.appendChild(m)
       loglist.scrollTop = loglist.scrollHeight;
-      if(logs[i].e.startsWith("err/")) {
-        let cl = logview.classList
-        if(!cl.contains("visible")) {
-          cl.add("visible")
-          setTimeout(() => cl.remove("visible"), 1000)
-        }
+      if((now - (new Date(curr.t)).getTime()) < 12000 &&
+          curr.e.startsWith("err/")) toshow = true
+    }
+    if(toshow) {
+      let cl = logview.classList
+      if(!cl.contains("visible")) {
+        cl.add("visible")
+        setTimeout(() => cl.remove("visible"), 1000)
       }
     }
   })
