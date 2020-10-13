@@ -91,7 +91,7 @@ function run_(env) {
   }
   env.runptr.ndx++
   exec_(env, line, proc => {
-    if(proc) run(env, proc)
+    if(proc) runProc(env, proc)
     else run_(env)
   })
 }
