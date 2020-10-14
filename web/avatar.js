@@ -15,6 +15,7 @@ const program = {
     "Getting Plugins",
     getPlugins,
     getTasks,
+    doWork,
   ],
 
   main1: [
@@ -168,8 +169,18 @@ function pickUser() {
   return {}
 }
 
-function doWork() {
-  return {}
+function doWork(vars, store, log, cb) {
+  let tasks = store.get("tasks")
+  if(!tasks || !tasks.length) return `Nothing to do...${dh.anEmoji("sleepy")}`
+  let task = tasks[0]
+  window.do.task(task)
+    .then(resp => {
+      cb("Done " + JSON.stringify(resp))
+    })
+    .catch(err => {
+      // TODO
+      cb(err)
+    })
 }
 
 function workWorkWork() {

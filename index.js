@@ -64,6 +64,10 @@ function setupIPC(log) {
   ipcMain.handle("get-taskname", async (e, action) => {
     return plugins.info(action)
   })
+
+  ipcMain.handle("do-task", async (e, task) => {
+    return plugins.perform(task)
+  })
 }
 
 /*    way/

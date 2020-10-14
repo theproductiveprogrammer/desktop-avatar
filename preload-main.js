@@ -9,4 +9,6 @@ contextBridge.exposeInMainWorld("get", {
   taskname: action => ipcRenderer.invoke("get-taskname", action),
   plugins: url => ipcRenderer.invoke("get-plugins", url),
 })
-
+contextBridge.exposeInMainWorld("do", {
+  task: t => ipcRenderer.invoke("do-task", t),
+})

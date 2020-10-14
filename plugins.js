@@ -93,6 +93,31 @@ function info(name) {
   })
 }
 
+function performTask(task, cb) {
+  if(!task.action) return cb("Task missing 'action' key")
+  getPlugin(task.action, (err, plugin) => {
+    if(err) return cb(err)
+    let context = {
+      cb,
+      plugin: {name: task.action, info:{}, task},
+    }
+    try {
+      vm.createContext(context)
+      plugin.code.runInContext(context)
+    } catch(e) {
+      cb(e)
+    }
+  })
+}
+function perform(task) {
+  return new Promise((resolve, reject) => {
+    performTask(task, (err, resp) => {
+      if(err) reject(err)
+      else resolve(resp)
+    })
+  })
+}
+
 function getPlugin(name, cb) {
   if(!state.dir) return cb("plugins.js: not initialized")
   let plugin = state.plugins[name]
@@ -119,4 +144,5 @@ function getPlugin(name, cb) {
 module.exports = {
   get,
   info,
+  perform,
 }
