@@ -57,12 +57,12 @@ function setupIPC(log) {
     return { name: log.getName(), DEBUG: process.env.DEBUG }
   })
 
-  ipcMain.handle("get-taskname", async (e,action) => {
-    const pluginInfo = util.promisify(plugins.getInfo)
-    let loc = require('./loc.js')
-    let path = require('path')
-    let p = path.join(loc.plugin(), "desktop-avatar-plugins")
-    return pluginInfo(p, action)
+  ipcMain.handle("get-plugins", async (e, url) => {
+    return plugins.get(url)
+  })
+
+  ipcMain.handle("get-taskname", async (e, action) => {
+    return plugins.info(action)
   })
 }
 

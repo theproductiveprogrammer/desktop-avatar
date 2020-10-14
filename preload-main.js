@@ -7,5 +7,6 @@ contextBridge.exposeInMainWorld("show", {
 contextBridge.exposeInMainWorld("get", {
   logname : () => ipcRenderer.invoke("get-logname"),
   taskname: action => ipcRenderer.invoke("get-taskname", action),
+  plugins: url => ipcRenderer.invoke("get-plugins", url),
 })
 

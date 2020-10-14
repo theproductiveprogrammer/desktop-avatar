@@ -6,6 +6,32 @@ const vm = require('vm')
 const { clone, pull } = require('isomorphic-git')
 const http = require('isomorphic-git/http/node')
 
+const loc = require('./loc.js')
+
+let state = {
+  dir: null,
+  plugins: {},
+}
+
+function getPluginRepo(url, cb) {
+  state = { dir: null, plugins: {} }
+  getLatest(url, loc.plugin(), (err, dir) => {
+    if(err) cb(err)
+    else {
+      state.dir = dir
+      cb()
+    }
+  })
+}
+function get(url) {
+  return new Promise((resolve, reject) => {
+    getPluginRepo(url, err => {
+      if(err) reject(err)
+      else resolve()
+    })
+  })
+}
+
 function getLatest(from, to, cb) {
   let url
   try {
@@ -43,47 +69,45 @@ function updateRepo(from, to, cb) {
   .catch(cb)
 }
 
-function getInfo(loc, name, cb) {
-  getPlugin(loc, name, (err, plugin) => {
-    if(err) cb(err)
-    else if(!plugin) return cb("Plugin not found")
-    else if(!plugin.code) return cb("Plugin code not found")
-    else {
-      let context = {
-        plugin: {name, info:{}},
-      }
-      try {
-        vm.createContext(context)
-        plugin.code.runInContext(context)
-        return cb(null, context.plugin.info)
-      } catch(e) {
-        cb(e)
-      }
+function getInfo(name, cb) {
+  getPlugin(name, (err, plugin) => {
+    if(err) return cb(err)
+    let context = {
+      plugin: {name, info:{}},
+    }
+    try {
+      vm.createContext(context)
+      plugin.code.runInContext(context)
+      return cb(null, context.plugin.info)
+    } catch(e) {
+      cb(e)
     }
   })
 }
-
-function getPlugin(loc, name, cb) {
-  getPlugins(loc, (err, plugins) => {
-    if(err) cb(err)
-    else {
-      let plugin = plugins[name]
-      if(!plugin) return cb("No Matching Plugin")
-      loadPlugin(plugin, (err, plugin) => {
-        if(err) cb(err)
-        else cb(null, plugin)
-      })
-    }
+function info(name) {
+  return new Promise((resolve, reject) => {
+    getInfo(name, (err, info) => {
+      if(err) reject(err)
+      else resolve(info)
+    })
   })
 }
 
-function loadPlugin(plugin, cb) {
-  if(plugin.loaded) return cb(null, plugin)
+function getPlugin(name, cb) {
+  if(!state.dir) return cb("plugins.js: not initialized")
+  let plugin = state.plugins[name]
+  if(plugin && plugin.code) return cb(null, plugin)
+
+  plugin = {
+    p: path.join(state.dir, name + ".js")
+  }
+
   fs.readFile(plugin.p, (err, code) => {
     if(err) cb(err)
     else {
       try {
         plugin.code = new vm.Script(code)
+        state.plugins[name] = plugin
         cb(null, plugin)
       } catch(e) {
         cb(e)
@@ -92,32 +116,7 @@ function loadPlugin(plugin, cb) {
   })
 }
 
-function getPlugins(loc, cb) {
-  fs.readdir(loc, { withFileTypes: true }, (err, files) => {
-    if(err) cb(err)
-    else {
-      let plugins = {}
-      for(let i = 0;i < files.length;i++) {
-        let f = files[i]
-        if(f.name[0] !== '.'
-            && f.isFile()
-            && f.name.endsWith(".js")) {
-          let n = path.basename(f.name, ".js")
-          let p = path.join(loc, f.name)
-          plugins[n] = { p }
-        }
-      }
-      cb(null, plugins)
-    }
-  })
-
-  function load_1(p) {
-
-  }
-}
-
 module.exports = {
-  getLatest,
-  getPlugin,
-  getInfo,
+  get,
+  info,
 }

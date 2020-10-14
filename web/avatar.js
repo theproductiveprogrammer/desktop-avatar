@@ -12,6 +12,8 @@ const program = {
   main: [
     getServerURL,
     getUsers,
+    "Getting Plugins",
+    getPlugins,
     getTasks,
   ],
 
@@ -113,6 +115,23 @@ function getUsers(vars, store, log, cb) {
       })
     }
   })
+}
+
+const DEFAULT_PLUGIN_URL="https://github.com/theproductiveprogrammer/desktop-avatar-plugins.git"
+
+function getPlugins(vars, store, log, cb) {
+  log("avatar/gettingplugins")
+  let pluginURL = store.get("settings.pluginURL")
+  if(!pluginURL) pluginURL = DEFAULT_PLUGIN_URL
+  window.get.plugins(pluginURL)
+    .then(() => cb({}))
+    .catch(err => {
+      log("err/avatar/gettingplugins", err)
+      cb({
+        chat: "**Error downloading plugins**!\n\nI will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.",
+        proc: "exit"
+      })
+    })
 }
 
 function getTasks(vars, store, log, cb) {
