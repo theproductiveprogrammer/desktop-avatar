@@ -73,6 +73,7 @@ function isJustEmojis(txt) {
 }
 
 function oneOf(a) {
+  if(!Array.isArray(a)) a = Array.prototype.slice.call(arguments)
   return (a && a.length)
     ? a[Math.floor(Math.random()*a.length)]
     : ""
