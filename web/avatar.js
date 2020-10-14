@@ -42,7 +42,7 @@ const program = {
   ],
 
   exit: [
-    vars => `Bye for now ${dh.userName(vars.ui)}!`
+    vars => `Bye for now`
   ],
 
   runptr: {
@@ -52,7 +52,7 @@ const program = {
 }
 
 function sayHi(vars, store) {
-  return `${dh.greeting()} ${dh.userName(vars.ui)}`
+  return `${dh.greeting()} ${dh.userName(store.get("ui"))}`
 }
 
 function getServerURL(vars) {
@@ -91,7 +91,7 @@ function waitForServerURL(vars, store, log, cb) {
 function getUsers(vars, store, log, cb) {
   log("avatar/gettingusers")
   let p = `${vars.serverURL}/dapp/v2/myusers`
-  let ui = store.get('ui')
+  let ui = store.get("ui")
 
   req.post(p, {
     id: ui.id,
@@ -137,7 +137,7 @@ function getPlugins(vars, store, log, cb) {
 function getTasks(vars, store, log, cb) {
   log("avatar/gettingtasks")
   let p = `${vars.serverURL}/dapp/v2/tasks`
-  let ui = store.get('ui')
+  let ui = store.get("ui")
 
   req.post(p, {
     id: ui.id,
