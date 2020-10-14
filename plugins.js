@@ -80,7 +80,7 @@ function getInfo(name, cb) {
     try {
       vm.createContext(context)
       plugin.code.runInContext(context)
-      return cb(null, context.plugin.info)
+      return cb(null, context.plugin.info.name)
     } catch(e) {
       cb(e)
     }
@@ -88,15 +88,45 @@ function getInfo(name, cb) {
 }
 function info(name) {
   return new Promise((resolve, reject) => {
-    getInfo(name, (err, info) => {
+    getInfo(name, (err, name) => {
       if(err) reject(err)
-      else resolve(info)
+      else resolve(name)
+    })
+  })
+}
+
+function getDesc(task, cb) {
+  if(!task.action) return cb_("Task missing 'action' key")
+  getPlugin(task.action, (err, plugin) => {
+    if(err) return cb(err)
+    let context = {
+      plugin: {name: task.action, info:{}},
+    }
+    try {
+      vm.createContext(context)
+      plugin.code.runInContext(context)
+      let desc = task.action
+      if(typeof context.plugin.info.desc==="function") {
+        desc = context.plugin.info.desc(task)
+      } else if(typeof context.plugin.info.desc==="string"){
+        desc = context.plugin.info.desc
+      }
+      return cb(null, desc)
+    } catch(e) {
+      cb(e)
+    }
+  })
+}
+function desc(task) {
+  return new Promise((resolve, reject) => {
+    getDesc(task, (err, desc) => {
+      if(err) reject(err)
+      else resolve(desc)
     })
   })
 }
 
 function performTask(task, cb_) {
-  if(!task.action) return cb_("Task missing 'action' key")
   getPlugin(task.action, (err, plugin) => {
     if(err) return cb_(err)
     puppeteer.launch({ headless:false })
@@ -157,5 +187,6 @@ function getPlugin(name, cb) {
 module.exports = {
   get,
   info,
+  desc,
   perform,
 }

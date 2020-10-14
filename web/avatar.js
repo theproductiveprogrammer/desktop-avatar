@@ -172,6 +172,10 @@ function pickUser() {
 function doWork(vars, store, log, cb) {
   let tasks = store.get("tasks")
   if(!tasks || !tasks.length) return `Nothing to do...${dh.anEmoji("sleepy")}`
+  window.get.taskdesc(tasks[0])
+    .then(desc => cb(desc))
+    .catch(cb)
+  /*
   let task = tasks[0]
   window.do.task(task)
     .then(resp => {
@@ -183,6 +187,7 @@ function doWork(vars, store, log, cb) {
       cb("Got Error")
       console.error(err)
     })
+    */
 }
 
 function workWorkWork() {

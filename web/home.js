@@ -67,8 +67,8 @@ function e(ui, log, store) {
       for(let action in summary) {
         let name = h("td", action)
         window.get.taskname(action)
-          .then(info => {
-            name.innerText = info.name
+          .then(n => {
+            name.innerText = n
           })
           .catch(e => console.error(e))
         tbl.add(h("tr", [
