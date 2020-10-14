@@ -7,6 +7,7 @@ const { clone, pull } = require('isomorphic-git')
 const http = require('isomorphic-git/http/node')
 
 const loc = require('./loc.js')
+const dh = require('./web/display-helpers.js')
 
 const puppeteer = require('puppeteer')
 
@@ -75,6 +76,7 @@ function getInfo(name, cb) {
   getPlugin(name, (err, plugin) => {
     if(err) return cb(err)
     let context = {
+      console,
       plugin: {name, info:{}},
     }
     try {
@@ -95,33 +97,42 @@ function info(name) {
   })
 }
 
-function getDesc(task, cb) {
+function getChat(task, cb) {
   if(!task.action) return cb_("Task missing 'action' key")
   getPlugin(task.action, (err, plugin) => {
     if(err) return cb(err)
     let context = {
+      console,
       plugin: {name: task.action, info:{}},
     }
     try {
       vm.createContext(context)
       plugin.code.runInContext(context)
-      let desc = task.action
-      if(typeof context.plugin.info.desc==="function") {
-        desc = context.plugin.info.desc(task)
-      } else if(typeof context.plugin.info.desc==="string"){
-        desc = context.plugin.info.desc
+      let chat = chat_1(task.action)
+      if(typeof context.plugin.info.chat==="function") {
+        chat = context.plugin.info.chat(task)
+      } else if(typeof context.plugin.info.chat==="string"){
+        chat = context.plugin.info.chat
       }
-      return cb(null, desc)
+      return cb(null, chat)
     } catch(e) {
       cb(e)
     }
   })
+
+  function chat_1(name) {
+    dh.oneOf(
+      `Ok trying ${name}...`,
+      `Doing ${name}...`,
+      `I'm going to do ${name} now...`,
+    )
+  }
 }
-function desc(task) {
+function chat(task) {
   return new Promise((resolve, reject) => {
-    getDesc(task, (err, desc) => {
+    getChat(task, (err, chat) => {
       if(err) reject(err)
-      else resolve(desc)
+      else resolve(chat)
     })
   })
 }
@@ -187,6 +198,6 @@ function getPlugin(name, cb) {
 module.exports = {
   get,
   info,
-  desc,
+  chat,
   perform,
 }
