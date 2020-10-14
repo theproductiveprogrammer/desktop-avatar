@@ -179,7 +179,9 @@ function doWork(vars, store, log, cb) {
     })
     .catch(err => {
       // TODO
-      cb(err)
+      //
+      cb("Got Error")
+      console.error(err)
     })
 }
 

@@ -8,6 +8,8 @@ const http = require('isomorphic-git/http/node')
 
 const loc = require('./loc.js')
 
+const puppeteer = require('puppeteer')
+
 let state = {
   dir: null,
   plugins: {},
@@ -93,20 +95,31 @@ function info(name) {
   })
 }
 
-function performTask(task, cb) {
-  if(!task.action) return cb("Task missing 'action' key")
+function performTask(task, cb_) {
+  if(!task.action) return cb_("Task missing 'action' key")
   getPlugin(task.action, (err, plugin) => {
-    if(err) return cb(err)
-    let context = {
-      cb,
-      plugin: {name: task.action, info:{}, task},
-    }
-    try {
-      vm.createContext(context)
-      plugin.code.runInContext(context)
-    } catch(e) {
-      cb(e)
-    }
+    if(err) return cb_(err)
+    puppeteer.launch({ headless:false })
+    .then(browser => {
+      let cb = (err, resp) => {
+        browser.close()
+          .then(() => cb_(err, resp))
+          .catch(() => cb_(err, resp))
+      }
+      let context = {
+        cb,
+        browser,
+        console,
+        plugin: {name: task.action, info:{}, task},
+      }
+      try {
+        vm.createContext(context)
+        plugin.code.runInContext(context)
+      } catch(e) {
+        cb(e)
+      }
+    })
+    .catch(cb_)
   })
 }
 function perform(task) {
