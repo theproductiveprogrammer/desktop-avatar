@@ -1,10 +1,12 @@
 'use strict'
 const { app, dialog, Menu, ipcMain } = require('electron')
+const util = require('util')
 
 const db = require('./db.js')
 const kc = require('./kafclient.js')
 const lg = require('./logger.js')
 const wins = require('./wins.js')
+const plugins = require('./plugins.js')
 
 /*    understand/
  * main entry point into our program - called
@@ -53,6 +55,14 @@ function setupIPC(log) {
 
   ipcMain.handle("get-logname", async () => {
     return { name: log.getName(), DEBUG: process.env.DEBUG }
+  })
+
+  ipcMain.handle("get-taskname", async (e,action) => {
+    const pluginInfo = util.promisify(plugins.getInfo)
+    let loc = require('./loc.js')
+    let path = require('path')
+    let p = path.join(loc.plugin(), "desktop-avatar-plugins")
+    return pluginInfo(p, action)
   })
 }
 

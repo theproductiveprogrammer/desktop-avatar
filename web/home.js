@@ -65,8 +65,14 @@ function e(ui, log, store) {
         else summary[curr].assigned++
       }
       for(let action in summary) {
+        let name = h("td", action)
+        window.get.taskname(action)
+          .then(info => {
+            name.innerText = info.name
+          })
+          .catch(e => console.error(e))
         tbl.add(h("tr", [
-          h("td", action),
+          name,
           h("td", summary[action].assigned),
           h("td", 0),
           h("td", 0)

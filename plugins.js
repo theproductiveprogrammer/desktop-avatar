@@ -50,12 +50,12 @@ function getInfo(loc, name, cb) {
     else if(!plugin.code) return cb("Plugin code not found")
     else {
       let context = {
-        plugin: {name, info},
+        plugin: {name, info:{}},
       }
       try {
         vm.createContext(context)
         plugin.code.runInContext(context)
-        return cb(null, context.plugin)
+        return cb(null, context.plugin.info)
       } catch(e) {
         cb(e)
       }
