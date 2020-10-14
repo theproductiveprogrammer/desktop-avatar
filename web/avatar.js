@@ -191,14 +191,12 @@ function doWork(vars, store, log, cb) {
 }
 
 function workWorkWork() {
-  let msgs = [
+  return dh.oneOf([
     `Work! Work! Work! ${dh.smiley()}...`,
     "Let's get some work from the server...",
     "Checking the server for work to do...",
     "Let me go check the server for some work...",
-  ]
-
-  return msgs[Math.floor(Math.random()*msgs.length)]
+  ])
 }
 
 module.exports = {

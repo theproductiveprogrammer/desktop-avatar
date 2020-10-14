@@ -29,8 +29,7 @@ function anEmoji(keyword) {
       options.push(`:${k}:`)
     }
   }
-  if(!options.length) return ""
-  return options[Math.floor(Math.random()*options.length)]
+  return oneOf(options)
 }
 
 function greeting() {
@@ -42,7 +41,7 @@ function greeting() {
     "Hi",
   ]
   if(Math.random() > 0.9) {
-    return greetings[Math.floor(Math.random()*greetings.length)]
+    return oneOf(greetings)
   }
   let hh = (new Date()).getHours()
   if(hh >= 6 && hh < 12) return "Good Morning"
@@ -73,6 +72,13 @@ function isJustEmojis(txt) {
   return !txt.trim()
 }
 
+function oneOf(a) {
+  return (a && a.length)
+    ? a[Math.floor(Math.random()*a.length)]
+    : ""
+
+}
+
 module.exports = {
   userName,
   greeting,
@@ -82,4 +88,5 @@ module.exports = {
   smiley,
   anEmoji,
   isJustEmojis,
+  oneOf,
 }
