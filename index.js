@@ -7,6 +7,7 @@ const kc = require('./kafclient.js')
 const lg = require('./logger.js')
 const wins = require('./wins.js')
 const plugins = require('./plugins.js')
+const users = require('./users.js')
 
 /*    understand/
  * main entry point into our program - called
@@ -67,6 +68,10 @@ function setupIPC(log) {
 
   ipcMain.handle("get-taskchat", async (e, task) => {
     return plugins.chat(task)
+  })
+
+  ipcMain.handle("set-users", async (e, uis) => {
+    return users.set(uis)
   })
 
   ipcMain.handle("do-task", async (e, task) => {

@@ -8,6 +8,7 @@ const http = require('isomorphic-git/http/node')
 
 const loc = require('./loc.js')
 const dh = require('./web/display-helpers.js')
+const users = require('./users.js')
 
 const puppeteer = require('puppeteer')
 
@@ -137,16 +138,25 @@ function chat(task) {
   })
 }
 
-function performTask(task, cb_) {
-  getPlugin(task.action, (err, plugin) => {
-    if(err) return cb_(err)
+function getBrowser(task) {
+  let uctx = users.get(task.userId)
+  if(!uctx) return Promise.reject("User for task not found")
+  if(uctx.browser) return Promise.resolve(uctx.browser)
+  return new Promise((resolve, reject) => {
     puppeteer.launch({ headless:false })
+      .then(browser => {
+        uctx.browser = browser
+        resolve(browser)
+      })
+      .catch(reject)
+  })
+}
+
+function performTask(task, cb) {
+  getPlugin(task.action, (err, plugin) => {
+    if(err) return cb(err)
+    getBrowser(task)
     .then(browser => {
-      let cb = (err, resp) => {
-        browser.close()
-          .then(() => cb_(err, resp))
-          .catch(() => cb_(err, resp))
-      }
       let context = {
         cb,
         browser,
@@ -160,7 +170,7 @@ function performTask(task, cb_) {
         cb(e)
       }
     })
-    .catch(cb_)
+    .catch(cb)
   })
 }
 function perform(task) {

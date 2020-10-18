@@ -25,6 +25,7 @@ function main() {
     showUI(log, store)
     setupPolling(log, store)
     setupTimer(log, store)
+    setupIPC(log, store)
     avatar.start(log, store)
   })
 }
@@ -73,6 +74,22 @@ function setupTimer(log, store) {
   setInterval(() => {
     store.event("timer/tick", new Date())
   }, 4000)
+}
+
+function setupIPC(log, store) {
+  store.react('ui', send_users_1)
+  store.react("users", send_users_1)
+
+  function send_users_1() {
+    let ui = store.get('ui')
+    if(!ui) window.set.users(null)
+    else {
+      let users = store.get('users')
+      if(!users) users = [ ui ]
+      else users = users.concat(ui)
+      window.set.users(users)
+    }
+  }
 }
 
 function fetchSettings(log, store) {

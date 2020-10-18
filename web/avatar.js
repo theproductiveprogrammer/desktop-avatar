@@ -172,22 +172,26 @@ function pickUser() {
 function doWork(vars, store, log, cb) {
   let tasks = store.get("tasks")
   if(!tasks || !tasks.length) return `Nothing to do...${dh.anEmoji("sleepy")}`
-  window.get.taskchat(tasks[0])
-    .then(chat => cb(chat)) // TODO
-    .catch(cb) // TODO
-  /*
   let task = tasks[0]
-  window.do.task(task)
-    .then(resp => {
-      cb("Done " + JSON.stringify(resp))
+  window.get.taskchat(task)
+    .then(chat => {
+      cb(chat)
+      window.do.task(task)
+        .then(resp => {
+          cb("Done " + JSON.stringify(resp))
+        })
+        .catch(err => {
+          // TODO
+          //
+          cb("Got Error")
+          console.error(err)
+        })
     })
     .catch(err => {
       // TODO
-      //
       cb("Got Error")
       console.error(err)
     })
-    */
 }
 
 function workWorkWork() {

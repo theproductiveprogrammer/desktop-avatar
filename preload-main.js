@@ -10,6 +10,9 @@ contextBridge.exposeInMainWorld("get", {
   taskchat: t => ipcRenderer.invoke("get-taskchat", t),
   plugins: url => ipcRenderer.invoke("get-plugins", url),
 })
+contextBridge.exposeInMainWorld("set", {
+  users: (ui, uis) => ipcRenderer.invoke("set-users", ui, uis),
+})
 contextBridge.exposeInMainWorld("do", {
   task: t => ipcRenderer.invoke("do-task", t),
 })
