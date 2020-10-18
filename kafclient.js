@@ -72,6 +72,7 @@ function sendPending() {
       setTimeout(sendPending, 2 * 1000)
     } else {
       PENDING.shift()
+      m.cb && m.cb()
       sendPending()
     }
   })
@@ -81,9 +82,9 @@ function sendPending() {
 /*    way/
  * add the message to the put queue and kick off the sending process
  */
-function put(msg, log) {
+function put(msg, log, cb) {
   msg = JSON.stringify(msg)
-  PENDING.push({ log, msg })
+  PENDING.push({ log, msg, cb })
   sendPending()
 }
 
