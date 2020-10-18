@@ -142,8 +142,12 @@ function getBrowser(task) {
   let uctx = users.get(task.userId)
   if(!uctx) return Promise.reject("User for task not found")
   if(uctx.browser) return Promise.resolve(uctx.browser)
+  let args = []
+  if(uctx.proxy) {
+    args.push(`--proxy-server=socks5://localhost:${uctx.proxy}`)
+  }
   return new Promise((resolve, reject) => {
-    puppeteer.launch({ headless:false })
+    puppeteer.launch({ headless:false, args })
       .then(browser => {
         uctx.browser = browser
         resolve(browser)
