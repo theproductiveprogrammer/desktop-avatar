@@ -8,7 +8,11 @@ function set(uis) {
   if(uis) {
     uis.forEach(ui => {
       USERS[ui.id] = Object.assign({ ui }, users[ui.id])
+      delete users[ui.id]
     })
+  }
+  for(let k in users) {
+    if(users[k].browser) users[k].browser.close()
   }
 }
 
