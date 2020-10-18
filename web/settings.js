@@ -62,6 +62,11 @@ function show(settings, log) {
   let userips = h("textarea.userips", {
     placeholder: "userid = socks proxy port\n\nEg:1234 = 8746",
     value: settings.userips || "",
+    onblur: () => {
+      let v = user_map_1()
+      v = v.map(v => v.join(" = ")).join("\n")
+      userips.value = v
+    },
   })
 
   let submit = h(".submit", {
@@ -95,6 +100,12 @@ function show(settings, log) {
     submit
   )
 
+  function user_map_1() {
+    let v = userips.value
+    if(!v) return []
+    return v.split(/[\r\n]/).map(v => v.split('=').map(v => parseInt(v))).filter(v => v.length == 2 && !isNaN(v[0]) && !isNaN(v[1]))
+  }
+
   function submit_1() {
     let svrURL = svr.value
     let pluginURL = plugins.value
@@ -111,6 +122,7 @@ function show(settings, log) {
     settings.t = (new Date()).toISOString()
     settings.serverURL = svrURL
     settings.pluginURL = pluginURL
+    settings.usermap = user_map_1()
     log.trace("settings/saving", settings)
     kc.put(settings, NAME)
     setTimeout(() => window.thisWin.close(), 2 * 1000)

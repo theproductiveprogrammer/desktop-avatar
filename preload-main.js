@@ -11,7 +11,8 @@ contextBridge.exposeInMainWorld("get", {
   plugins: url => ipcRenderer.invoke("get-plugins", url),
 })
 contextBridge.exposeInMainWorld("set", {
-  users: (ui, uis) => ipcRenderer.invoke("set-users", ui, uis),
+  users: uis => ipcRenderer.invoke("set-users", uis),
+  usermap: umap => ipcRenderer.invoke("set-usermap", umap),
 })
 contextBridge.exposeInMainWorld("do", {
   task: t => ipcRenderer.invoke("do-task", t),

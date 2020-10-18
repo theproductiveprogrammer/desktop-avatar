@@ -74,6 +74,10 @@ function setupIPC(log) {
     return users.set(uis)
   })
 
+  ipcMain.handle("set-usermap", async (e, umap) => {
+    return users.setmap(umap)
+  })
+
   ipcMain.handle("do-task", async (e, task) => {
     return plugins.perform(task)
   })

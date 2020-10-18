@@ -80,6 +80,10 @@ function setupIPC(log, store) {
   store.react('ui', send_users_1)
   store.react("users", send_users_1)
 
+  store.react("settings.usermap", umap => {
+    window.set.usermap(umap)
+  })
+
   function send_users_1() {
     let ui = store.get('ui')
     if(!ui) window.set.users(null)
