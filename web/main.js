@@ -80,8 +80,8 @@ function setupIPC(log, store) {
   store.react('ui', send_users_1)
   store.react("users", send_users_1)
 
-  store.react("settings.usermap", umap => {
-    window.set.usermap(umap)
+  store.react("settings.userips", uips => {
+    window.set.userips(uips)
   })
 
   function send_users_1() {

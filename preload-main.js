@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld("get", {
 })
 contextBridge.exposeInMainWorld("set", {
   users: uis => ipcRenderer.invoke("set-users", uis),
-  usermap: umap => ipcRenderer.invoke("set-usermap", umap),
+  userips: uips => ipcRenderer.invoke("set-userips", uips),
 })
 contextBridge.exposeInMainWorld("do", {
   task: t => ipcRenderer.invoke("do-task", t),
