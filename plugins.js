@@ -9,6 +9,7 @@ const http = require('isomorphic-git/http/node')
 const loc = require('./loc.js')
 const dh = require('./web/display-helpers.js')
 const users = require('./users.js')
+const lg = require('./logger.js')
 
 const puppeteer = require('puppeteer')
 
@@ -156,23 +157,45 @@ function getBrowser(task) {
   })
 }
 
+function getLogger(task, cb) {
+  let uctx = users.get(task.userId)
+  if(!uctx) return cb("User for task not found")
+  if(!uctx.logger) {
+    let n = `User-${task.userId}`
+    uctx.logger = lg(n, process.env.DEBUG)
+  }
+  cb(null, uctx.logger)
+}
+
 function performTask(task, cb) {
   getPlugin(task.action, (err, plugin) => {
     if(err) return cb(err)
     getBrowser(task)
     .then(browser => {
-      let context = {
-        cb,
-        browser,
-        console,
-        plugin: {name: task.action, info:{}, task},
-      }
-      try {
-        vm.createContext(context)
-        plugin.code.runInContext(context)
-      } catch(e) {
-        cb(e)
-      }
+      getLogger(task, (err, log) => {
+        if(err) return cb(err)
+        let context = {
+          cb,
+          log,
+          status: {
+            done: () => log("task/done", task.id),
+          },
+          browser,
+          console,
+          plugin: {name: task.action, info:{}, task},
+        }
+        try {
+          log("task/new", task, err => {
+            if(err) cb(err)
+            else {
+              vm.createContext(context)
+              plugin.code.runInContext(context)
+            }
+          })
+        } catch(e) {
+          cb(e)
+        }
+      })
     })
     .catch(cb)
   })
