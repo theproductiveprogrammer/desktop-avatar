@@ -48,6 +48,23 @@ function get(log, processor, scheduler) {
 
 }
 
+/*    way/
+ * gets the latest few records 'from' the 'log'
+ *    cb(err, last, recs)
+ */
+function getFrom(log, from, cb) {
+  let p = `http://localhost:${PORT}/get/${log}?from=${from}`
+  req.get(p, (err, resp) => {
+    let last = resp.headers()["x-kafjs-lastmsgsent"]
+    if(last) last = parseInt(last)
+    if(!resp) resp = []
+    else resp = resp.body
+    if(!Array.isArray(resp)) if(!err) err = "bad response"
+    if(!last || isNaN(last)) last = -1
+    cb(err, last, resp)
+  })
+}
+
 /*    understand/
  * put the logs in the order they come in, retrying on failure
  */
@@ -93,5 +110,6 @@ module.exports = {
   PORT,
   put,
   get,
+  getFrom,
 }
 
