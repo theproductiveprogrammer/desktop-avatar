@@ -168,6 +168,7 @@ function exec_(env, line, cb) {
   }
 
   function run_line_1(obj) {
+    if(!obj) obj = {}
     if(typeof obj == "string") obj = { chat: obj }
     newMsg(env, obj)
     let delay = Math.random() * 4000 + 1000
