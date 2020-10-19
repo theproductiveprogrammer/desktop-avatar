@@ -4,6 +4,8 @@ const req = require('@tpp/req')
 const dh = require('./display-helpers.js')
 const vm = require('./avatar-vm.js')
 
+const kc = require('../kafclient.js')
+
 function start(log, store) {
   vm.start(log, store, program)
 }
@@ -15,7 +17,9 @@ const program = {
     "Getting Plugins",
     getPlugins,
     getTasks,
+    showStatus,
     doWork,
+    showStatus,
   ],
 
   main1: [
@@ -52,11 +56,11 @@ const program = {
   },
 }
 
-function sayHi(vars, store) {
+function sayHi({vars, store}) {
   return `${dh.greeting()} ${dh.userName(store.get("ui"))}`
 }
 
-function getServerURL(vars) {
+function getServerURL({vars}) {
   let serverURL = store.get("settings.serverURL")
   if(!serverURL) return {
     chat: "I need the server URL to be set so I can connect to the server.\n\nI get all sorts of information from it. Please set the serverURL for me to proceed",
@@ -74,22 +78,22 @@ function openSettingsWindow() {
   return {}
 }
 
-function waitForServerURL(vars, store, log, cb) {
-  let serverURL = store.get("settings.serverURL")
+function waitForServerURL(env, cb) {
+  let serverURL = env.store.get("settings.serverURL")
   if(serverURL) {
     if(serverURL.endsWith("/")) {
       serverURL = serverURL.substring(0, serverURL.length-2)
     }
-    vars.serverURL = serverURL
+    env.vars.serverURL = serverURL
     cb()
   } else {
     setTimeout(() => {
-      waitForServerURL(vars, store, log, cb)
+      waitForServerURL(env, cb)
     }, 1000)
   }
 }
 
-function getUsers(vars, store, log, cb) {
+function getUsers({vars, store, log}, cb) {
   log("avatar/gettingusers")
   let p = `${vars.serverURL}/dapp/v2/myusers`
   let ui = store.get("ui")
@@ -120,7 +124,7 @@ function getUsers(vars, store, log, cb) {
 
 const DEFAULT_PLUGIN_URL="https://github.com/theproductiveprogrammer/desktop-avatar-plugins.git"
 
-function getPlugins(vars, store, log, cb) {
+function getPlugins({store, log}, cb) {
   log("avatar/gettingplugins")
   let pluginURL = store.get("settings.pluginURL")
   if(!pluginURL) pluginURL = DEFAULT_PLUGIN_URL
@@ -135,7 +139,7 @@ function getPlugins(vars, store, log, cb) {
     })
 }
 
-function getTasks(vars, store, log, cb) {
+function getTasks({vars, store, log}, cb) {
   log("avatar/gettingtasks")
   let p = `${vars.serverURL}/dapp/v2/tasks`
   let ui = store.get("ui")
@@ -173,13 +177,41 @@ function pickUser() {
   return {}
 }
 
-function doWork(vars, store, log, cb) {
+let froms = {}
+function showStatus({store, say}, cb) {
+  let ui = store.get("ui")
+  let users = store.get("users")
+  if(users) users = users.concat(ui)
+  else users = [ ui ]
+
+  get_ndx_1(0)
+
+  function get_ndx_1(ndx) {
+    if(ndx >= users.length) return cb({})
+    let ui = users[ndx]
+    let from = froms[ui.id] || 1
+    let n = `User-${ui.id}`
+    kc.getFrom(n, from, (err, last, recs) => {
+      if(err) log("err/showstatus/get", err)
+      else {
+        if(last >= from) froms[ui.id] = last + 1
+        recs.forEach(msg => say({
+          from: ui,
+          chat: JSON.stringify(msg),
+        }))
+        get_ndx_1(ndx+1)
+      }
+    })
+  }
+}
+
+function doWork({store, say}, cb) {
   let tasks = store.get("tasks")
   if(!tasks || !tasks.length) return `Nothing to do...${dh.anEmoji("sleepy")}`
   let task = tasks[0]
   window.get.taskchat(task)
     .then(chat => {
-      cb(chat)
+      say(chat)
       window.do.task(task)
         .then(resp => {
           cb("Done " + JSON.stringify(resp))

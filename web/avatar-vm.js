@@ -114,12 +114,17 @@ function return_(env) {
  *      { from: <user info>, chat: ... }
  *      { wait: <delay in milliseconds> }
  *    + a function:
- *        invoked with the variables, store, and log
- *          (vars, store, log) => ...
+ *        invoked with an environment containing:
+ *          { vars: // context variables to pass around
+ *            store: // the store
+ *            log: // the log
+ *            say: // shows chat message
+ *          }
+ *          env => ...env.say("Hello there")
  *        can return a simple string or an object as
  *        described above.
  *        Can also return nothing - in this case the
- *        last parameter is a callback that the function
+ *        second parameter is a callback that the function
  *        must invoke when it's done. The callback
  *        again accepts a string/object as described above
  *    + RETURN:
@@ -133,9 +138,9 @@ function return_(env) {
  *  { wait: 500 }     // wait for 500 ms before next step
  *                    // by default waits for 1-5 seconds
  *  () => (new Date()).toISOString() // show current date
- *  vars => `Hi ${vars.name}` // uses variables
- *  (vars,store) => if(...) return { proc: "def" }
- *  (vars,store,log,cb) => {
+ *  ({vars}) => `Hi ${vars.name}` // uses variables
+ *  ({vars,store}) => if(...) return { proc: "def" }
+ *  (env, cb) => {
  *      if(x) {
  *        goToTheWeb(andDosomething).then(() => {
  *            cb({ chat: "ok done!", proc: "nextproc" })
@@ -158,8 +163,13 @@ function exec_(env, line, cb) {
     cb()
 
   } else if(typeof line === "function") {
-
-    let ret = line(env.vars, env.store, env.log, run_line_1)
+    const env_ = {
+      vars: env.vars,
+      store: env.store,
+      log: env.log,
+      say: msg => newMsg(env, msg),
+    }
+    let ret = line(env_, run_line_1)
     if(ret) run_line_1(ret)
 
   } else {
@@ -182,7 +192,7 @@ function exec_(env, line, cb) {
  * create a new chat for the requested bot and add it to the store.
  */
 function newMsg(env, msg) {
-  if(!msg.chat) return
+  if(!msg || !msg.chat) return
   let from = find_bot_1(env, msg)
 
   store.event("msg/add", {
