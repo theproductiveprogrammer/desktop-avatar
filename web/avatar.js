@@ -139,12 +139,16 @@ function getTasks(vars, store, log, cb) {
   log("avatar/gettingtasks")
   let p = `${vars.serverURL}/dapp/v2/tasks`
   let ui = store.get("ui")
+  let users = store.get("users")
+  if(users) users = users.concat(ui)
+  else users = [ ui ]
+  let forUsers = users.map(ui => ui.id)
 
   req.post(p, {
     id: ui.id,
     seed: ui.seed,
     authKey: ui.authKey,
-    forUsers: [ ui.id ],
+    forUsers,
   }, (err, resp) => {
     if(err) {
       log("err/avatar/gettingtasks", err)
