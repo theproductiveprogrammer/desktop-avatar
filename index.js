@@ -75,6 +75,10 @@ function setupIPC(log) {
     return users.setips(uips)
   })
 
+  ipcMain.handle("set-puppetShow", async (e, show) => {
+    return users.setPuppetShow(show)
+  })
+
   ipcMain.handle("do-task", async (e, task) => {
     return plugins.perform(task)
   })

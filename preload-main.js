@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld("get", {
 contextBridge.exposeInMainWorld("set", {
   users: uis => ipcRenderer.invoke("set-users", uis),
   userips: uips => ipcRenderer.invoke("set-userips", uips),
+  puppetShow: show => ipcRenderer.invoke("set-puppetShow", show),
 })
 contextBridge.exposeInMainWorld("do", {
   task: t => ipcRenderer.invoke("do-task", t),

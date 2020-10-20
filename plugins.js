@@ -11,8 +11,6 @@ const dh = require('./web/display-helpers.js')
 const users = require('./users.js')
 const lg = require('./logger.js')
 
-const puppeteer = require('puppeteer')
-
 let state = {
   dir: null,
   plugins: {},
@@ -139,24 +137,6 @@ function chat(task) {
   })
 }
 
-function getBrowser(task) {
-  let uctx = users.get(task.userId)
-  if(!uctx) return Promise.reject("User for task not found")
-  if(uctx.browser) return Promise.resolve(uctx.browser)
-  let args = []
-  if(uctx.proxy) {
-    args.push(`--proxy-server=socks5://localhost:${uctx.proxy}`)
-  }
-  return new Promise((resolve, reject) => {
-    puppeteer.launch({ headless:false, args })
-      .then(browser => {
-        uctx.browser = browser
-        resolve(browser)
-      })
-      .catch(reject)
-  })
-}
-
 function getLogger(task, cb) {
   let uctx = users.get(task.userId)
   if(!uctx) return cb("User for task not found")
@@ -170,7 +150,12 @@ function getLogger(task, cb) {
 function performTask(task, cb) {
   getPlugin(task.action, (err, plugin) => {
     if(err) return cb(err)
-    getBrowser(task)
+    let uctx = users.get(task.userId)
+    if(!uctx) {
+      log("err/task/user/notfound", task.userId)
+      return cb("Did not find user for task")
+    }
+    users.getBrowser(uctx)
     .then(browser => {
       getLogger(task, (err, log) => {
         if(err) return cb(err)

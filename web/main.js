@@ -84,6 +84,10 @@ function setupIPC(log, store) {
     window.set.userips(uips)
   })
 
+  store.react("settings.puppetShow", show => {
+    window.set.puppetShow(show)
+  })
+
   function send_users_1() {
     let ui = store.get('ui')
     if(!ui) window.set.users(null)
