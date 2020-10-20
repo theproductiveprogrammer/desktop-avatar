@@ -155,7 +155,7 @@ function performTask(task, cb) {
       log("err/task/user/notfound", task.userId)
       return cb("Did not find user for task")
     }
-    users.getBrowser(uctx)
+    users.browser(uctx)
     .then(browser => {
       getLogger(task, (err, log) => {
         if(err) return cb(err)

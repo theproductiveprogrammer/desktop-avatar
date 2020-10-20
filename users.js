@@ -28,7 +28,7 @@ function closeBrowsers() {
   }
 }
 
-function getBrowser(user) {
+function browser(user) {
   if(user.browserCache) {
     if(user.browserCache.proxy == user.proxy &&
       user.browserCache.puppetShow == PUPPET_SHOW) {
@@ -77,7 +77,6 @@ module.exports = {
   set,
   get,
   setips,
-  getBrowser,
-  closeBrowsers,
+  browser,
   setPuppetShow,
 }
