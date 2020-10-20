@@ -20,6 +20,7 @@ const program = {
     showStatus,
     doWork,
     showStatus,
+    doWork,
   ],
 
   main1: [
