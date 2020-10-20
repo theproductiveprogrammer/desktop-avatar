@@ -60,7 +60,7 @@ function getFrom(log, from, cb) {
     if(!resp) resp = []
     else resp = resp.body
     if(!Array.isArray(resp)) if(!err) err = "bad response"
-    if(!last || isNaN(last)) last = -1
+    if(!last || isNaN(last)) last=(resp&&resp.length)?-1:0
     cb(err, last, resp)
   })
 }
