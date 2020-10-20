@@ -39,7 +39,7 @@ function createSettingsWin() {
   if(wins.settings) return wins.settings.focus()
   wins.settings = new BrowserWindow({
     width: 600,
-    height: 600,
+    height: 660,
     resizable: false,
     webPreferences: {
       preload: path.join(__dirname, "preload-settings.js"),

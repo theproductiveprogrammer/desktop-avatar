@@ -64,6 +64,13 @@ function show(settings, log) {
     onblur: () => userips.value=user_ip_vals_1(user_ips_1())
   }, user_ip_vals_1(settings.userips))
 
+  let chkbox = h("input", { type: "checkbox" })
+  let puppetShow = h(".puppetShow", [
+    chkbox,
+    h("label", "Show Browser Windows"),
+  ])
+  if(settings.puppetShow) chkbox.attr({ checked : true })
+
   let submit = h(".submit", {
     tabindex: 0,
     onclick: submit_1,
@@ -92,6 +99,7 @@ function show(settings, log) {
     plugins,
     h(".label", "User IP Mapping"),
     userips,
+    puppetShow,
     submit
   )
 
@@ -123,6 +131,7 @@ function show(settings, log) {
     settings.serverURL = svrURL
     settings.pluginURL = pluginURL
     settings.userips = user_ips_1()
+    settings.puppetShow = chkbox.checked ? true : false
     log.trace("settings/saving", settings)
     kc.put(settings, NAME)
     setTimeout(() => window.thisWin.close(), 2 * 1000)

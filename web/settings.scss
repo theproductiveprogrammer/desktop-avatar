@@ -2,7 +2,7 @@
 @import "./common.scss";
 
 $width: 600px;
-$height: 600px;
+$height: 660px;
 
 body {
   color: $darkblue;
@@ -35,7 +35,7 @@ body {
     font-variant: all-small-caps;
     font-weight: bold;
   }
-  input,textarea {
+  input,textarea,.puppetShow {
     display: block;
     margin-left: -1px;
     margin-bottom: 32px;
@@ -52,6 +52,21 @@ body {
   }
   textarea {
     height: 128px;
+  }
+  .puppetShow {
+    margin: 0;
+    margin-top: -12px;
+    padding: 2px 12px;
+    input,label {
+      display: inline;
+      width: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 0;
+      margin: 0 12px 0 0;
+      line-height: 24px;
+      vertical-align: middle;
+    }
   }
 
   .submit {
