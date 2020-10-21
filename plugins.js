@@ -153,17 +153,21 @@ function performTask(task, cb) {
     let uctx = users.get(task.userId)
     if(!uctx) {
       log("err/task/user/notfound", task.userId)
-      return cb("Did not find user for task")
+      return cb("invalid task: user not found")
     }
     users.browser(uctx)
     .then(browser => {
       getLogger(task, (err, log) => {
         if(err) return cb(err)
         let context = {
-          cb,
           log,
           status: {
-            done: () => log("task/done", task.id),
+            done: status_done_1,
+            usererr: status_usererr_1,
+            timeout: status_timeout_1,
+            servererr: status_servererr_1,
+            errcapcha: status_capcha_1,
+            baduser: status_baduser_1,
           },
           browser,
           console,
@@ -184,6 +188,25 @@ function performTask(task, cb) {
     })
     .catch(cb)
   })
+
+  function status_done_1(msg) {
+    let data
+    if(msg) data = { id: task.id, msg }
+    else data = { id: task.id }
+    log("task/done", data, cb)
+  }
+  function status_usererr_1(err) { status_with_1(400, err) }
+  function status_timeout_1(err) { status_with_1(504, err) }
+  function status_servererr_1(err) { status_with_1(500, err) }
+  function status_capcha_1(err) { status_with_1(401, err) }
+  function status_baduser_1(err) { status_with_1(403, err) }
+  function status_with_1(status, err) {
+    if(err instanceof Error) err = err.stack
+    let data
+    if(err) data = { id: task.id, status, err }
+    else data = { id: task.id, status }
+    log("err/task/failed", data, cb)
+  }
 }
 function perform(task) {
   return new Promise((resolve, reject) => {
