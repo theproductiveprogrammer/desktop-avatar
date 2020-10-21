@@ -10,7 +10,7 @@ const toolbar = require('./toolbar.js')
 const logview = require('./logview.js')
 const login = require('./login.js')
 const home = require('./home.js')
-const avatar = require('./avatar.js')
+const avatar = require('./avatar/')
 
 import "./main.scss"
 
