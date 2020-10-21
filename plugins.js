@@ -160,7 +160,7 @@ function performTask(task, cb) {
       getLogger(task, (err, log) => {
         if(err) return cb(err)
         let context = {
-          log,
+          trace: m => log.trace(`trace/${task.action}.${task.id}`, m),
           status: {
             done: status_done_1,
             usererr: status_usererr_1,
