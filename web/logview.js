@@ -38,7 +38,7 @@ function e(log, store) {
       if(!m) continue
       loglist.appendChild(m)
       if((now - (new Date(curr.t)).getTime()) < 12000 &&
-          curr.e.startsWith("err/")) toshow = true
+          isErr(curr.e)) toshow = true
     }
     if(now - scrolledon > 30 * 1000) {
       let old = scrolledon
@@ -70,7 +70,7 @@ function e(log, store) {
     }
     let msg = m.e || ""
     let errcls = ""
-    if(msg.startsWith("err/")) errcls = ".err"
+    if(isErr(msg)) errcls = ".err"
     let data = m.data || ""
     if(data && typeof data == "object") data = JSON.stringify(data, 0, 2)
     data = data ? h('.padded', data) : ""
@@ -85,6 +85,8 @@ function e(log, store) {
     return v
   }
 }
+
+const isErr = m => m.startsWith("err") || m.startsWith("trace/err")
 
 module.exports = {
   e
