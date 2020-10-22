@@ -176,7 +176,7 @@ function performTask(task, cb) {
           plugin: {name: task.action, info:{}, task},
         }
         try {
-          log("task/new", task, err => {
+          log("task/new", { task }, err => {
             if(err) cb(err)
             else {
               vm.createContext(context)
@@ -193,8 +193,8 @@ function performTask(task, cb) {
 
   function status_done_1(msg) {
     let data
-    if(msg) data = { id: task.id, msg }
-    else data = { id: task.id }
+    if(msg) data = { task: { id: task.id }, msg }
+    else data = { task: { id: task.id } }
     log("task/done", data, cb)
   }
   function status_usererr_1(err) { status_with_1(400, err) }
@@ -205,8 +205,8 @@ function performTask(task, cb) {
   function status_with_1(status, err) {
     if(err instanceof Error) err = err.stack
     let data
-    if(err) data = { id: task.id, status, err }
-    else data = { id: task.id, status }
+    if(err) data = { task: { id: task.id }, status, err }
+    else data = { task { id: task.id }, status }
     log("err/task/failed", data, cb)
   }
 }
