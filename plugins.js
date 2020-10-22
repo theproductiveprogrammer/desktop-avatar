@@ -159,8 +159,10 @@ function performTask(task, cb) {
     .then(browser => {
       getLogger(task, (err, log) => {
         if(err) return cb(err)
+        let timeout = task.timeout || 30 * 1000
         let context = {
           trace: m => log.trace(`trace/${task.action}.${task.id}`, m),
+          timeout,
           status: {
             done: status_done_1,
             usererr: status_usererr_1,
