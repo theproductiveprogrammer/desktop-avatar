@@ -172,24 +172,24 @@ function exec_(env, line, cb) {
       vars: env.vars,
       store: env.store,
       log: env.log,
+      RETURN,
       say: msg => newMsg(env, msg),
     }
-    let ret = line(env_, run_line_1)
-    if(ret) run_line_1(ret)
+    let ret = line(env_, nxt => exec_(env, nxt, cb))
+    if(ret) exec_(env, ret, cb)
 
   } else {
 
-    run_line_1(line)
-  }
+    if(!line) line = {}
+    if(typeof line == "string") line = { chat: line }
 
-  function run_line_1(obj) {
-    if(!obj) obj = {}
-    if(typeof obj == "string") obj = { chat: obj }
-    newMsg(env, obj)
+    newMsg(env, line)
+
     let delay = Math.random() * 4000 + 1000
-    if(!obj.chat) delay = 0
-    if(obj.wait) delay = obj.wait
-    setTimeout(() => cb(obj.proc), delay)
+    if(!line.chat) delay = 0
+    if(line.wait) delay = obj.wait
+    setTimeout(() => cb(line.proc), delay)
+
   }
 }
 
@@ -259,7 +259,6 @@ function newMsg(env, msg) {
 
 module.exports = {
   start,
-  RETURN,
 }
 
 
