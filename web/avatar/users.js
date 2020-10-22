@@ -1,6 +1,10 @@
 'use strict'
 const req = require('@tpp/req')
 
+/*    understand/
+ * get a list of users information for whom this app
+ * is going to do work for
+ */
 function getUsers({vars,log,store}, cb) {
   log("avatar/gettingusers")
   let p = `${vars.serverURL}/dapp/v2/myusers`

@@ -2,6 +2,18 @@
 const ss = require('string-similarity')
 const kc = require('../../kafclient.js')
 
+/*    understand/
+ * as the avatar performs tasks it records them in the
+ * user's log file. We look through this file to get a
+ * handle of the various tasks the user has performed
+ * and is performing - keeping track of them in the
+ * store
+ *
+ *      way/
+ * we periodically check for new log records and process
+ * them - finding duplicate tasks and keeping track of
+ * their status
+ */
 function userStatus({store, log}, cb) {
   const CHECK_EVERY = 10 * 1000
   let last = store.get("lastUserStatus")
@@ -61,10 +73,10 @@ function userStatus({store, log}, cb) {
   }
 
   function process_1(msg, ut) {
-    let t = find_matching_1(ut.tasks, msg.data)
+    let t = findDuplicate(ut.tasks, msg.data)
     if(!t) {
       if(!msg.data || !msg.data.task) {
-        log.trace("err/processing/unknown", { msg })
+        log("err/processing/unknown", { msg })
         return
       }
       t = msg.data.task
@@ -82,43 +94,66 @@ function userStatus({store, log}, cb) {
         t.status = t.status.concat("failed", msg.t)
         break;
       default:
-        log.trace("err/processing/type", { msg })
+        log("err/processing/type", { msg })
     }
   }
 
-  function find_matching_1(tasks, data) {
-    if(!data || !tasks || !data.task || !tasks.length) return
+}
 
-    let task = data.task
-    for(let i = 0;i < tasks.length;i++) {
-      let curr = tasks[i]
-      if(task.id && curr.id === task.id) return curr
-      if(curr.action !== task.action) continue
-      switch(task.action) {
-        case "LINKEDIN_CONNECT":
-          if(curr.linkedinURL == task.linkedinURL) {
-            return curr
-          }
-          break;
-        case "LINKEDIN_MSG":
-          if(curr.linkedinURL == task.linkedinURL
-              && isSimilar(curr.msg, task.msg)) {
-            return curr
-          }
-          break;
-        case "LINKEDIN_VIEW":
-          break;
-        case "LINKEDIN_CHECK_CONNECT":
-          break;
-        case "LINKEDIN_DISCONNECT":
-          break;
-        case "LINKEDIN_CHECK_MSG":
-          break;
-      }
+/*    problem/
+ * a problem we faced when running linked in tasks was that
+ * sometimes the server would ask us to do the same thing
+ * again - either because of some back-end issue or because
+ * we did not correctly inform it that it had been done.
+ * In some cases, this does not matter - viewing a profile
+ * is not a big issue, or checking for a message response
+ * for example - but in some cases it really makes a diff-
+ * erence - notably in sending messages. We don't want to
+ * spam the user with duplicate messages.
+ *
+ *    way/
+ * we look for earlier tasks that could be duplicates of
+ * this one - either a "real" duplicate (with matching id)
+ * or one that has similar data (connecting to the same
+ * user, sending the same message to the same user etc)
+ */
+function findDuplicate(tasks, data) {
+  if(!data || !tasks || !data.task || !tasks.length) return
+
+  let task = data.task
+  for(let i = 0;i < tasks.length;i++) {
+    let curr = tasks[i]
+    if(task.id && curr.id === task.id) return curr
+    if(curr.action !== task.action) continue
+    switch(task.action) {
+      case "LINKEDIN_CONNECT":
+        if(curr.linkedinURL == task.linkedinURL) {
+          return curr
+        }
+        break;
+      case "LINKEDIN_MSG":
+        if(curr.linkedinURL == task.linkedinURL
+          && isSimilar(curr.msg, task.msg)) {
+          return curr
+        }
+        break;
+      case "LINKEDIN_VIEW":
+        break;
+      case "LINKEDIN_CHECK_CONNECT":
+        break;
+      case "LINKEDIN_DISCONNECT":
+        break;
+      case "LINKEDIN_CHECK_MSG":
+        break;
     }
   }
 }
 
+/*    way/
+ * return all the users we manage - the logged in user
+ * and addional managed users that the logged in user
+ * manages
+ */
 function getUis(store) {
   let ui = store.get("ui")
   let users = store.get("users")
@@ -127,6 +162,14 @@ function getUis(store) {
   return users
 }
 
+/*    way/
+ * check if two message strings are similar enough to
+ * be considered the "same"
+ *    eg: "How are you? Let's connect"
+ *    and "How are you? Let us connect"
+ *
+ * used to check for duplicate tasks
+ */
 function isSimilar(s1, s2) {
   if(!s1 && !s1) return true
   if(!s1 || !s2) return false

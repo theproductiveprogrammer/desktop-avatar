@@ -1,5 +1,10 @@
 'use strict'
 
+/*    understand/
+ * if we have a server URL to connect to RETURN from this
+ * sub-procedure otherwise let it proceed to do other
+ * things (bring up the settings window / set a default)
+ */
 function checkServerURL({vars, store, RETURN}) {
   let serverURL = store.get("settings.serverURL")
   if(serverURL) {
@@ -15,11 +20,19 @@ function checkServerURL({vars, store, RETURN}) {
   }
 }
 
+/*    way/
+ * ask the main process to bring up the settings window
+ */
 function openSettingsWindow() {
   window.show.settings()
   return {}
 }
 
+/*    way/
+ * periodically check if the user has provided us with
+ * a serverURL (this will be pulled in as we poll the
+ * settings logfile)
+ */
 function waitForServerURL(env, cb) {
   let serverURL = env.store.get("settings.serverURL")
   if(serverURL) {

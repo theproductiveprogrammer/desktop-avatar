@@ -2,6 +2,10 @@
 const marked = require('marked')
 const emoji = require('emojilib')
 
+/*    way/
+ * try our best to give show a good name from the data
+ * we have about the user
+ */
 function userName(ui) {
   if(!ui) return "(no user)"
   let r = ui.title ? u.title + " " : ""
@@ -13,14 +17,23 @@ function userName(ui) {
   return "(no name)"
 }
 
+/*    way/
+ * return user timezone (default to GMT)
+ */
 function timeZone(ui) {
   return ui.timeZone || "GMT"
 }
 
+/*    way/
+ * return a random smiley emoji
+ */
 function smiley() {
   return anEmoji("smile")
 }
 
+/*    way/
+ * randomly pick an emoji that matches the given keyword
+ */
 function anEmoji(keyword) {
   let options = []
   for(let k in emoji.lib) {
@@ -32,6 +45,10 @@ function anEmoji(keyword) {
   return oneOf(options)
 }
 
+/*    way/
+ * greet the user based on the time of day or sometimes
+ * just by wishing them generically
+ */
 function greeting() {
   let greetings = [
     "Hi there",
@@ -40,7 +57,7 @@ function greeting() {
     "Good to see you",
     "Hi",
   ]
-  if(Math.random() > 0.9) {
+  if(Math.random() > 0.7) {
     return oneOf(greetings)
   }
   let hh = (new Date()).getHours()
@@ -49,6 +66,9 @@ function greeting() {
   return "Good Evening"
 }
 
+/*    way/
+ * return the parsed version of the markdown text
+ */
 function md(txt) {
   return marked(txt)
 }
@@ -66,12 +86,19 @@ function emojify(txt) {
   })
 }
 
+/*    way/
+ * check if the given text is nothing but emoji's
+ */
 function isJustEmojis(txt) {
   let rx = /:[a-z_]*:/g
   txt = txt.replace(rx, "")
   return !txt.trim()
 }
 
+/*    way/
+ * randomly pick one of the arguments (or one of the array
+ * of elements passed in)
+ */
 function oneOf(a) {
   if(!Array.isArray(a)) a = Array.prototype.slice.call(arguments)
   return (a && a.length)

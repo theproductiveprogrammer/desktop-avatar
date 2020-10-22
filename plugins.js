@@ -11,11 +11,18 @@ const dh = require('./web/display-helpers.js')
 const users = require('./users.js')
 const lg = require('./logger.js')
 
+/*    understand/
+ * we hold information about the plugins here so they
+ * can be accessed by the various functions
+ */
 let state = {
   dir: null,
   plugins: {},
 }
 
+/*    way/
+ * download the latest plugin
+ */
 function getPluginRepo(url, cb) {
   state = { dir: null, plugins: {} }
   getLatest(url, loc.plugin(), (err, dir) => {
@@ -26,6 +33,9 @@ function getPluginRepo(url, cb) {
     }
   })
 }
+/*    understand/
+ * Promisi-fied version of `getPluginRepo`
+ */
 function get(url) {
   return new Promise((resolve, reject) => {
     getPluginRepo(url, err => {
@@ -35,6 +45,10 @@ function get(url) {
   })
 }
 
+/*    way/
+ * if the repo is downloaded update it otherwise clone
+ * the repo
+ */
 function getLatest(from, to, cb) {
   let url
   try {
@@ -72,6 +86,9 @@ function updateRepo(from, to, cb) {
   .catch(cb)
 }
 
+/*    way/
+ * run the plugin and return the info
+ */
 function getInfo(name, cb) {
   getPlugin(name, (err, plugin) => {
     if(err) return cb(err)
@@ -88,6 +105,9 @@ function getInfo(name, cb) {
     }
   })
 }
+/*    way/
+ * Promisi-fied version of `getInfo`
+ */
 function info(name) {
   return new Promise((resolve, reject) => {
     getInfo(name, (err, name) => {
@@ -97,6 +117,10 @@ function info(name) {
   })
 }
 
+/*    way/
+ * ask the plugin for a chat message that tells us what
+ * the plugin is going to do
+ */
 function getChat(task, cb) {
   if(!task.action) return cb_("Task missing 'action' key")
   getPlugin(task.action, (err, plugin) => {
@@ -128,6 +152,9 @@ function getChat(task, cb) {
     )
   }
 }
+/*    way/
+ * Promisi-fied version of `getChat`
+ */
 function chat(task) {
   return new Promise((resolve, reject) => {
     getChat(task, (err, chat) => {
@@ -137,6 +164,9 @@ function chat(task) {
   })
 }
 
+/*    understand/
+ * return the user's log
+ */
 function getLogger(task, cb) {
   let uctx = users.get(task.userId)
   if(!uctx) return cb("User for task not found")
@@ -147,6 +177,11 @@ function getLogger(task, cb) {
   cb(null, uctx.logger)
 }
 
+/*    way/
+ * get the plugin, the user's browser, logger, and set
+ * up the environment to call the plugin that will
+ * perform the task.
+ */
 function performTask(task, cb) {
   getPlugin(task.action, (err, plugin) => {
     if(err) return cb(err)
@@ -206,7 +241,7 @@ function performTask(task, cb) {
     if(err instanceof Error) err = err.stack
     let data
     if(err) data = { task: { id: task.id }, status, err }
-    else data = { task { id: task.id }, status }
+    else data = { task: { id: task.id }, status }
     log("err/task/failed", data, cb)
   }
 }
@@ -219,6 +254,9 @@ function perform(task) {
   })
 }
 
+/*    way/
+ * load the plugin from disk or return it from cache
+ */
 function getPlugin(name, cb) {
   if(!state.dir) return cb("plugins.js: not initialized")
   let plugin = state.plugins[name]

@@ -5,6 +5,11 @@ const dh = require('./display-helpers.js')
 
 import "./home.scss"
 
+/*    understand/
+ * the home page shows a user pane on the left, a report
+ * pane on the right and the middle contains a view of
+ * the avatar that is doing work chatting with you
+ */
 function e(ui, log, store) {
   let page = h('.page')
 
@@ -20,7 +25,7 @@ function e(ui, log, store) {
       h("img", { src: "./salesboxai-logo.png" })
     ),
     user_pane_1(),
-    msg_pane_1(),
+    avatar_pane_1(),
     reportpane
   )
 
@@ -86,7 +91,7 @@ function e(ui, log, store) {
 
   let msglist = []
 
-  function msg_pane_1() {
+  function avatar_pane_1() {
     let cont = h('.msgpane')
     let msgblock = h('.msgblock')
 

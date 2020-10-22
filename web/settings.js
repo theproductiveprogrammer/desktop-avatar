@@ -9,7 +9,12 @@ import "./settings.scss"
 const NAME = "settings"
 
 /*    understand/
- * Main entry point
+ * main entry point
+ *
+ *    way/
+ * get various settings (logname and DEBUG/production settings)
+ * and create a log, load the current settings, and show
+ * the settings window with it's values.
  */
 function main() {
   window.get.logname().then(({name,DEBUG}) => {
@@ -22,6 +27,10 @@ function main() {
   })
 }
 
+/*    way/
+ * get the settings from the logfile, using the latest
+ * values
+ */
 function loadSettings(log, cb) {
   let settings = {}
   kc.get(NAME, latest => {
@@ -39,6 +48,12 @@ function loadSettings(log, cb) {
   })
 }
 
+/*    way/
+ * show the settings window with it's title and input areas
+ * set up keyboard and click handlers and validate and
+ * submit the latest values to the log when user wants
+ * to do it
+ */
 function show(settings, log) {
   let cont = document.getElementById("cont")
   cont.innerHTML = ""

@@ -16,6 +16,13 @@ import "./main.scss"
 
 /*    understand/
  * main entry point - it all starts here
+ *
+ *    way/
+ * we set up the store to be globally available (for
+ * debugging) then get the setting we need from the
+ * main process (basically logname and debug/release
+ * mode) then set up the log, ui, polling, IPC handlers
+ * and finally start up the avatar.
  */
 function main() {
   window.STORE = store
@@ -30,6 +37,12 @@ function main() {
   })
 }
 
+/*    way/
+ * shows the toolbar, logview, and footer surrounding the
+ * main content which can either be the 'login' page or
+ * the 'home' page depending on if we have a user logged
+ * in (and hence user info) or not
+ */
 function showUI(log, store) {
   let cont = h("#cont")
   document.body.appendChild(cont)
@@ -64,11 +77,20 @@ function showUI(log, store) {
 
 }
 
+/*    way/
+ * poll for settings and log updates
+ */
 function setupPolling(log, store) {
   fetchSettings(log, store)
   fetchLogs(log, store)
 }
 
+/*    understand/
+ * As part of the interface we show timestamps of messages
+ * in the form "3 minutes ago", "1 hour ago" etc. For this
+ * to reactivly update we setup a timer that at a
+ * reasonable frequency updates the current time
+ */
 function setupTimer(log, store) {
   store.event("timer/tick", new Date())
   setInterval(() => {
@@ -76,6 +98,11 @@ function setupTimer(log, store) {
   }, 4000)
 }
 
+/*    understand/
+ * here we react to various settings and reflect them back
+ * in the main process so it can keep things up to date
+ * there as well
+ */
 function setupIPC(log, store) {
   store.react('ui', send_users_1)
   store.react("users", send_users_1)
@@ -100,6 +127,9 @@ function setupIPC(log, store) {
   }
 }
 
+/*    way/
+ * poll for latest settings
+ */
 function fetchSettings(log, store) {
   kc.get("settings", latest => {
     store.event("settings/set", latest[latest.length-1])
@@ -110,6 +140,9 @@ function fetchSettings(log, store) {
   })
 }
 
+/*    way/
+ * poll for any updates to the logs
+ */
 function fetchLogs(log, store) {
   let logs = []
   kc.get(log.getName(), latest => {

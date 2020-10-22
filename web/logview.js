@@ -3,6 +3,35 @@ const { h } = require('@tpp/htm-x')
 
 import "./logview.scss"
 
+/*    understand/
+ * this pane displays all the log messages and can be
+ * closed and opened by the user. If it detects error
+ * messages (and the pane is closed) it slides out briefly
+ * to alert the user that he may want to take a closer
+ * look.
+ *
+ *    problem/
+ * The scrolling is also interesting - we want to scroll
+ * to the end of the messages when a new message comes in
+ * but if the user is scrolling we don't want to rudely
+ * hijack the scroll and yank him all the way down.
+ *    way/
+ * We keep track of when we are scrolling and - if the user
+ * is scrolling we don't scroll until at least 30 seconds
+ * have passed after he stopped scrolling
+ *
+ *    problem/
+ * when the user refreshes the page, we reload the logs
+ * from the beginning so the log view remains correctly
+ * populated. However because we briefly slide out the
+ * pane to alert the user about error messages - this
+ * sliding happens for every old error message as well
+ * leading to a constant slide in-out if there are a lot
+ * of error messages in the log.
+ *    way/
+ * we only slide the log viewer out for recent error
+ * messages.
+ */
 function e(log, store) {
   let logview = h('.logview')
 
@@ -86,6 +115,10 @@ function e(log, store) {
   }
 }
 
+/*    way/
+ * checks if this is an error message so we can color
+ * it RED and alert the user if needed
+ */
 const isErr = m => m.startsWith("err") || m.startsWith("trace/err")
 
 module.exports = {

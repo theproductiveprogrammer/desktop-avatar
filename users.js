@@ -1,11 +1,19 @@
 'use strict'
 const puppeteer = require('puppeteer')
 
+/*    understand/
+ * keep track of the users and their browsers
+ */
 let USERS = {}
 let PUPPET_SHOW = false
 
 function setPuppetShow(show) { PUPPET_SHOW = show }
 
+/*    way/
+ * Close any existing browsers and link up the ui's (user
+ * info's) with the associated users - keeping any
+ * additional information we may have cached
+ */
 function set(uis) {
   closeBrowsers()
 
@@ -28,6 +36,11 @@ function closeBrowsers() {
   }
 }
 
+/*    way/
+ * If there is a valid cached browser return that - other
+ * wise create a new browser with the (proxy and show) settings
+ * and return that - adding it to the cache for next time.
+ */
 function browser(user) {
   if(user.browserCache) {
     if(user.browserCache.proxy == user.proxy &&
@@ -57,12 +70,19 @@ function browser(user) {
 }
 
 
+/*    way/
+ * return user information (including associated proxy
+ * port)
+ */
 function get(id) {
   let r = USERS[id]
   if(r) r.proxy = UIPS[id]
   return r
 }
 
+/*    understand/
+ * holds user to proxy ip mapping
+ */
 let UIPS = {}
 function setips(uips) {
   UIPS = {}

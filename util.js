@@ -31,6 +31,10 @@ function ensureExists(path_, cb) {
   }
 }
 
+/*    understand/
+ * given a name - try and make it as 'clean' as possible
+ * so it's usable as a filename
+ */
 function sanitizeFilename(n) {
   let illegalRe = /[\/\?<>\\:\*\|"]/g;
   let controlRe = /[\x00-\x1f\x80-\x9f]/g;

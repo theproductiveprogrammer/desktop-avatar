@@ -4,6 +4,10 @@ const req = require('@tpp/req')
 
 import "./login.scss"
 
+/*    understand/
+ * show the login form and allow the user to navigate
+ * by pressing enter and spacebar etc
+ */
 function e(log, store) {
   let form = h(".loginForm")
 

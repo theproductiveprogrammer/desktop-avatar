@@ -2,14 +2,27 @@
 const path = require('path')
 const { BrowserWindow, shell } = require('electron')
 
+/*    understand/
+ * hold all open windows here - useful to (a) have
+ * all windows in one place and (b) ensure they are
+ * not garbage collected (this used to be a problem
+ * in electron - not sure it is anymore but it doesn't
+ * hurt to keep these references)
+ */
 let wins = {}
 
+/*    way/
+ * create the main window and try not to let it be
+ * resized (we are not responsive yet). Also the
+ * main window has one link on the footer - to
+ * the external salesbox website so we don't open that
+ * link in the electron browser itself.
+ */
 function createMainWin() {
   if(wins.main) return wins.main.focus()
   wins.main = new BrowserWindow({
     width: 1300,
     height: 800,
-    resizable: false,
     webPreferences: {
       preload: path.join(__dirname, "preload-main.js"),
       nodeIntegration: false,
@@ -18,6 +31,9 @@ function createMainWin() {
     },
     backgroundColor: "#0490f9",
   })
+  wins.main.setResizable(false)
+  wins.main.setMaximizable(false)
+  wins.main.setFullScreenable(false)
 
   wins.main.on("close", () => wins.main = null)
 
@@ -31,6 +47,10 @@ function createMainWin() {
   loadWin("main.html", wins.main)
 }
 
+/*    understand/
+ * creates the settings window where users can set their
+ * settings
+ */
 function createSettingsWin() {
   if(wins.settings) return wins.settings.focus()
   wins.settings = new BrowserWindow({
@@ -51,6 +71,11 @@ function createSettingsWin() {
   loadWin("settings.html", wins.settings)
 }
 
+/*    understand/
+ * we need to be able to close the settings window from
+ * the render process (when the user clicks the 'submit'
+ * button) so we expose this function
+ */
 function closeSettings() {
   if(wins.settings) wins.settings.close()
 }
@@ -73,6 +98,9 @@ function loadWin(name, win) {
   }
 }
 
+/*    way/
+ * checks that there are no windows open
+ */
 function None() {
   return BrowserWindow.getAllWindows().length == 0
 }

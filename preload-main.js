@@ -1,6 +1,10 @@
 'use strict'
 const { ipcRenderer, contextBridge } = require('electron')
 
+/*    understand/
+ * Bridge between the renderer and the main process
+ */
+
 contextBridge.exposeInMainWorld("show", {
   settings: () => ipcRenderer.invoke("show-settings"),
 })
