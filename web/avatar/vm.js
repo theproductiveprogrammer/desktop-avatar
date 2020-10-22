@@ -68,7 +68,10 @@ function runProc(env, name) {
     env.runptr.ndx == env.proc.length-1
 
   if(env.runptr.name && !is_tail_call) {
-    env.stack.push(env.runptr)
+    env.stack.push({
+      proc: env.proc,
+      runptr: env.runptr,
+    })
   }
   env.proc = proc
   env.runptr = runptr
@@ -102,7 +105,9 @@ function run_(env) {
  */
 function return_(env) {
   env.log.trace("avatarvm/run/return", env.runptr)
-  env.runptr = env.stack.pop()
+  let { proc, runptr } = env.stack.pop()
+  env.proc = proc
+  env.runptr = runptr
 }
 
 /*    understand/
