@@ -18,7 +18,7 @@ import "./main.scss"
  * main entry point - it all starts here
  */
 function main() {
-  window.store = store
+  window.STORE = store
 
   window.get.logname().then(({name,DEBUG}) => {
     let log = lg(name, DEBUG)

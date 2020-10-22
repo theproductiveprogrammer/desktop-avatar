@@ -200,7 +200,7 @@ function newMsg(env, msg) {
   if(!msg || !msg.chat) return
   let from = find_bot_1(env, msg)
 
-  store.event("msg/add", {
+  env.store.event("msg/add", {
     t: (new Date()).toISOString(),
     from,
     chat: msg.chat
