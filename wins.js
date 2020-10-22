@@ -21,16 +21,12 @@ function createMainWin() {
 
   wins.main.on("close", () => wins.main = null)
 
-  if(!process.env.DEBUG) {
-    /*    understand/
-     * In debug mode we use hotloading which fails
-     * when 'will-navigate is trapped
-     */
-    wins.main.webContents.on("will-navigate", (e, url) => {
+  wins.main.webContents.on("will-navigate", (e, url) => {
+    if(url && url.indexOf("src=desktop-avatar") > 0) {
       e.preventDefault()
       shell.openExternal(url)
-    })
-  }
+    }
+  })
 
   loadWin("main.html", wins.main)
 }

@@ -39,8 +39,8 @@ function showUI(log, store) {
     h('span', [
       "POWERED BY ",
       h("a", {
-        href: "http://salesboxai.com",
-      }, "http://salesboxai.com")
+        href: "https://salesboxai.com/?src=desktop-avatar",
+      }, "https://salesboxai.com")
     ])
   )
 
