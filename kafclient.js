@@ -8,9 +8,9 @@ const PORT = 7749
  * the scheduler how/when to continue. Returns a control structure that
  * can be used to stop getting more data (aside from using the scheduler)
  */
-function get(log, processor, scheduler) {
+function get(log, processor, scheduler, from) {
   let ctrl = { stop:false }
-  let from = 1
+  from = from || 1
   let p = `http://localhost:${PORT}/get/${log}?from=`
   get_1()
   return ctrl
@@ -37,32 +37,15 @@ function get(log, processor, scheduler) {
       }
       let end = (resp && resp.length) ? false : true
       if(!end) processor(resp)
-      return schedule_1(null, end)
+      return schedule_1(null, end, from)
     })
   }
 
-  function schedule_1(err, end) {
-    let tm = scheduler(err, end)
+  function schedule_1(err, end, from) {
+    let tm = scheduler(err, end, from)
     if(tm) setTimeout(get_1, tm)
   }
 
-}
-
-/*    way/
- * gets the latest few records 'from' the 'log'
- *    cb(err, last, recs)
- */
-function getFrom(log, from, cb) {
-  let p = `http://localhost:${PORT}/get/${log}?from=${from}`
-  req.get(p, (err, resp) => {
-    let last = resp.headers()["x-kafjs-lastmsgsent"]
-    if(last) last = parseInt(last)
-    if(!resp) resp = []
-    else resp = resp.body
-    if(!Array.isArray(resp)) if(!err) err = "bad response"
-    if(!last || isNaN(last)) last=(resp&&resp.length)?-1:0
-    cb(err, last, resp)
-  })
 }
 
 /*    understand/
@@ -110,6 +93,5 @@ module.exports = {
   PORT,
   put,
   get,
-  getFrom,
 }
 
