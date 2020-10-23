@@ -14,9 +14,12 @@ function start(log, store, program) {
   let env = newEnv(log, store, program)
 
   store.react('ui', ui => {
+    let old = env.ui
     env.ui = ui
-    store.event("msg/clear")
-    if(env.ui) runProc(env, "main")
+    if(ui && (!old || old.id !== ui.id)) {
+      store.event("msg/clear")
+      runProc(env, "main")
+    }
   })
 }
 
