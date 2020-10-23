@@ -26,22 +26,43 @@ module.exports = {
    * get to it.
    */
   main: [
-    "Setting up",
+    chat.greeting,
     { proc: "setup" },
-    "Getting users",
     users.get,
-    "Checking user status",
+    chat.letsGetStarted,
     { proc: "dothework" },
   ],
 
   setup,
 
   /*    way/
-   * get the tasks for the users, schedule and do them
+   * get the tasks for the users, schedule and do them, then
+   * rest a bit before repeating
    */
   dothework: [
+    { proc: gettasks },
+    { proc: schedule },
+    doWork,
+    takeANap,
+    { proc: "dothework" },
+  ],
+
+  /*    way/
+   * check for existing user tasks and get additional tasks 
+   * from the server
+   */
+  gettasks: [
     tasks.userStatus,
-    //{ proc: "dothework" },
+    tasks.fromServer,
+  ],
+
+  /*    way/
+   * schedule the next task for the user, and apply rate
+   * limiting on top
+   */
+  schedule: [
+    schedule.nextTask,
+    schedule.pullWithRateLimiting,
   ],
 
 
