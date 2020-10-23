@@ -204,7 +204,7 @@ function exec_(env, line, cb) {
 
     if(!line) line = {}
     let delay = Math.random() * 4000 + 1000
-    if(!line.chat) delay = 0
+    if(!line.chat && typeof line !== "string") delay = 0
     if(line.wait) delay = obj.wait
     setTimeout(() => cb(line.call), delay)
 
