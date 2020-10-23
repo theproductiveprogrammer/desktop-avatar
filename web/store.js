@@ -1,7 +1,7 @@
 'use strict'
 const dux = require('@tpp/dux')
 
-const store = dux.createStore(reducer, { msgs: [] })
+const store = dux.createStore(reducer, {})
 
 function reducer(state, type, payload) {
   switch(type) {
@@ -17,6 +17,8 @@ function reducer(state, type, payload) {
       return { ...state, settings: payload }
     case "msg/add":
       return { ...state, msgs: state.msgs.concat(payload) }
+    case "msg/clear":
+      return { ...state, msgs: [] }
     case "timer/tick":
       return { ...state, now: payload }
     case "users/set":

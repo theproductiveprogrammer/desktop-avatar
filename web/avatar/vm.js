@@ -14,8 +14,8 @@ function start(log, store, program) {
   let env = newEnv(log, store, program)
 
   store.react('ui', ui => {
-    if(env.ui && !ui) runProc(env, "exit")
     env.ui = ui
+    store.event("msg/clear")
     if(env.ui) runProc(env, "main")
   })
 }
