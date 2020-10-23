@@ -81,12 +81,17 @@ function md(txt) {
  * equivalents
  */
 function emojify(txt) {
-  let rx = /:[a-z_]*:/g
-  return txt.replace(rx, sc => {
-    let e = sc.substring(1, sc.length-1)
-    if(!emoji.lib[e]) return sc
-    return "&#" + emoji.lib[e].char.codePointAt(0) + ";"
+  return txt.replace(/:[a-z_]*:/g, sc => {
+    return moj(sc.substring(1, sc.length-1))
   })
+}
+
+/*    outcome/
+ * return the emoji for the given shortcode
+ */
+function moj(code) {
+  if(!emoji.lib[code]) return `:${code}:`
+  return "&#" + emoji.lib[code].char.codePointAt(0) + ";"
 }
 
 /*    way/
@@ -120,4 +125,5 @@ module.exports = {
   anEmoji,
   isJustEmojis,
   oneOf,
+  moj,
 }
