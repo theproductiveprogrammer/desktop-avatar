@@ -94,7 +94,7 @@ function e(ui, log, store) {
     let msgblock = h('.msgblock')
 
     cont.c(
-      h('.title', `${dh.greeting()} ${dh.userName(ui)}`),
+      h('.title', dh.greeting(ui)),
       h('.subtitle', "Let's get started!"),
       msgblock
     )

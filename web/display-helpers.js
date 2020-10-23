@@ -49,8 +49,11 @@ function anEmoji(keyword) {
  * greet the user based on the time of day or sometimes
  * just by wishing them generically
  */
-function greeting() {
-  let greetings = [
+function greeting(ui) {
+  if(ui) ui = ` ${userName(ui)}`
+  else ui = ""
+
+  const greetings = [
     "Hi there",
     "Hello",
     "Welcome",
@@ -58,12 +61,12 @@ function greeting() {
     "Hi",
   ]
   if(Math.random() > 0.7) {
-    return oneOf(greetings)
+    return oneOf(greetings) + ui
   }
   let hh = (new Date()).getHours()
-  if(hh >= 6 && hh < 12) return "Good Morning"
-  if(hh >= 12 && hh < 16) return "Good Afternoon"
-  return "Good Evening"
+  if(hh >= 6 && hh < 12) return "Good Morning" + ui
+  if(hh >= 12 && hh < 16) return "Good Afternoon" + ui
+  return "Good Evening" + ui
 }
 
 /*    way/
