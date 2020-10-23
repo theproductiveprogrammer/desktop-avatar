@@ -15,7 +15,7 @@ function getUsers({vars,log,store}, cb) {
     seed: ui.seed,
     authKey: ui.authKey
   }, (err, resp) => {
-    if(err) {
+    if(err || !resp || !resp.body) {
       log("err/avatar/gettingusers", err)
       cb({
         chat: "**Error getting users**!\n\nI will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.",
