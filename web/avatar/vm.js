@@ -142,7 +142,7 @@ function return_(env) {
  *            say: // shows chat message
  *            RETURN: // causes return from current proc
  *          }
- *          env => ...env.say("Hello there")
+ *          env => ...env.say("Hello there", () => ...)
  *        can return a simple string or an object as
  *        described above.
  *        Can also return nothing - in this case the
@@ -179,6 +179,7 @@ function return_(env) {
  * and return value or just run the line directly
  */
 function exec_(env, line, cb) {
+  let delay = Math.random() * 4000 + 1000
 
   if(line === RETURN) {
 
@@ -193,7 +194,11 @@ function exec_(env, line, cb) {
       store: env.store,
       log: env.log,
       RETURN,
-      say: msg => newMsg(env, msg),
+      say: (msg, cb) => {
+        newMsg(env, msg)
+        if(msg.wait) delay = msg.wait
+        setTimeout(() => cb(), delay)
+      },
     }
     let ret = line(env_, nxt => exec_(env, nxt, cb))
     if(ret) exec_(env, ret, cb)
@@ -203,9 +208,8 @@ function exec_(env, line, cb) {
     newMsg(env, line)
 
     if(!line) line = {}
-    let delay = Math.random() * 4000 + 1000
     if(!line.chat && typeof line !== "string") delay = 0
-    if(line.wait) delay = obj.wait
+    if(line.wait) delay = line.wait
     setTimeout(() => cb(line.call), delay)
 
   }

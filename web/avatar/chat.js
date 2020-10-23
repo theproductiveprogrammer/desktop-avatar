@@ -5,10 +5,6 @@ function greeting({store}) {
   return dh.greeting(store.get("ui"))
 }
 
-function delay() {
-  return Math.random() * 4000 + 1000
-}
-
 function letsGetStarted({say}, cb) {
   const ops = [
     [ "Let's get to work today :fire:", dh.smiley() ],
@@ -17,11 +13,7 @@ function letsGetStarted({say}, cb) {
   ]
 
   const msgs = dh.oneOf(ops)
-  say(msgs[0])
-  setTimeout(() => {
-    say(msgs[1])
-    setTimeout(cb, delay())
-  }, 900)
+  say({ chat: msgs[0], wait: 900 }, () => say(msgs[1], cb))
 }
 
 function checkingSetup() {
@@ -52,5 +44,4 @@ module.exports = {
   checkingSetup,
   needServerURL,
   looksGood,
-  delay,
 }

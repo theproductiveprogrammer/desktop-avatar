@@ -13,8 +13,7 @@ function checkServerURL({vars, store, RETURN, say}, cb) {
     serverURL = serverURL.substring(0, serverURL.length)
   }
   vars.serverURL = serverURL
-  say(chat.looksGood())
-  setTimeout(() => cb(RETURN), chat.delay())
+  say(chat.looksGood(), () => cb(RETURN))
 }
 
 /*    way/
