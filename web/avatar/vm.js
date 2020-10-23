@@ -91,15 +91,24 @@ function run_(env) {
   env.log.trace("avatarvm/running", {
     ptr: env.runptr, line
   })
+
   if(!line) {
+
     env.log.trace("avatarvm/run/fin", env.runptr)
-    return
+    if(env.runptr.name !== "exit") {
+      return_(env)
+      if(env.proc) run_(env)
+      else runProc(env, "exit")
+    }
+
+  } else {
+
+    env.runptr.ndx++
+    exec_(env, line, proc => {
+      if(proc) runProc(env, proc)
+      else run_(env)
+    })
   }
-  env.runptr.ndx++
-  exec_(env, line, proc => {
-    if(proc) runProc(env, proc)
-    else run_(env)
-  })
 }
 
 /*    way/
@@ -107,17 +116,21 @@ function run_(env) {
  * resume execution from where we left off
  */
 function return_(env) {
-  env.log.trace("avatarvm/run/return", env.runptr)
-  let { proc, runptr } = env.stack.pop()
-  env.proc = proc
-  env.runptr = runptr
+  let r = env.stack.pop()
+  if(r) {
+    env.proc = r.proc
+    env.runptr = r.runptr
+  } else {
+    env.proc = null
+    env.runptr = {}
+  }
 }
 
 /*    understand/
  * the avatar understands:
  *    + simple strings: it's a chat message
  *    + an object: with the following keys
- *      { proc: "call next proc name" }
+ *      { call: "next proc name" }
  *      { chat: "chat msg - just like a simple string" }
  *      { from: <user info>, chat: ... }
  *      { wait: <delay in milliseconds> }
@@ -127,6 +140,7 @@ function return_(env) {
  *            store: // the store
  *            log: // the log
  *            say: // shows chat message
+ *            RETURN: // causes return from current proc
  *          }
  *          env => ...env.say("Hello there")
  *        can return a simple string or an object as
@@ -137,6 +151,7 @@ function return_(env) {
  *        again accepts a string/object as described above
  *    + RETURN:
  *        returns from the current proc invocation
+ *        (accessible from the `env` passed into a function)
  *
  *    examples/
  *  "Hello there!"    // shows chat message "Hello There"
@@ -159,7 +174,7 @@ function return_(env) {
  *  }
  *
  *    way/
- * If the current line a RETURN, then invoke the special RETURN handler,
+ * If the current line is a RETURN, then invoke the special RETURN handler,
  * otherwise if is a function, invoke it and handle it's callback
  * and return value or just run the line directly
  */
@@ -167,10 +182,12 @@ function exec_(env, line, cb) {
 
   if(line === RETURN) {
 
+    env.log.trace("avatarvm/run/return", env.runptr)
     return_(env)
     cb()
 
   } else if(typeof line === "function") {
+
     const env_ = {
       vars: env.vars,
       store: env.store,
@@ -191,7 +208,7 @@ function exec_(env, line, cb) {
     let delay = Math.random() * 4000 + 1000
     if(!line.chat) delay = 0
     if(line.wait) delay = obj.wait
-    setTimeout(() => cb(line.proc), delay)
+    setTimeout(() => cb(line.call), delay)
 
   }
 }

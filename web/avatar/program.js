@@ -27,10 +27,10 @@ module.exports = {
    */
   main: [
     chat.greeting,
-    { proc: "setup" },
+    { call: "setup" },
     users.get,
     chat.letsGetStarted,
-    { proc: "dothework" },
+    { call: "dothework" },
   ],
 
   setup,
@@ -40,11 +40,11 @@ module.exports = {
    * rest a bit before repeating
    */
   dothework: [
-    { proc: gettasks },
-    { proc: schedule },
+    { call: gettasks },
+    { call: schedule },
     doWork,
     takeANap,
-    { proc: "dothework" },
+    { call: "dothework" },
   ],
 
   /*    way/

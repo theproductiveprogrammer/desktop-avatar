@@ -19,7 +19,7 @@ function getUsers({vars,log,store}, cb) {
       log("err/avatar/gettingusers", err)
       cb({
         chat: "**Error getting users**!\n\nI will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.",
-        proc: "exit"
+        call: "exit"
       })
     } else {
       let users = resp.body
