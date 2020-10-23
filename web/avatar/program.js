@@ -2,6 +2,8 @@
 const setup = require('./setup.js')
 const users = require('./users.js')
 const tasks = require('./tasks.js')
+const chat = require('./chat.js')
+const schedule = require('./schedule.js')
 
 /*    problem/
  * the avatar is a kind of chatbot that communicates with
@@ -27,23 +29,34 @@ module.exports = {
    */
   main: [
     chat.greeting,
-    { call: "setup" },
-    users.get,
     chat.letsGetStarted,
-    { call: "dothework" },
+    { call: "setup" },
+    //users.get,
+    //{ call: "dothework" },
   ],
 
-  setup,
+  /*    way/
+   * check if we have a server url set then return. If not,
+   * open the settings window and wait until the user
+   * provides us with a server URL
+   */
+  setup: [
+    chat.checkingSetup,
+    setup.checkServerURL,
+    chat.needServerURL,
+    setup.openSettingsWindow,
+    setup.waitForServerURL,
+  ],
 
   /*    way/
    * get the tasks for the users, schedule and do them, then
    * rest a bit before repeating
    */
   dothework: [
-    { call: gettasks },
-    { call: schedule },
-    doWork,
-    takeANap,
+    { call: "gettasks" },
+    { call: "schedule" },
+    //doWork,
+    //takeANap,
     { call: "dothework" },
   ],
 
@@ -71,6 +84,6 @@ module.exports = {
    * exit and stop the work
    */
   exit: [
-    () => `Bye for now. If you want me to start work again, please logout and re-login!`
+    "Bye for now :zzz:"
   ],
 }

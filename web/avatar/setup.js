@@ -1,23 +1,20 @@
 'use strict'
+const chat = require('./chat.js')
 
 /*    understand/
  * if we have a server URL to connect to RETURN from this
  * sub-procedure otherwise let it proceed to do other
  * things (bring up the settings window / set a default)
  */
-function checkServerURL({vars, store, RETURN}) {
+function checkServerURL({vars, store, RETURN, say}, cb) {
   let serverURL = store.get("settings.serverURL")
-  if(serverURL) {
-    if(serverURL.endsWith("/")) {
-      serverURL = serverURL.substring(0, serverURL.length)
-    }
-    vars.serverURL = serverURL
-    return RETURN
-  } else {
-    return {
-      chat: "I need the server URL to be set so I can connect to the server.\n\nI get all sorts of information from it. Please set the serverURL for me to proceed",
-    }
+  if(!serverURL) return {}
+  if(serverURL.endsWith("/")) {
+    serverURL = serverURL.substring(0, serverURL.length)
   }
+  vars.serverURL = serverURL
+  say(chat.looksGood())
+  setTimeout(() => cb(RETURN), chat.delay())
 }
 
 /*    way/
@@ -48,9 +45,8 @@ function waitForServerURL(env, cb) {
   }
 }
 
-module.exports = [
+module.exports = {
   checkServerURL,
   openSettingsWindow,
   waitForServerURL,
-  env => env.RETURN,
-]
+}
