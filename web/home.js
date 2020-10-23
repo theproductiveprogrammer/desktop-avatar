@@ -99,6 +99,11 @@ function e(ui, log, store) {
       msgblock
     )
 
+    let scrolledon = 0
+    msgblock.attr({
+      onscroll: () => scrolledon = Date.now()
+    })
+
     let shown = 0
     store.react('msgs', msgs => {
       if(!msgs) return
@@ -106,11 +111,22 @@ function e(ui, log, store) {
         msgblock.c()
         shown = 0
       }
+      let scroll = false
       for(let i = shown;i < msgs.length;i++) {
         let msg = msg_1(msgs[i])
-        if(msg) msgblock.add(msg)
+        if(msg) {
+          msgblock.add(msg)
+          scroll = true
+        }
       }
       shown = msgs.length
+      if(!scroll) return
+      let now = Date.now()
+      if(now - scrolledon > 30 * 1000) {
+        let old = scrolledon
+        msgblock.scrollTop = msgblock.scrollHeight
+        setTimeout(() => scrolledon = old, 200)
+      }
     })
     return cont
   }
