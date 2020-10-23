@@ -89,6 +89,23 @@ function e(ui, log, store) {
   }
 
 
+  /*    way/
+   * show the avatar pane and react to new messages. If we
+   * find that messages have reduced/cleared, restart from
+   * scratch as that's our expected case (logged out and
+   * re-logged in).
+   *
+   *    problem/
+   * we need to scroll to show the latest message to the
+   * user. However, the user may have himself scrolled up
+   * to look at earlier messages and we don't want to rudely
+   * drag him down again.
+   *
+   *    way/
+   * keep track of the last time the user scrolled manually
+   * and don't do anything for at least 30 seconds after
+   * that. Otherwise scroll down for each new message.
+   */
   function avatar_pane_1() {
     let cont = h('.msgpane')
     let msgblock = h('.msgblock')
