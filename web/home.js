@@ -89,8 +89,6 @@ function e(ui, log, store) {
   }
 
 
-  let msglist = []
-
   function avatar_pane_1() {
     let cont = h('.msgpane')
     let msgblock = h('.msgblock')
@@ -103,6 +101,11 @@ function e(ui, log, store) {
 
     let shown = 0
     store.react('msgs', msgs => {
+      if(!msgs) return
+      if(shown > msgs.length) {
+        msgblock.c()
+        shown = 0
+      }
       for(let i = shown;i < msgs.length;i++) {
         let msg = msg_1(msgs[i])
         if(msg) msgblock.add(msg)
