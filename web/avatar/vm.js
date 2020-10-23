@@ -200,11 +200,9 @@ function exec_(env, line, cb) {
 
   } else {
 
-    if(!line) line = {}
-    if(typeof line == "string") line = { chat: line }
-
     newMsg(env, line)
 
+    if(!line) line = {}
     let delay = Math.random() * 4000 + 1000
     if(!line.chat) delay = 0
     if(line.wait) delay = obj.wait
@@ -217,7 +215,10 @@ function exec_(env, line, cb) {
  * create a new chat for the requested bot and add it to the store.
  */
 function newMsg(env, msg) {
-  if(!msg || !msg.chat) return
+  if(!msg) return
+  if(typeof msg == "string") msg = { chat: msg }
+  if(!msg.chat) return
+
   let from = find_bot_1(env, msg)
 
   env.store.event("msg/add", {
