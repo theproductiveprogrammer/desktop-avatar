@@ -76,12 +76,17 @@ function md(txt) {
   return marked(txt)
 }
 
+/*    understand/
+ * emoji shortcodes are like :smile:, :fire:, :+1:
+ */
+const rxMoj = /:[-+0-9a-z_]*:/g
+
 /*    outcome/
  * Find emoji shortcodes and replace them with the HTML
  * equivalents
  */
 function emojify(txt) {
-  return txt.replace(/:[a-z_]*:/g, sc => {
+  return txt.replace(rxMoj, sc => {
     return moj(sc.substring(1, sc.length-1))
   })
 }
@@ -98,8 +103,7 @@ function moj(code) {
  * check if the given text is nothing but emoji's
  */
 function isJustEmojis(txt) {
-  let rx = /:[a-z_]*:/g
-  txt = txt.replace(rx, "")
+  txt = txt.replace(rxMoj, "")
   return !txt.trim()
 }
 
