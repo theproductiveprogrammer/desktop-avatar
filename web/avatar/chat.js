@@ -18,10 +18,10 @@ function letsGetStarted({say}, cb) {
 
 function checkingSetup() {
   return dh.oneOf(
-    "Let me do a quick check of our setup...",
-    "Let me do a quick check of the settings...",
-    "Let me do a quick check of our setup...:mag:",
-    "Let me do a quick check of the settings...:mag:",
+    "I'm going to do a quick check of our setup...",
+    "I'm going to do a quick check of the settings...",
+    "I'm going to do a quick check of our setup...:mag:",
+    "I'm going to do a quick check of the settings...:mag:",
   )
 }
 
@@ -38,10 +38,63 @@ function looksGood() {
   )
 }
 
+function gettingUsers() {
+  return dh.oneOf(
+    "First let me check which users I am assigned to work for...",
+    "Let's start by checking if there are any other users we should be working with...",
+    "First, I am going to check with the server if there are any other users we need to work with..."
+  )
+}
+
+function manageUsers(users) {
+  if(users.length == 0) {
+    return dh.oneOf(
+      "Currently you do not have any other users to manage",
+      "You do not have any other users to manage",
+      "You have no other users to manage",
+      "I did not find any other users for you to manage"
+    )
+  }
+  return dh.oneOf(
+    `You have ${users.length} users to manage`,
+    `Found ${users.length} users for you to manage`,
+    `You have ${users.length} users to work with`
+  )
+}
+
+function noticeReport() {
+  return dh.oneOf(
+    "I'll show you a report of the work I'm doing on the report pane to the right",
+    "You can see the work we're doing on the report pane to the right",
+    "To help you see what's going on we'll update working reports on the right hand side pane"
+  )
+}
+
+
+
+/*    way/
+ * return a chat message that shows a standard "I don't
+ * know what to do" and invokes the "exit" proc
+ */
+function exit(reason) {
+  return {
+    chat: `**${reason}**!
+
+I will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.
+`,
+    call: "exit"
+  }
+}
+
 module.exports = {
   greeting,
   letsGetStarted,
   checkingSetup,
   needServerURL,
   looksGood,
+  gettingUsers,
+  manageUsers,
+  noticeReport,
+
+  exit,
 }

@@ -1,6 +1,8 @@
 'use strict'
 const req = require('@tpp/req')
 
+const chat = require('./chat.js')
+
 /*    understand/
  * get a list of users information for whom this app
  * is going to do work for
@@ -17,10 +19,7 @@ function getUsers({vars,log,store}, cb) {
   }, (err, resp) => {
     if(err || !resp || !resp.body) {
       log("err/avatar/gettingusers", err)
-      cb({
-        chat: "**Error getting users**!\n\nI will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.",
-        call: "exit"
-      })
+      cb(chat.exit("Error getting users"))
     } else {
       let users = resp.body
       log("avatar/gotusers", { num: users.length })
@@ -28,7 +27,7 @@ function getUsers({vars,log,store}, cb) {
       store.event("users/set", users)
       cb({
         from: -1,
-        chat: `You have ${users.length} user(s) to manage`
+        chat: chat.manageUsers(users),
       })
     }
   })

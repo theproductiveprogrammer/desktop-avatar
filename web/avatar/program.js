@@ -31,7 +31,9 @@ module.exports = {
     chat.greeting,
     chat.letsGetStarted,
     { call: "setup" },
-    //users.get,
+    chat.gettingUsers,
+    users.get,
+    chat.noticeReport,
     //{ call: "dothework" },
   ],
 
