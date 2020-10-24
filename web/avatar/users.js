@@ -19,7 +19,10 @@ function getUsers({vars,log,store}, cb) {
   }, (err, resp) => {
     if(err || !resp || !resp.body) {
       log("err/avatar/gettingusers", err)
-      cb(chat.exit("Error getting users"))
+      cb({
+        chat: chat.err("Error getting users"),
+        call: "exit"
+      })
     } else {
       let users = resp.body
       log("avatar/gotusers", { num: users.length })

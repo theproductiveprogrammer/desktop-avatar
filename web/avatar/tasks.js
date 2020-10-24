@@ -1,6 +1,8 @@
 'use strict'
 const ss = require('string-similarity')
+const req = require('@tpp/req')
 const kc = require('../../kafclient.js')
+const chat = require('./chat.js')
 
 /*    understand/
  * as the avatar performs tasks it records them in the
@@ -27,68 +29,51 @@ function userStatus({store, log}, cb) {
   get_ndx_1(0)
 
   function get_ndx_1(ndx) {
-    if(ndx >= users.length) return done_1()
+    if(ndx >= users.length) return cb()
     let ui = users[ndx]
-    let curr = userTasks[ui.id]
-    if(!curr) curr = {
-      name: `User-${ui.id}`,
-      from: 1,
-      tasks: [],
-    }
+    let curr = getUserTasks(store, ui.id)
     log("userStatus/checking", {
       name: curr.name, from: curr.from
     })
 
-    kc.get(curr.name, recs => {
-      if(!uts[ui.id]) uts[ui.id] = copy_1(curr)
-      recs.forEach(msg => process_1(msg, uts[ui.id]))
-    }, (err, end, from) => {
+    kc.get(curr.name, (recs, from) => {
+
+      let ut = getUserTasks(store, ui.id, true)
+      ut.from = from
+      recs.forEach(msg => process_1(msg, ut.tasks))
+      store.event("user/tasks/set", ut)
+
+    }, (err, end) => {
+
       if(err) {
         log("err/userStatus/get", err)
         return 0
       }
       if(end) {
-        if(uts[ui.id]) uts[ui.id].from = from
+        let ut = getUserTasks(store, ui.id)
+        if(ut.from != curr.from) {
+          log("userStatus/got", {
+            name: ut.name, from: ut.from
+          })
+        }
         get_ndx_1(ndx+1)
         return 0
       }
       return 10
+
     }, curr.from)
 
   }
 
-  function copy_1(curr) {
-    return {
-      name: curr.name,
-      from: curr.from,
-      tasks: curr.tasks.map(t => Object.assign({}, t)),
-    }
-  }
-
-  function done_1() {
-    if(Object.keys(uts).length) {
-      for(let k in uts) {
-        log("userStatus/got", {
-          name: uts[k].name, from: uts[k].from
-        })
-      }
-      for(let k in userTasks) {
-        if(!uts[k]) uts[k] = userTasks[k]
-      }
-      store.event("userTasks/set", uts)
-    }
-    cb()
-  }
-
-  function process_1(msg, ut) {
-    let t = findDuplicate(ut.tasks, msg.data)
+  function process_1(msg, tasks) {
+    let t = findDuplicate(tasks, msg.data)
     if(!t) {
       if(!msg.data || !msg.data.task) {
         log("err/processing/unknown", { msg })
         return
       }
       t = msg.data.task
-      ut.tasks.push(t)
+      tasks.push(t)
     }
     if(!t.status) t.status = []
     switch(msg.e) {
@@ -106,6 +91,46 @@ function userStatus({store, log}, cb) {
     }
   }
 
+}
+
+/*    way/
+ * periodically get tasks from the server and add them to
+ * the userTasks list - checking that they have not already
+ * been added (non-duplicate tasks)
+ */
+function serverTasks({vars, store, log}, cb) {
+  const CHECK_EVERY = 2 * 60 * 1000
+  let last = store.get("lastServerTasks")
+  if(!last) last = 0
+  if(Date.now() - last < CHECK_EVERY) return cb()
+  store.event("lastServerTasks/set", Date.now())
+
+  let users = getUis(store)
+  let forUsers = users.map(ui => ui.id)
+  log("serverTasks/getting", { forUsers })
+  let ui = store.get("ui")
+
+  let p = `${vars.serverURL}/dapp/v2/tasks`
+  req.post(p, {
+    id: ui.id,
+    seed: ui.seed,
+    authKey: ui.authKey,
+    forUsers,
+  }, (err, resp) => {
+    if(err) {
+      log("err/serverTasks", err)
+      cb(chat.err("Error getting tasks"))
+    } else {
+      let tasks = resp.body
+      log("serverTasks/got", { num: tasks.length })
+      log.trace("serverTasks/gottasks", tasks)
+      store.event("tasks/set", tasks)
+      cb({
+        from: -1,
+        chat: chat.gotTasks(tasks),
+      })
+    }
+  })
 }
 
 /*    problem/
@@ -171,6 +196,38 @@ function getUis(store) {
 }
 
 /*    way/
+ * return the current user tasks from the store - returning
+ * a copy is requested for modification
+ */
+function getUserTasks(store, id, formodif) {
+  let userTasks = store.get("userTasks")
+  if(userTasks && userTasks[id]) return cin_1(userTasks[id])
+  else {
+    return {
+      id,
+      name: `User-${id}`,
+      from: 1,
+      tasks: [],
+    }
+  }
+
+  /*    understand/
+   * copy the user tasks passed in if needed (copying is
+   * needed for modification)
+   */
+  function cin_1(ut) {
+    if(!formodif) return ut
+    return {
+      id: ut.id,
+      name: ut.name,
+      from: ut.from,
+      tasks: ut.tasks.map(t => Object.assign({}, t)),
+    }
+  }
+}
+
+
+/*    way/
  * check if two message strings are similar enough to
  * be considered the "same"
  *    eg: "How are you? Let's connect"
@@ -186,4 +243,5 @@ function isSimilar(s1, s2) {
 
 module.exports = {
   userStatus,
+  fromServer: serverTasks,
 }

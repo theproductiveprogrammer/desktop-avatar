@@ -46,6 +46,20 @@ function gettingUsers() {
   )
 }
 
+function errGettingUsers() {
+    return `**Error Getting Users**!
+
+I will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.
+`
+}
+
+function errGettingTasks() {
+    return `**Error Getting Tasks**!
+
+Failed to get tasks from the server.
+`
+}
+
 function manageUsers(users) {
   if(users.length == 0) {
     return dh.oneOf(
@@ -70,21 +84,10 @@ function noticeReport() {
   )
 }
 
-
-
-/*    way/
- * return a chat message that shows a standard "I don't
- * know what to do" and invokes the "exit" proc
- */
-function exit(reason) {
-  return {
-    chat: `**${reason}**!
-
-I will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.
-`,
-    call: "exit"
-  }
+function gotTasks(tasks) {
+  return `Giving you ${tasks.length} task(s) to do`
 }
+
 
 module.exports = {
   greeting,
@@ -93,8 +96,9 @@ module.exports = {
   needServerURL,
   looksGood,
   gettingUsers,
+  errGettingUsers,
   manageUsers,
   noticeReport,
-
-  exit,
+  gotTasks,
+  errGettingTasks,
 }

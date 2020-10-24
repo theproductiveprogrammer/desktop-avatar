@@ -27,8 +27,13 @@ function reducer(state, type, payload) {
       return { ...state, tasks: payload }
     case "lastUserStatus/set":
       return { ...state, lastUserStatus: payload }
-    case "userTasks/set":
-      return { ...state, userTasks: payload }
+    case "user/tasks/set":
+      let userTasks = state.userTasks || {}
+      userTasks = { ...userTasks }
+      userTasks[payload.id] = payload
+      return { ...state, userTasks }
+    case "lastServerTasks/set":
+      return { ...state, lastServerTasks: payload }
     default:
       console.error("WARNING(store.js):UNHANDLED STATE", type)
       return state

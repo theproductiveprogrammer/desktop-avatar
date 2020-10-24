@@ -34,7 +34,7 @@ module.exports = {
     chat.gettingUsers,
     users.get,
     chat.noticeReport,
-    //{ call: "dothework" },
+    { call: "dothework" },
   ],
 
   /*    way/
@@ -56,10 +56,10 @@ module.exports = {
    */
   dothework: [
     { call: "gettasks" },
-    { call: "schedule" },
+    //{ call: "schedule" },
     //doWork,
     //takeANap,
-    { call: "dothework" },
+    //{ call: "dothework" },
   ],
 
   /*    way/
