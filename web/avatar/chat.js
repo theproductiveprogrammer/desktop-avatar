@@ -101,7 +101,7 @@ function gotTasks(tasks) {
       "I haven't got anything new for you right now.\n\nCheck back later!",
       "No new tasks ATM",
       "Ok - haven't found anything new for you to do right now",
-      "After checking everywhere I couldn't find anything for you to do.\n\nBut check back later"
+      "After checking everywhere I couldn't find anything for you to do.\n\nCheck back later."
     )
   }
   return dh.oneOf(
