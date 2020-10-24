@@ -135,8 +135,9 @@ function e(ui, log, store) {
     )
 
     let scrolledon = 0
+    let autoscroll = false
     msgblock.attr({
-      onscroll: () => scrolledon = Date.now()
+      onscroll: () => autoscroll||(scrolledon = Date.now())
     })
 
     let shown = 0
@@ -158,9 +159,9 @@ function e(ui, log, store) {
       if(!scroll) return
       let now = Date.now()
       if(now - scrolledon > 30 * 1000) {
-        let old = scrolledon
+        autoscroll = true
         msgblock.scrollTop = msgblock.scrollHeight
-        setTimeout(() => scrolledon = old, 200)
+        setTimeout(() => autoscroll = false, 200)
       }
     })
     return cont
