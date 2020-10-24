@@ -116,32 +116,37 @@ function serverTasks({vars, store, say, log}, cb) {
       let tasks = resp.body
       log("serverTasks/got", { num: tasks.length })
       log.trace("serverTasks/gottasks", tasks)
-      tasks = process_1(tasks)
-      cb({
+      tasks = filter_1(tasks)
+      say({
         from: -1,
         chat: chat.gotTasks(tasks),
+      }, () => {
+        if(tasks && tasks.length) {
+          tasks.forEach(task => {
+            let ut = getUserTasks(store, task.userId, true)
+            task.status = [{
+              e: "task/new",
+              t: Date.now(),
+            }]
+            ut.tasks = ut.tasks.concat(task)
+            store.event("user/tasks/set", ut)
+          })
+        }
+        cb()
       })
     }
   })
 
   /*    way/
-   * add to the user's current task, ignoring duplicates
+   * filter out duplicate tasks the server has sent us
    */
-  function process_1(tasks) {
+  function filter_1(tasks) {
     let r = []
     for(let i = 0;i < tasks.length;i++) {
       let task = tasks[i]
-      let ut = getUserTasks(store, task.userId, true)
+      let ut = getUserTasks(store, task.userId)
       let t = findDuplicate(ut.tasks, task)
-      if(!t) {
-        task.status = [{
-          e: "task/new",
-          t: Date.now(),
-        }]
-        r.push(task)
-        ut.tasks = ut.tasks.concat(task)
-        store.event("user/tasks/set", ut)
-      }
+      if(!t) r.push(task)
     }
     return r
   }

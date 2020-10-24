@@ -49,6 +49,7 @@ function e(ui, log, store) {
     let hdr = h("tr", [
       h("th", "Task"),
       h("th", "Assigned"),
+      h("th", "In Progress"),
       h("th", "Success"),
       h("th", "Failure"),
     ])
@@ -59,15 +60,21 @@ function e(ui, log, store) {
       id
     )
 
-    store.react("tasks", tasks => {
+    store.react(`userTasks.${ui.id}`, ut => {
       tbl.c(hdr)
-      if(!tasks) return
-      tasks = tasks.filter(t => t.userId == ui.id)
+      if(!ut) return
       let summary = {}
-      for(let i = 0;i < tasks.length;i++) {
-        let curr = tasks[i].action
-        if(!summary[curr]) summary[curr] = { assigned: 1 }
+      for(let i = 0;i < ut.tasks.length;i++) {
+        let curr = ut.tasks[i].action
+        if(!summary[curr]) summary[curr] = {
+          assigned: 1,
+          inprogress: 0,
+          success: 0,
+          failure: 0
+        }
         else summary[curr].assigned++
+        let status = status_1(ut.tasks[i])
+        if(status) summary[curr][status]++
       }
       for(let action in summary) {
         let name = h("td", action)
@@ -79,13 +86,24 @@ function e(ui, log, store) {
         tbl.add(h("tr", [
           name,
           h("td", summary[action].assigned),
-          h("td", 0),
-          h("td", 0)
+          h("td", summary[action].inprogress),
+          h("td", summary[action].success),
+          h("td", summary[action].failure),
         ]))
       }
     })
 
     return cont
+  }
+
+  function status_1(task) {
+    if(!task || !task.status || !task.status.length) return
+    let m = {
+      "task/started": "inprogress",
+      "task/done": "success",
+      "err/task/failed": "failure",
+    }
+    return m[task.status[task.status.length-1].e]
   }
 
 
