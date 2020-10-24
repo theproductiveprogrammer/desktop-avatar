@@ -97,7 +97,11 @@ function serverTasks({vars, store, say, log}, cb) {
   store.event("lastServerTasks/set", Date.now())
 
   let users = getUis(store)
-  let forUsers = users.map(ui => ui.id)
+  let forUsers = users.map(ui => {
+    return {
+      id: ui.id, seed: ui.seed, authKey: ui.authKey
+    }
+  })
   log("serverTasks/getting", { forUsers })
   let ui = store.get("ui")
   say(chat.gettingTasks(), () => {
