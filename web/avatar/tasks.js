@@ -100,41 +100,43 @@ function serverTasks({vars, store, say, log}, cb) {
   let forUsers = users.map(ui => ui.id)
   log("serverTasks/getting", { forUsers })
   let ui = store.get("ui")
-  say(chat.gettingTasks(), () => 1)
+  say(chat.gettingTasks(), () => {
 
-  let p = `${vars.serverURL}/dapp/v2/tasks`
-  req.post(p, {
-    id: ui.id,
-    seed: ui.seed,
-    authKey: ui.authKey,
-    forUsers,
-  }, (err, resp) => {
-    if(err) {
-      log("err/serverTasks", err)
-      cb(chat.err("Error getting tasks"))
-    } else {
-      let tasks = resp.body
-      log("serverTasks/got", { num: tasks.length })
-      log.trace("serverTasks/gottasks", tasks)
-      tasks = filter_1(tasks)
-      say({
-        from: -1,
-        chat: chat.gotTasks(tasks),
-      }, () => {
-        if(tasks && tasks.length) {
-          tasks.forEach(task => {
-            let ut = getUserTasks(store, task.userId, true)
-            task.status = [{
-              e: "task/new",
-              t: Date.now(),
-            }]
-            ut.tasks = ut.tasks.concat(task)
-            store.event("user/tasks/set", ut)
-          })
-        }
-        cb()
-      })
-    }
+    let p = `${vars.serverURL}/dapp/v2/tasks`
+    req.post(p, {
+      id: ui.id,
+      seed: ui.seed,
+      authKey: ui.authKey,
+      forUsers,
+    }, (err, resp) => {
+      if(err) {
+        log("err/serverTasks", err)
+        cb(chat.err("Error getting tasks"))
+      } else {
+        let tasks = resp.body
+        log("serverTasks/got", { num: tasks.length })
+        log.trace("serverTasks/gottasks", tasks)
+        tasks = filter_1(tasks)
+        say({
+          from: -1,
+          chat: chat.gotTasks(tasks),
+        }, () => 1)
+        setTimeout(() => {
+          if(tasks && tasks.length) {
+            tasks.forEach(task => {
+              let ut = getUserTasks(store, task.userId, true)
+              task.status = [{
+                e: "task/new",
+                t: Date.now(),
+              }]
+              ut.tasks = ut.tasks.concat(task)
+              store.event("user/tasks/set", ut)
+            })
+          }
+          cb()
+        }, 200)
+      }
+    })
   })
 
   /*    way/
