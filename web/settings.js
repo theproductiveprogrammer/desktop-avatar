@@ -142,11 +142,13 @@ function show(settings, log) {
       plugins.focus()
       return
     }
-    settings.t = (new Date()).toISOString()
-    settings.serverURL = svrURL
-    settings.pluginURL = pluginURL
-    settings.userips = user_ips_1()
-    settings.puppetShow = chkbox.checked ? true : false
+    settings = {
+      t: (new Date()).toISOString(),
+      serverURL: svrURL,
+      pluginURL: pluginURL,
+      userips: user_ips_1(),
+      puppetShow: chkbox.checked ? true : false,
+    }
     log.trace("settings/saving", settings)
     kc.put(settings, NAME)
     setTimeout(() => window.thisWin.close(), 2 * 1000)
