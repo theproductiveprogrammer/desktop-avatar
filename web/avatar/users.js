@@ -20,7 +20,7 @@ function getUsers({vars,log,store}, cb) {
     if(err || !resp || !resp.body) {
       log("err/avatar/gettingusers", err)
       cb({
-        chat: chat.err("Error getting users"),
+        chat: chat.errGettingUsers(),
         call: "exit"
       })
     } else {

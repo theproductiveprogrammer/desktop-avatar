@@ -111,7 +111,7 @@ function serverTasks({vars, store, say, log}, cb) {
     }, (err, resp) => {
       if(err) {
         log("err/serverTasks", err)
-        cb(chat.err("Error getting tasks"))
+        cb(chat.errGettingTasks())
       } else {
         let tasks = resp.body
         log("serverTasks/got", { num: tasks.length })
