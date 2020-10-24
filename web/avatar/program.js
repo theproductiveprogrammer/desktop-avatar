@@ -60,8 +60,8 @@ module.exports = {
     { call: "gettasks" },
     //{ call: "schedule" },
     //doWork,
-    //takeANap,
-    //{ call: "dothework" },
+    schedule.takeANap,
+    { call: "dothework" },
   ],
 
   /*    way/
