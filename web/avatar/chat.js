@@ -84,8 +84,34 @@ function noticeReport() {
   )
 }
 
+function gettingTasks() {
+  const opts = [
+    "Checking with the server for any new tasks...",
+    "I'll ask the server for any more tasks...",
+    "Asking the server for new tasks...",
+    "Asking the server for more tasks...",
+    "I'm asking the server for new tasks...",
+    "I'm asking the server for more tasks...",
+  ]
+  return dh.oneOf(opts) + dh.anEmoji("computer")
+}
+
 function gotTasks(tasks) {
-  return `Giving you ${tasks.length} task(s) to do`
+  if(tasks.length == 0) {
+    return dh.oneOf(
+      "I haven't got anything new for you right now.\n\nCheck back later!",
+      "No new tasks ATM",
+      "Ok - haven't found anything new for you to do right now",
+      "After checking everywhere I couldn't find anything for you to do.\n\nBut check back later"
+    )
+  }
+  return dh.oneOf(
+    `Giving you ${tasks.length} task(s) to do`,
+    `Got ${tasks.length} task(s) for you to do`,
+    `Found ${tasks.length} task(s) for you to do`,
+    `Giving you ${tasks.length} task(s)`,
+    `Here you go - ${tasks.length} task(s)`
+  )
 }
 
 
@@ -99,6 +125,7 @@ module.exports = {
   errGettingUsers,
   manageUsers,
   noticeReport,
+  gettingTasks,
   gotTasks,
   errGettingTasks,
 }

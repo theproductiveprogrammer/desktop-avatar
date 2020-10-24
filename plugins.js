@@ -211,7 +211,7 @@ function performTask(task, cb) {
           plugin: {name: task.action, info:{}, task},
         }
         try {
-          log("task/new", { task }, err => {
+          log("task/started", { task }, err => {
             if(err) cb(err)
             else {
               vm.createContext(context)

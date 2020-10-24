@@ -66,29 +66,20 @@ function userStatus({store, log}, cb) {
   }
 
   function process_1(msg, tasks) {
-    let t = findDuplicate(tasks, msg.data)
+    if(!msg.data || !msg.data.task) {
+      log("err/processing/unknown", { msg })
+      return
+    }
+    let t = findDuplicate(tasks, msg.data.task)
     if(!t) {
-      if(!msg.data || !msg.data.task) {
-        log("err/processing/unknown", { msg })
-        return
-      }
       t = msg.data.task
       tasks.push(t)
     }
     if(!t.status) t.status = []
-    switch(msg.e) {
-      case "task/new":
-        t.status = t.status.concat("new", msg.t)
-        break;
-      case "task/done":
-        t.status = t.status.concat("done", msg.t)
-        break;
-      case "err/task/failed":
-        t.status = t.status.concat("failed", msg.t)
-        break;
-      default:
-        log("err/processing/type", { msg })
-    }
+    t.status = t.status.concat({
+      e: msg.e,
+      t: msg.t,
+    })
   }
 
 }
@@ -98,7 +89,7 @@ function userStatus({store, log}, cb) {
  * the userTasks list - checking that they have not already
  * been added (non-duplicate tasks)
  */
-function serverTasks({vars, store, log}, cb) {
+function serverTasks({vars, store, say, log}, cb) {
   const CHECK_EVERY = 2 * 60 * 1000
   let last = store.get("lastServerTasks")
   if(!last) last = 0
@@ -109,6 +100,7 @@ function serverTasks({vars, store, log}, cb) {
   let forUsers = users.map(ui => ui.id)
   log("serverTasks/getting", { forUsers })
   let ui = store.get("ui")
+  say(chat.gettingTasks(), () => 1)
 
   let p = `${vars.serverURL}/dapp/v2/tasks`
   req.post(p, {
@@ -124,13 +116,36 @@ function serverTasks({vars, store, log}, cb) {
       let tasks = resp.body
       log("serverTasks/got", { num: tasks.length })
       log.trace("serverTasks/gottasks", tasks)
-      store.event("tasks/set", tasks)
+      tasks = process_1(tasks)
       cb({
         from: -1,
         chat: chat.gotTasks(tasks),
       })
     }
   })
+
+  /*    way/
+   * add to the user's current task, ignoring duplicates
+   */
+  function process_1(tasks) {
+    let r = []
+    for(let i = 0;i < tasks.length;i++) {
+      let task = tasks[i]
+      let ut = getUserTasks(store, task.userId, true)
+      let t = findDuplicate(ut.tasks, task)
+      if(!t) {
+        task.status = [{
+          e: "task/new",
+          t: Date.now(),
+        }]
+        r.push(task)
+        ut.tasks = ut.tasks.concat(task)
+        store.event("user/tasks/set", ut)
+      }
+    }
+    return r
+  }
+
 }
 
 /*    problem/
@@ -150,10 +165,9 @@ function serverTasks({vars, store, log}, cb) {
  * or one that has similar data (connecting to the same
  * user, sending the same message to the same user etc)
  */
-function findDuplicate(tasks, data) {
-  if(!data || !tasks || !data.task || !tasks.length) return
+function findDuplicate(tasks, task) {
+  if(!task || !tasks || !tasks.length) return
 
-  let task = data.task
   for(let i = 0;i < tasks.length;i++) {
     let curr = tasks[i]
     if(task.id && curr.id === task.id) return curr
