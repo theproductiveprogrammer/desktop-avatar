@@ -96,7 +96,16 @@ function emojify(txt) {
  */
 function moj(code) {
   if(!emoji.lib[code]) return `:${code}:`
-  return "&#" + emoji.lib[code].char.codePointAt(0) + ";"
+  let i = 0
+  const c = emoji.lib[code].char
+  let v = ""
+  while(i < c.length) {
+    let cp = c.codePointAt(i)
+    i++
+    if(cp > 65535) i++
+    v += `&#${cp};`
+  }
+  return v
 }
 
 /*    way/
