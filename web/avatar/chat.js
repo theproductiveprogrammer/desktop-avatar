@@ -21,7 +21,7 @@ function checkingSetup() {
     "I'm going to do a quick check of our setup...",
     "Doing a check of our setup...",
     "I'm going to start by checking our setup...",
-  ) + dh.oneOf(":mag:", "mag_right")
+  ) + dh.oneOf(":mag:", ":mag_right:")
 }
 
 function needServerURL() {
