@@ -19,10 +19,9 @@ function letsGetStarted({say}, cb) {
 function checkingSetup() {
   return dh.oneOf(
     "I'm going to do a quick check of our setup...",
-    "I'm going to do a quick check of the settings...",
-    "I'm going to do a quick check of our setup...:mag:",
-    "I'm going to do a quick check of the settings...:mag:",
-  )
+    "Doing a check of our setup...",
+    "I'm going to start by checking our setup...",
+  ) + dh.oneOf(":mag:", "mag_right")
 }
 
 function needServerURL() {
