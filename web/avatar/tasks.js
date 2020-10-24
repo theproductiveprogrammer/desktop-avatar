@@ -35,6 +35,9 @@ function userStatus({store, log}, cb) {
       from: 1,
       tasks: [],
     }
+    log("userStatus/checking", {
+      name: curr.name, from: curr.from
+    })
 
     kc.get(curr.name, recs => {
       if(!uts[ui.id]) uts[ui.id] = copy_1(curr)
@@ -64,6 +67,11 @@ function userStatus({store, log}, cb) {
 
   function done_1() {
     if(Object.keys(uts).length) {
+      for(let k in uts) {
+        log("userStatus/got", {
+          name: uts[k].name, from: uts[k].from
+        })
+      }
       for(let k in userTasks) {
         if(!uts[k]) uts[k] = userTasks[k]
       }
