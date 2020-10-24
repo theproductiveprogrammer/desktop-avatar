@@ -36,7 +36,7 @@ function get(log, processor, scheduler, from) {
         }
       }
       let end = (resp && resp.length) ? false : true
-      if(!end) processor(resp)
+      if(!end) processor(resp, from)
       return schedule_1(null, end, from)
     })
   }
