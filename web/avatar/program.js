@@ -23,7 +23,7 @@ const schedule = require('./schedule.js')
 module.exports = {
 
   /*    way/
-   * greet the user, set up any missing parameters, get the
+   * greet the user, set up and download plugins, get the
    * list of users on whose behalf we are going to work and
    * get to it.
    */
@@ -31,6 +31,8 @@ module.exports = {
     chat.greeting,
     chat.letsGetStarted,
     { call: "setup" },
+    setup.getPlugins,
+    chat.looksGood,
     chat.gettingUsers,
     users.get,
     chat.noticeReport,

@@ -13,7 +13,7 @@ function checkServerURL({vars, store, RETURN, say}, cb) {
     serverURL = serverURL.substring(0, serverURL.length)
   }
   vars.serverURL = serverURL
-  say(chat.looksGood(), () => cb(RETURN))
+  return RETURN
 }
 
 /*    way/
@@ -44,8 +44,28 @@ function waitForServerURL(env, cb) {
   }
 }
 
+const DEFAULT_PLUGIN_URL="https://github.com/theproductiveprogrammer/desktop-avatar-plugins.git"
+/*    way/
+ * request the main process to download and setup the
+ * plugins that perform our tasks for us
+ */
+function getPlugins({store, log}, cb) {
+  let pluginURL = store.get("settings.pluginURL")
+  if(!pluginURL) pluginURL = DEFAULT_PLUGIN_URL
+  window.get.plugins(pluginURL)
+    .then(() => cb({}))
+    .catch(err => {
+      log("err/getPlugins", err)
+      cb({
+        chat: "**Error downloading plugins**!\n\nI will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.",
+        proc: "exit"
+      })
+    })
+}
+
 module.exports = {
   checkServerURL,
   openSettingsWindow,
   waitForServerURL,
+  getPlugins,
 }
