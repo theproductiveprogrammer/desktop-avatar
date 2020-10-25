@@ -76,6 +76,15 @@ function userReducer(state, type, payload) {
         userTasks[payload.userId] = ut
         return { ...state, userTasks }
       }
+    case "user/task/dispatch":
+      {
+        let userTasks = state.userTasks || {}
+        let ut = userTasks[payload.userId]
+        userTasks = { ...userTasks }
+        ut = { ...ut, dispatched: payload }
+        userTasks[payload.userId] = ut
+        return { ...state, userTasks }
+      }
     default: return state
   }
 }

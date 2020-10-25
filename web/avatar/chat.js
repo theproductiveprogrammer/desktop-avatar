@@ -46,16 +46,23 @@ function gettingUsers() {
 }
 
 function errGettingUsers() {
-    return `**Error Getting Users**!
+  return `**Error Getting Users**!
 
 I will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.
 `
 }
 
 function errGettingTasks() {
-    return `**Error Getting Tasks**!
+  return `**Error Getting Tasks**!
 
 Failed to get tasks from the server.
+`
+}
+
+function errDispatch(err) {
+  return `**Error Invoking Task**!
+
+I couldn't get the task working. Please see the log for more details...
 `
 }
 
@@ -127,4 +134,5 @@ module.exports = {
   gettingTasks,
   gotTasks,
   errGettingTasks,
+  errDispatch,
 }

@@ -159,6 +159,51 @@ function serverTasks({vars, store, say, log}, cb) {
 
 }
 
+/*    way/
+ * if a user has assigned work that is not yet dispatched
+ * then dispatch it
+ */
+function doWork({store,log,say}, cb) {
+  let userTasks = store.get("user.userTasks") || {}
+  let users = Object.keys(userTasks)
+  work_ndx_1(0)
+
+
+  function work_ndx_1(ndx) {
+    if(ndx >= users.length) return cb()
+    let ut = userTasks[users[ndx]]
+    if(ut.assigned) {
+      if(!ut.dispatched||ut.assigned.id!==ut.dispatched.id){
+        dispatch_1(ut, () => work_ndx_1(ndx+1))
+      } else {
+        work_ndx_1(ndx+1)
+      }
+    } else {
+      work_ndx_1(ndx+1)
+    }
+  }
+
+  function dispatch_1(ut, cb) {
+    let task = ut.assigned
+    store.event("user/task/dispatch", task)
+    log("task/dispatch", task)
+    window.get.taskchat(task)
+      .then(msg => {
+        say(msg, () => {
+          window.do.task(task)
+            .then(() => cb())
+            .catch(err_)
+        })
+      })
+      .catch(err_)
+  }
+
+  function err_(err) {
+    log("err/task/dispatch", err)
+    cb(chat.errDispatch(err))
+  }
+}
+
 /*    problem/
  * a problem we faced when running linked in tasks was that
  * sometimes the server would ask us to do the same thing
@@ -269,4 +314,5 @@ function isSimilar(s1, s2) {
 module.exports = {
   userStatus,
   fromServer: serverTasks,
+  doWork,
 }

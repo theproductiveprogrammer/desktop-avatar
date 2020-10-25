@@ -216,34 +216,47 @@ function performTask(task, cb) {
             else {
               vm.createContext(context)
               plugin.code.runInContext(context)
+              cb()
             }
           })
         } catch(e) {
           cb(e)
         }
+
+        function status_done_1(msg) {
+          let data
+          if(msg) data = { task: { id: task.id }, msg }
+          else data = { task: { id: task.id } }
+          log("task/done", data, cb)
+        }
+        function status_usererr_1(err) {
+          status_with_1(400, err)
+        }
+        function status_timeout_1(err) {
+          status_with_1(504, err)
+        }
+        function status_servererr_1(err) {
+          status_with_1(500, err)
+        }
+        function status_capcha_1(err) {
+          status_with_1(401, err)
+        }
+        function status_baduser_1(err) {
+          status_with_1(403, err)
+        }
+        function status_with_1(status, err) {
+          if(err instanceof Error) err = err.stack
+          let data
+          if(err) data = { task: { id: task.id }, status, err }
+          else data = { task: { id: task.id }, status }
+          log("err/task/failed", data, cb)
+        }
+
       })
     })
     .catch(cb)
   })
 
-  function status_done_1(msg) {
-    let data
-    if(msg) data = { task: { id: task.id }, msg }
-    else data = { task: { id: task.id } }
-    log("task/done", data, cb)
-  }
-  function status_usererr_1(err) { status_with_1(400, err) }
-  function status_timeout_1(err) { status_with_1(504, err) }
-  function status_servererr_1(err) { status_with_1(500, err) }
-  function status_capcha_1(err) { status_with_1(401, err) }
-  function status_baduser_1(err) { status_with_1(403, err) }
-  function status_with_1(status, err) {
-    if(err instanceof Error) err = err.stack
-    let data
-    if(err) data = { task: { id: task.id }, status, err }
-    else data = { task: { id: task.id }, status }
-    log("err/task/failed", data, cb)
-  }
 }
 function perform(task) {
   return new Promise((resolve, reject) => {
