@@ -234,9 +234,9 @@ function e(ui, log, store) {
     let logout = h('.logout.btn', {
       onclick: () => {
         page.classList.add("bye")
-        setTimeout(() => store.event("ui/set"), 350)
+        setTimeout(() => window.do.xit(), 350)
       }
-    }, "Logout")
+    }, "Exit")
 
 
     cont.c(icon, name, tz,

@@ -21,4 +21,5 @@ contextBridge.exposeInMainWorld("set", {
 })
 contextBridge.exposeInMainWorld("do", {
   task: t => ipcRenderer.invoke("do-task", t),
+  xit: () => ipcRenderer.invoke("exit"),
 })

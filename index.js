@@ -82,6 +82,10 @@ function setupIPC(log) {
   ipcMain.handle("do-task", async (e, task) => {
     return plugins.perform(task)
   })
+
+  ipcMain.handle("exit", async (e, task) => {
+    app.quit()
+  })
 }
 
 /*    way/
