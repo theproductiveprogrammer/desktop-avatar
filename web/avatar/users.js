@@ -10,7 +10,7 @@ const chat = require('./chat.js')
 function getUsers({vars,log,store}, cb) {
   log("avatar/gettingusers")
   let p = `${vars.serverURL}/dapp/v2/myusers`
-  let ui = store.get("ui")
+  let ui = store.get("user.ui")
 
   req.post(p, {
     id: ui.id,

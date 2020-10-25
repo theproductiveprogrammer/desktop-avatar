@@ -30,7 +30,7 @@ function e(ui, log, store) {
   )
 
   let ustore
-  store.react("users", uis => {
+  store.react("user.users", uis => {
     if(ustore) ustore.destroy()
     ustore = store.fork()
     reports.c(user_table_1(ui, ustore))
@@ -60,7 +60,7 @@ function e(ui, log, store) {
       id
     )
 
-    store.react(`userTasks.${ui.id}`, ut => {
+    store.react(`user.userTasks.${ui.id}`, ut => {
       tbl.c(hdr)
       if(!ut) return
       let summary = {}
@@ -141,7 +141,7 @@ function e(ui, log, store) {
     })
 
     let shown = 0
-    store.react('msgs', msgs => {
+    store.react('user.msgs', msgs => {
       if(!msgs) return
       if(shown > msgs.length) {
         msgblock.c()
@@ -176,7 +176,7 @@ function e(ui, log, store) {
     let tm = h(".tm")
     r.c(icon, name, tm, txt, h(".clearfix"))
 
-    store.react("now", n => {
+    store.react("time.now", n => {
       let tm_ = get_tm_1(msg.t, n)
       if(tm) tm.c(tm_)
     })

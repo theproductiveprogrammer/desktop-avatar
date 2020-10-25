@@ -51,7 +51,7 @@ function e(log, store) {
     onscroll: () => scrolledon = Date.now()
   })
 
-  store.react("logviewOpen", open => {
+  store.react("view.logviewOpen", open => {
     if(open) logview.classList.add("visible")
     else logview.classList.remove("visible")
   })

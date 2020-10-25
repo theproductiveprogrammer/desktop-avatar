@@ -65,7 +65,7 @@ function showUI(log, store) {
   )
 
   let curr = {}
-  store.react('ui', ui => {
+  store.react('user.ui', ui => {
     if(curr.store) store.destroy(curr.store)
 
     curr.store = store.fork()
@@ -104,8 +104,8 @@ function setupTimer(log, store) {
  * there as well
  */
 function setupIPC(log, store) {
-  store.react('ui', send_users_1)
-  store.react("users", send_users_1)
+  store.react('user.ui', send_users_1)
+  store.react("user.users", send_users_1)
 
   store.react("settings.userips", uips => {
     window.set.userips(uips)
@@ -116,10 +116,10 @@ function setupIPC(log, store) {
   })
 
   function send_users_1() {
-    let ui = store.get('ui')
+    let ui = store.get('user.ui')
     if(!ui) window.set.users(null)
     else {
-      let users = store.get('users')
+      let users = store.get('user.users')
       if(!users) users = [ ui ]
       else users = users.concat(ui)
       window.set.users(users)

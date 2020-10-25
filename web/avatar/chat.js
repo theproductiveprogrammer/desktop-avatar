@@ -2,7 +2,7 @@
 const dh = require('../display-helpers.js')
 
 function greeting({store}) {
-  return dh.greeting(store.get("ui"))
+  return dh.greeting(store.get("user.ui"))
 }
 
 function letsGetStarted({say}, cb) {

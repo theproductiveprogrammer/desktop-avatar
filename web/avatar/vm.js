@@ -13,7 +13,7 @@
 function start(log, store, program) {
   let env = newEnv(log, store, program)
 
-  store.react('ui', ui => {
+  store.react('user.ui', ui => {
     let old = env.ui
     env.ui = ui
     if(ui && (!old || old.id !== ui.id)) {

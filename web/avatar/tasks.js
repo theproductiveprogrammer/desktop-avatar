@@ -17,14 +17,14 @@ const chat = require('./chat.js')
  * their status
  */
 function userStatus({store, log}, cb) {
-  const CHECK_EVERY = 10 * 1000
-  let last = store.get("lastUserStatus")
+  const CHECK_EVERY = 30 * 1000
+  let last = store.get("time.lastUserStatus")
   if(!last) last = 0
   if(Date.now() - last < CHECK_EVERY) return cb()
   store.event("lastUserStatus/set", Date.now())
 
   let users = getUis(store)
-  let userTasks = store.get("userTasks") || {}
+  let userTasks = store.get("user.userTasks") || {}
   let uts = {}
   get_ndx_1(0)
 
@@ -32,7 +32,7 @@ function userStatus({store, log}, cb) {
     if(ndx >= users.length) return cb()
     let ui = users[ndx]
     let curr = getUserTasks(store, ui.id)
-    log("userStatus/checking", {
+    log.trace("userStatus/checking", {
       name: curr.name, from: curr.from
     })
 
@@ -91,7 +91,7 @@ function userStatus({store, log}, cb) {
  */
 function serverTasks({vars, store, say, log}, cb) {
   const CHECK_EVERY = 2 * 60 * 1000
-  let last = store.get("lastServerTasks")
+  let last = store.get("time.lastServerTasks")
   if(!last) last = 0
   if(Date.now() - last < CHECK_EVERY) return cb()
   store.event("lastServerTasks/set", Date.now())
@@ -103,7 +103,7 @@ function serverTasks({vars, store, say, log}, cb) {
     }
   })
   log("serverTasks/getting", { forUsers })
-  let ui = store.get("ui")
+  let ui = store.get("user.ui")
   say(chat.gettingTasks(), () => {
 
     let p = `${vars.serverURL}/dapp/v2/tasks`
@@ -213,8 +213,8 @@ function findDuplicate(tasks, task) {
  * manages
  */
 function getUis(store) {
-  let ui = store.get("ui")
-  let users = store.get("users")
+  let ui = store.get("user.ui")
+  let users = store.get("user.users")
   if(users) users = users.concat(ui)
   else users = [ ui ]
   return users
@@ -225,7 +225,7 @@ function getUis(store) {
  * a copy is requested for modification
  */
 function getUserTasks(store, id, formodif) {
-  let userTasks = store.get("userTasks")
+  let userTasks = store.get("user.userTasks")
   if(userTasks && userTasks[id]) return cin_1(userTasks[id])
   else {
     return {
