@@ -58,7 +58,7 @@ module.exports = {
    */
   dothework: [
     { call: "gettasks" },
-    //schedule.tasks,
+    schedule.tasks,
     //doWork,
     schedule.takeANap,
     { call: "dothework" },
