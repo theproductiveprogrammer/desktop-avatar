@@ -58,7 +58,7 @@ module.exports = {
    */
   dothework: [
     { call: "gettasks" },
-    //{ call: "schedule" },
+    //schedule.tasks,
     //doWork,
     schedule.takeANap,
     { call: "dothework" },
@@ -71,15 +71,6 @@ module.exports = {
   gettasks: [
     tasks.userStatus,
     tasks.fromServer,
-  ],
-
-  /*    way/
-   * schedule the next task for the user, and apply rate
-   * limiting on top
-   */
-  schedule: [
-    schedule.nextTask,
-    schedule.pullWithRateLimiting,
   ],
 
 
