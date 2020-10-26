@@ -205,7 +205,12 @@ function exec_(env, line, cb) {
         setTimeout(() => cb(), delay)
       },
     }
-    let ret = line(env_, nxt => exec_(env, nxt, cb))
+    let responded = false
+    let ret = line(env_, nxt => {
+      if(responded) return
+      responded = true
+      exec_(env, nxt, cb)
+    })
     if(ret) exec_(env, ret, cb)
 
   } else {
