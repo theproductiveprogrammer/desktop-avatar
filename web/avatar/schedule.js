@@ -1,4 +1,5 @@
 'use strict'
+const chat = require('./chat.js')
 
 /*    way/
  * randomly sleep for a while to avoid overwhelming the
@@ -48,7 +49,10 @@ function tasks({store,log,say}, cb) {
         if(!status) status = 200
         window.get.taskchat(task, status)
           .then(msg => {
-            say(msg, () => 1)
+            say({
+              from: chat.from(store, ut.id),
+              chat: msg,
+            }, () => 1)
           })
           .catch(e => log("err/tellinguser", e))
         return

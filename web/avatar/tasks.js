@@ -188,7 +188,10 @@ function doWork({store,log,say}, cb) {
     log("task/dispatch", task)
     window.get.taskchat(task)
       .then(msg => {
-        say(msg, () => {
+        say({
+          from: chat.from(store, ut.id),
+          chat: msg
+        }, () => {
           window.do.task(task)
             .then(() => cb())
             .catch(err_)

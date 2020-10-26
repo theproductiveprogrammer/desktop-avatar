@@ -120,6 +120,15 @@ function gotTasks(tasks) {
   )
 }
 
+function from(store, id) {
+  let ui = store.get("user.ui")
+  if(ui.id == id) return ui
+  let users = store.get("user.users")
+  for(let i = 0;i < users.length;i++) {
+    if(users[i].id == id) return users[i]
+  }
+}
+
 
 module.exports = {
   greeting,
@@ -135,4 +144,5 @@ module.exports = {
   gotTasks,
   errGettingTasks,
   errDispatch,
+  from,
 }
