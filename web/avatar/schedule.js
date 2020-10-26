@@ -38,11 +38,11 @@ function tasks({store,log,say}, cb) {
    * from the plugin to tell the user
    */
   function tell_user_about_1(ut, task) {
-    if(!task) return cb()
+    if(!task) return
     for(let i = 0;i < ut.tasks.length;i++) {
       let t = ut.tasks[i]
       if(t.id == task.id) {
-        if(!t.status || !t.status.length) return cb()
+        if(!t.status || !t.status.length) return
         let status = t.status[t.status.length-1].data
         if(status && status.data) status = status.data.status
         if(!status) status = 200
