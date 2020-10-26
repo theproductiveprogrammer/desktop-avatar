@@ -76,6 +76,16 @@ function userReducer(state, type, payload) {
         userTasks[payload.userId] = ut
         return { ...state, userTasks }
       }
+    case "user/task/unassign":
+      {
+        let userTasks = state.userTasks || {}
+        let ut = userTasks[payload.userId]
+        if(!ut) return state
+        userTasks = { ...userTasks }
+        ut = { ...ut, assigned: null }
+        userTasks[payload.userId] = ut
+        return { ...state, userTasks }
+      }
     case "user/task/dispatch":
       {
         let userTasks = state.userTasks || {}

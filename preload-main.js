@@ -11,7 +11,7 @@ contextBridge.exposeInMainWorld("show", {
 contextBridge.exposeInMainWorld("get", {
   logname : () => ipcRenderer.invoke("get-logname"),
   taskname: act => ipcRenderer.invoke("get-taskname", act),
-  taskchat: t => ipcRenderer.invoke("get-taskchat", t),
+  taskchat: (t,s) => ipcRenderer.invoke("get-taskchat",t,s),
   plugins: url => ipcRenderer.invoke("get-plugins", url),
 })
 contextBridge.exposeInMainWorld("set", {

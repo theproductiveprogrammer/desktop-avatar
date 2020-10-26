@@ -118,10 +118,10 @@ function info(name) {
 }
 
 /*    way/
- * ask the plugin for a chat message that tells us what
- * the plugin is going to do
+ * ask the plugin for a chat message corresponding to
+ * what the plugin is doing
  */
-function getChat(task, cb) {
+function getChat(task, status, cb) {
   if(!task.action) return cb_("Task missing 'action' key")
   getPlugin(task.action, (err, plugin) => {
     if(err) return cb(err)
@@ -132,11 +132,13 @@ function getChat(task, cb) {
     try {
       vm.createContext(context)
       plugin.code.runInContext(context)
-      let chat = chat_1(task.action)
-      if(typeof context.plugin.info.chat==="function") {
-        chat = context.plugin.info.chat(task)
-      } else if(typeof context.plugin.info.chat==="string"){
-        chat = context.plugin.info.chat
+      let chat = context.plugin.info[chatname_1(status)]
+      if(!chat) {
+        chat = default_chat_1(task, status, context.plugin.name)
+      } else if(typeof chat==="function") {
+        chat = chat(task)
+      } else {
+        chat = "" + chat
       }
       return cb(null, chat)
     } catch(e) {
@@ -144,20 +146,52 @@ function getChat(task, cb) {
     }
   })
 
-  function chat_1(name) {
-    dh.oneOf(
-      `Ok trying ${name}...`,
-      `Doing ${name}...`,
-      `I'm going to do ${name} now...`,
-    )
+  function chatname_1(status) {
+    if(!status) return "sayOnStart"
+    if(status == 200) return "sayOnEnd"
   }
+
+  function default_chats_1(task, status, name) {
+    if(!name) name = task.action
+    if(!status) status = 0;
+    let msgs = {
+      0: [
+        `Ok trying ${name}...`,
+        `Doing ${name}...`,
+        `I'm going to do ${name} now...`,
+      ],
+      200: [
+        `${name} completed!`,
+        `Done with ${name}...`,
+      ],
+      400: [
+        `Error in task data for "${name}" (id: ${task.id})`,
+        `Cannot perform task (id: ${task.id})`,
+      ],
+      504: [
+        `Timeout trying ${name}!`,
+        `Task ${name} took too long...timing out...`,
+      ],
+      500: [
+        `Hit an unexpected error when trying to do "${name}"`,
+        `Unexpected error caused ${name} task ${task.id} to fail...`,
+      ],
+      401: [
+        `User intervention required! The site needs you to prove that you are a human (and I'm not!) ` + dh.anEmoji("face"),
+      ],
+      403: [
+        `The site has refused to accept this user! Please see how you can get back on...`
+      ],
+    }
+  }
+
 }
 /*    way/
  * Promisi-fied version of `getChat`
  */
-function chat(task) {
+function chat(task, status) {
   return new Promise((resolve, reject) => {
-    getChat(task, (err, chat) => {
+    getChat(task, status, (err, chat) => {
       if(err) reject(err)
       else resolve(chat)
     })
@@ -227,6 +261,7 @@ function performTask(task, cb) {
           let data
           if(msg) data = { task: { id: task.id }, msg }
           else data = { task: { id: task.id } }
+          data.status = 200
           log("task/done", data, cb)
         }
         function status_usererr_1(err) {

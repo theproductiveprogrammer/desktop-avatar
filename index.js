@@ -63,8 +63,8 @@ function setupIPC(log) {
     return plugins.info(action)
   })
 
-  ipcMain.handle("get-taskchat", async (e, task) => {
-    return plugins.chat(task)
+  ipcMain.handle("get-taskchat", async (e,task,status) => {
+    return plugins.chat(task, status)
   })
 
   ipcMain.handle("set-users", async (e, uis) => {

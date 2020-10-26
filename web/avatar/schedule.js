@@ -13,7 +13,7 @@ function takeANap(env, cb) {
  * if the user has completed the last tasks assign him
  * another
  */
-function tasks({store,log}, cb) {
+function tasks({store,log,say}, cb) {
   const userTasks = store.get("user.userTasks")
   if(!userTasks) return cb()
   for(let k in userTasks) {
@@ -24,6 +24,29 @@ function tasks({store,log}, cb) {
     }
   }
   cb()
+
+  /*    way/
+   * find the corresponding task's status and get the chat
+   * from the plugin to tell the user
+   */
+  function tell_user_about_1(ut, task) {
+    if(!task) return cb()
+    for(let i = 0;i < ut.tasks.length;i++) {
+      let t = ut.tasks[i]
+      if(t.id == task.id) {
+        if(!t.status || !t.status.length) return cb()
+        let status = t.status[t.status.length-1].data
+        if(status && status.data) status = status.data.status
+        if(!status) status = 200
+        window.get.taskchat(task, status)
+          .then(msg => {
+            say(msg, () => 1)
+          })
+          .catch(e => log("err/tellinguser", e))
+        return
+      }
+    }
+  }
 
   /*    way/
    * see if there are any tasks that can be assigned
