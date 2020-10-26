@@ -195,6 +195,7 @@ function exec_(env, line, cb) {
       log: env.log,
       RETURN,
       say: (msg, cb) => {
+        let delay = Math.random() * 4000 + 1000
         newMsg(env, msg)
         if(msg.wait) delay = msg.wait
         setTimeout(() => cb(), delay)
