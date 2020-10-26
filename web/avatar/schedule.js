@@ -16,7 +16,8 @@ function takeANap(env, cb) {
  */
 function tasks({store,log,say}, cb) {
   const userTasks = store.get("user.userTasks")
-  if(!userTasks) return cb()
+  if(!userTasks) return {}
+  let chatting = false
   for(let k in userTasks) {
     let ut = userTasks[k]
     if(!ut.assigned || finished_work_1(ut)) {
@@ -28,22 +29,23 @@ function tasks({store,log,say}, cb) {
         log.trace("user/task/assigned", assigned)
       } else {
         if(prev) store.event("user/task/unassign", prev)
-        tell_user_about_1(ut, prev)
+        chatting = true
+        tell_user_about_1(ut, prev, cb)
       }
     }
   }
-  cb()
+  if(!chatting) return {}
 
   /*    way/
    * find the corresponding task's status and get the chat
    * from the plugin to tell the user
    */
-  function tell_user_about_1(ut, task) {
-    if(!task) return
+  function tell_user_about_1(ut, task, cb) {
+    if(!task) return cb()
     for(let i = 0;i < ut.tasks.length;i++) {
       let t = ut.tasks[i]
       if(t.id == task.id) {
-        if(!t.status || !t.status.length) return
+        if(!t.status || !t.status.length) return cb()
         let status = t.status[t.status.length-1].data
         if(status && status.data) status = status.data.status
         if(!status) status = 200
@@ -52,12 +54,16 @@ function tasks({store,log,say}, cb) {
             say({
               from: chat.from(store, ut.id),
               chat: msg,
-            }, () => 1)
+            }, () => cb())
           })
-          .catch(e => log("err/tellinguser", e))
+          .catch(e => {
+            log("err/tellinguser", e)
+            cb()
+          })
         return
       }
     }
+    cb()
   }
 
   /*    way/
