@@ -288,9 +288,7 @@ function getUserTasks(store, id, formodif) {
   function cin_1(ut) {
     if(!formodif) return ut
     return {
-      id: ut.id,
-      name: ut.name,
-      from: ut.from,
+      ...ut,
       tasks: ut.tasks.map(t => Object.assign({}, t)),
     }
   }
