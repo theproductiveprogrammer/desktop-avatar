@@ -121,7 +121,7 @@ function e(ui, log, store) {
    *
    *    way/
    * keep track of the last time the user scrolled manually
-   * and don't do anything for at least 30 seconds after
+   * and don't do anything for at least 15 seconds after
    * that. Otherwise scroll down for each new message.
    */
   function avatar_pane_1() {
@@ -158,7 +158,7 @@ function e(ui, log, store) {
       shown = msgs.length
       if(!scroll) return
       let now = Date.now()
-      if(now - scrolledon > 30 * 1000) {
+      if(now - scrolledon > 15 * 1000) {
         autoscroll = true
         msgblock.scrollTop = msgblock.scrollHeight
         setTimeout(() => autoscroll = false, 200)
