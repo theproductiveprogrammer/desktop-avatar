@@ -257,12 +257,16 @@ function performTask(task, cb) {
           cb(e)
         }
 
+        let status_set = false
+
         function status_done_1(msg) {
+          if(status_set) return
+          status_set = true
           let data
           if(msg) data = { task: { id: task.id }, msg }
           else data = { task: { id: task.id } }
           data.status = 200
-          log("task/done", data, cb)
+          log("task/done", data)
         }
         function status_usererr_1(err) {
           status_with_1(400, err)
@@ -280,11 +284,13 @@ function performTask(task, cb) {
           status_with_1(403, err)
         }
         function status_with_1(status, err) {
+          if(status_set) return
+          status_set = true
           if(err instanceof Error) err = err.stack
           let data
           if(err) data = { task: { id: task.id }, status, err }
           else data = { task: { id: task.id }, status }
-          log("err/task/failed", data, cb)
+          log("err/task/failed", data)
         }
 
       })
