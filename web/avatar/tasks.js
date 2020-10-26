@@ -124,8 +124,7 @@ function serverTasks({vars, store, say, log}, cb) {
         say({
           from: -1,
           chat: chat.gotTasks(tasks),
-        }, () => 1)
-        setTimeout(() => {
+        }, () => {
           if(tasks && tasks.length) {
             tasks.forEach(task => {
               let ut = getUserTasks(store, task.userId, true)
@@ -138,7 +137,7 @@ function serverTasks({vars, store, say, log}, cb) {
             })
           }
           cb()
-        }, 200)
+        })
       }
     })
   })
