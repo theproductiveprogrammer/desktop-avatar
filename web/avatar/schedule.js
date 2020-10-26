@@ -19,8 +19,8 @@ function tasks({store,log,say}, cb) {
   for(let k in userTasks) {
     let ut = userTasks[k]
     if(!ut.assigned || finished_work_1(ut)) {
-      log.trace("user/task/done", ut)
       let prev = ut.assigned
+      if(prev) log.trace("user/task/done", prev)
       let assigned = assign_1(ut)
       if(assigned) {
         store.event("user/task/assign", assigned)
