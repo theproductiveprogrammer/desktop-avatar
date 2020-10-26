@@ -18,7 +18,8 @@ function start(log, store, program) {
     env.ui = ui
     if(ui && (!old || old.id !== ui.id)) {
       store.event("msg/clear")
-      runProc(env, "main")
+      loadProc("main", env)
+      run_(env)
     }
   })
 }
@@ -42,44 +43,41 @@ function newEnv(log, store, program) {
     program,
     vars: {},
     stack: [],
-    proc: [],
     runptr: {},
+    recursion_depth: 0,
   }
 }
 
+function proc(env, name) { return env.program[name] }
+
 /*    way/
- * set up the run pointer to point to the proc, push the last caller
- * onto the call stack (handling tail recursion correctly) and execute
- * the first line of the proc
+ * set up the run pointer to point to the proc, pushing the last caller
+ * onto the call stack and handling tail recursion correctly
  */
-function runProc(env, name) {
-  let proc = env.program[name]
-  if(!proc) {
+function loadProc(name, env) {
+  const old = env.runptr
+  env.runptr = {}
+
+  const p = proc(env, name)
+  if(!p) {
     env.log("err/avatarvm/run/noproc", {
       name,
       stack: env.stack,
     })
     return
   }
-  let runptr = {
+
+  const op = proc(env, old.name)
+  const is_tail_call = op && name == old.name && old.ndx == op.length-1
+
+  if(old.name && !is_tail_call) {
+    env.stack.push(old)
+    env.log.trace("avatarvm/run/begin", name)
+  }
+  env.runptr = {
     name,
-    ndx: 0
+    ndx: 0,
   }
-
-  let is_tail_call = env.runptr.name &&
-    runptr.name == env.runptr.name &&
-    env.runptr.ndx == env.proc.length-1
-
-  if(env.runptr.name && !is_tail_call) {
-    env.stack.push({
-      proc: env.proc,
-      runptr: env.runptr,
-    })
-  }
-  env.proc = proc
-  env.runptr = runptr
-  env.log.trace("avatarvm/run/begin", env.runptr.name)
-  run_(env)
 }
 
 /*    way/
@@ -87,28 +85,36 @@ function runProc(env, name) {
  * line, moving to the next or invoking another procedure if requested.
  */
 function run_(env) {
-  let line = env.proc[env.runptr.ndx]
+  if(env.recursion_depth++ > 32) {
+    env.recursion_depth = 0
+    return setTimeout(() => run_(env))
+  }
+  const p = proc(env, env.runptr.name)
+  const line = p[env.runptr.ndx]
+
   env.log.trace("avatarvm/running", {
     ptr: env.runptr, line
   })
 
   if(!line) {
+    env.log.trace("avatarvm/run/fin", env.runptr.name)
 
-    env.log.trace("avatarvm/run/fin", env.runptr)
     if(env.runptr.name !== "exit") {
       return_(env)
-      if(env.proc) run_(env)
-      else runProc(env, "exit")
+      if(!env.runptr.name) loadProc("exit", env)
+      run_(env)
     }
 
   } else {
 
     env.runptr.ndx++
     exec_(env, line, proc => {
-      if(proc) runProc(env, proc)
-      else run_(env)
+      if(proc) loadProc(proc, env)
+      run_(env)
     })
+
   }
+
 }
 
 /*    way/
@@ -116,14 +122,7 @@ function run_(env) {
  * resume execution from where we left off
  */
 function return_(env) {
-  let r = env.stack.pop()
-  if(r) {
-    env.proc = r.proc
-    env.runptr = r.runptr
-  } else {
-    env.proc = null
-    env.runptr = {}
-  }
+  env.runptr = env.stack.pop() || {}
 }
 
 /*    understand/
@@ -155,18 +154,18 @@ function return_(env) {
  *
  *    examples/
  *  "Hello there!"    // shows chat message "Hello There"
- *  { proc: "abc" }   // starts running proc "abc"
+ *  { call: "abc" }   // starts running proc "abc"
  *  { chat: "Hi!" }   // shows chat message "Hi"
  *  { from: user1.ui, chat:... } // chat message from user1
  *  { wait: 500 }     // wait for 500 ms before next step
  *                    // by default waits for 1-5 seconds
  *  () => (new Date()).toISOString() // show current date
  *  ({vars}) => `Hi ${vars.name}` // uses variables
- *  ({vars,store}) => if(...) return { proc: "def" }
+ *  ({vars,store}) => if(...) return { call: "def" }
  *  (env, cb) => {
  *      if(x) {
  *        goToTheWeb(andDosomething).then(() => {
- *            cb({ chat: "ok done!", proc: "nextproc" })
+ *            cb({ chat: "ok done!", call: "nextproc" })
  *        })
  *      } else {
  *        goToTheWeb(andDosomething).then(() => cb())
@@ -179,6 +178,11 @@ function return_(env) {
  * and return value or just run the line directly
  */
 function exec_(env, line, cb) {
+  if(env.recursion_depth++ > 32) {
+    env.recursion_depth = 0
+    return setTimeout(() => exec_(env, line, cb))
+  }
+
   let delay = Math.random() * 4000 + 1000
 
   if(line === RETURN) {
