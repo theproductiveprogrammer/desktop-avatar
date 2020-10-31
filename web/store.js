@@ -122,6 +122,8 @@ function settingsReducer(state, type, payload) {
  * becomes easier to handle.
  */
 function enrich(store) {
+  store.ffork = () => enrich(store.fork())
+
   store.getUsers = () => {
     const ui = store.get("user.ui")
     const users = store.get("user.users")

@@ -30,15 +30,18 @@ function e(ui, log, store) {
   )
 
   let ustore
-  store.react("user.users", uis => {
-    if(ustore) ustore.destroy()
-    ustore = store.fork()
-    reports.c(user_table_1(ui, ustore))
-    if(!uis) return
-    uis.forEach(ui => reports.add(user_table_1(ui, ustore)))
-  })
+  store.react("user.ui", show_users_1)
+  store.react("user.users", show_users_1)
 
   return page
+
+  function show_users_1() {
+    if(ustore) ustore.destroy()
+    ustore = store.ffork()
+    const users = store.getUsers()
+    reports.c()
+    reports.add(users.map(ui => user_table_1(ui, ustore)))
+  }
 
   function user_table_1(ui, store) {
     let cont = h(".userreport")
@@ -60,12 +63,17 @@ function e(ui, log, store) {
       id
     )
 
-    store.react(`user.userTasks.${ui.id}`, ut => {
+    store.react("user.status", show_status_1)
+    store.react("user.tasks", show_status_1)
+
+    return cont
+
+    function show_status_1() {
       tbl.c(hdr)
-      if(!ut) return
+      const tasks = store.getTasks(ui.id)
       let summary = {}
-      for(let i = 0;i < ut.tasks.length;i++) {
-        let curr = ut.tasks[i].action
+      for(let i = 0;i < tasks.length;i++) {
+        let curr = tasks[i].action
         if(!summary[curr]) summary[curr] = {
           assigned: 1,
           inprogress: 0,
@@ -73,7 +81,7 @@ function e(ui, log, store) {
           failure: 0
         }
         else summary[curr].assigned++
-        let status = status_1(ut.tasks[i])
+        let status = status_1(tasks[i])
         if(status) summary[curr][status]++
       }
       for(let action in summary) {
@@ -91,18 +99,15 @@ function e(ui, log, store) {
           h("td", summary[action].failure),
         ]))
       }
-    })
-
-    return cont
+    }
   }
 
   function status_1(task) {
-    if(!task || !task.status || !task.status.length) return
     const status = store.getTaskStatus(task)
+    if(!status) return
     if(status.code == 102) return "inprogress"
     if(status.code == 200) return "success"
     if(status.err) return "failure"
-    return m[task.status[task.status.length-1].code]
   }
 
 

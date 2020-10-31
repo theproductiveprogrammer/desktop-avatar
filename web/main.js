@@ -68,7 +68,7 @@ function showUI(log, store) {
   store.react('user.ui', ui => {
     if(curr.store) store.destroy(curr.store)
 
-    curr.store = store.fork()
+    curr.store = store.ffork()
     if(!ui) curr.page = login.e(log, curr.store)
     else curr.page = home.e(ui, log, curr.store)
 
