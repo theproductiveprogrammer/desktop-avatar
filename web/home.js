@@ -98,12 +98,11 @@ function e(ui, log, store) {
 
   function status_1(task) {
     if(!task || !task.status || !task.status.length) return
-    let m = {
-      "task/started": "inprogress",
-      "task/done": "success",
-      "err/task/failed": "failure",
-    }
-    return m[task.status[task.status.length-1].e]
+    const status = store.getTaskStatus(task)
+    if(status.code == 102) return "inprogress"
+    if(status.code == 200) return "success"
+    if(status.err) return "failure"
+    return m[task.status[task.status.length-1].code]
   }
 
 
@@ -234,7 +233,7 @@ function e(ui, log, store) {
     let logout = h('.logout.btn', {
       onclick: () => {
         page.classList.add("bye")
-        setTimeout(() => window.do.xit(), 350)
+        setTimeout(() => window.x.it(), 350)
       }
     }, "Exit")
 

@@ -19,7 +19,10 @@ contextBridge.exposeInMainWorld("set", {
   userips: uips => ipcRenderer.invoke("set-userips", uips),
   puppetShow: show => ipcRenderer.invoke("set-puppetShow", show),
 })
-contextBridge.exposeInMainWorld("do", {
-  task: t => ipcRenderer.invoke("do-task", t),
-  xit: () => ipcRenderer.invoke("exit"),
+contextBridge.exposeInMainWorld("x", {
+  cute: t => ipcRenderer.invoke("x-cute", t),
+  it: () => ipcRenderer.invoke("x-it"),
+})
+contextBridge.exposeInMainWorld("add", {
+  tasks: t => ipcRenderer.invoke("add-tasks", t),
 })

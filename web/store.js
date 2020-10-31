@@ -1,13 +1,28 @@
 'use strict'
 const dux = require('@tpp/dux')
 
-const store = dux.createStore(reducer, {
+const store = enrich(dux.createStore(reducer, {
   logs: [],
-  time: {},
-  user: {},
-  view: {},
+  time: {
+    now: 0,
+    lastUserStatus: 0,
+    lastServerTasks: 0,
+  },
+  user: {
+    ui: null,
+    users: [],
+    msgs: [],
+    from: {},
+    tasks: [],
+    status: [],
+    assigned: {},
+    dispatched: {},
+  },
+  view: {
+    logviewOpen: false,
+  },
   settings: {},
-})
+}))
 
 function reducer(state, type, payload) {
   let changes = 0
@@ -54,46 +69,33 @@ function userReducer(state, type, payload) {
   switch(type) {
     case "ui/set":
       return { ...state, ui: payload }
+    case "users/set":
+      return { ...state, users: payload }
     case "msg/add":
       return { ...state, msgs: state.msgs.concat(payload) }
     case "msg/clear":
       return { ...state, msgs: [] }
-    case "users/set":
-      return { ...state, users: payload }
-    case "user/tasks/set":
+    case "task/add":
+      return { ...state, tasks: state.tasks.concat(payload) }
+    case "from/set":
       {
-        let userTasks = state.userTasks || {}
-        userTasks = { ...userTasks }
-        userTasks[payload.id] = payload
-        return { ...state, userTasks }
+        let from = Object.assign({}, state.from)
+        from[payload.userId] = payload.from
+        return { ...state, from }
       }
-    case "user/task/assign":
+    case "status/add":
+      return { ...state, status: state.status.concat(payload) }
+    case "assigned/set":
       {
-        let userTasks = state.userTasks || {}
-        let ut = userTasks[payload.userId]
-        userTasks = { ...userTasks }
-        ut = { ...ut, assigned: payload }
-        userTasks[payload.userId] = ut
-        return { ...state, userTasks }
+        let assigned = Object.assign({}, state.assigned)
+        assigned[payload.userId] = payload.taskId
+        return { ...state, assigned }
       }
-    case "user/task/unassign":
+    case "dispatched/set":
       {
-        let userTasks = state.userTasks || {}
-        let ut = userTasks[payload.userId]
-        if(!ut) return state
-        userTasks = { ...userTasks }
-        ut = { ...ut, assigned: null }
-        userTasks[payload.userId] = ut
-        return { ...state, userTasks }
-      }
-    case "user/task/dispatch":
-      {
-        let userTasks = state.userTasks || {}
-        let ut = userTasks[payload.userId]
-        userTasks = { ...userTasks }
-        ut = { ...ut, dispatched: payload }
-        userTasks[payload.userId] = ut
-        return { ...state, userTasks }
+        let dispatched = Object.assign({}, state.dispatched)
+        dispatched[payload.userId] = payload.taskId
+        return { ...state, dispatched }
       }
     default: return state
   }
@@ -112,6 +114,45 @@ function settingsReducer(state, type, payload) {
     case "settings/set": return payload
     default: return state
   }
+}
+
+/*    understand/
+ * it is useful to have some utility methods on the store
+ * to get values that are combinations. That way it
+ * becomes easier to handle.
+ */
+function enrich(store) {
+  store.getUsers = () => {
+    const ui = store.get("user.ui")
+    const users = store.get("user.users")
+    return users.concat(ui)
+  }
+
+  store.getTasks = userId => {
+    const tasks = store.get("user.tasks")
+    return tasks.filter(t => t.userId == userId)
+  }
+
+  store.getTaskStatus = taskId => {
+    const status = store.get("user.status")
+    for(let i = status.length-1;i >= 0;i--) {
+      if(status[i].id == taskId) return status[i]
+    }
+  }
+
+  store.getTask = taskId => {
+    const tasks = store.get("user.tasks")
+    for(let i = 0;i < tasks.length;i++) {
+      if(tasks[i].id == taskId) return tasks[i]
+    }
+  }
+
+  store.getMsgFrom = userId => {
+    const from = store.get("user.from")[userId]
+    return from || 1
+  }
+
+  return store
 }
 
 module.exports = store

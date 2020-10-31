@@ -151,10 +151,10 @@ function getChat(task, status, cb) {
     if(status == 200) return "sayOnEnd"
   }
 
-  function default_chats_1(task, status, name) {
+  function default_chat_1(task, status, name) {
     if(!name) name = task.action
-    if(!status) status = 0;
-    let msgs = {
+    if(!status) status = -1
+    const msgs = {
       0: [
         `Ok trying ${name}...`,
         `Doing ${name}...`,
@@ -183,6 +183,9 @@ function getChat(task, status, cb) {
         `The site has refused to accept this user! Please see how you can get back on...`
       ],
     }
+    const m = msg[status]
+    if(m) return m
+    return `Something wrong with the status of ${task.id}!`
   }
 
 }
@@ -244,29 +247,31 @@ function performTask(task, cb) {
           console,
           plugin: {name: task.action, info:{}, task},
         }
-        try {
-          log("task/started", { task }, err => {
-            if(err) cb(err)
-            else {
+
+        log("task/status", {
+          id: task.id,
+          msg: "task/started",
+          code: 102,
+        }, err => {
+          cb(err)
+          if(!err) {
+            try {
               vm.createContext(context)
               plugin.code.runInContext(context)
-              cb()
+            } catch(e) {
+              console.error(e)
+              status_servererr_1(e)
             }
-          })
-        } catch(e) {
-          cb(e)
-        }
+          }
+        })
 
         let status_set = false
 
         function status_done_1(msg) {
           if(status_set) return
           status_set = true
-          let data
-          if(msg) data = { task: { id: task.id }, msg }
-          else data = { task: { id: task.id } }
-          data.status = 200
-          log("task/done", data)
+          if(!msg) msg = "task/done"
+          log("task/status",{ id: task.id, msg, code: 200 })
         }
         function status_usererr_1(err) {
           status_with_1(400, err)
@@ -283,14 +288,12 @@ function performTask(task, cb) {
         function status_baduser_1(err) {
           status_with_1(403, err)
         }
-        function status_with_1(status, err) {
+        function status_with_1(code, err) {
           if(status_set) return
           status_set = true
-          if(err instanceof Error) err = err.stack
-          let data
-          if(err) data = { task: { id: task.id }, status, err }
-          else data = { task: { id: task.id }, status }
-          log("err/task/failed", data)
+          if(!err) err = "err/task"
+          else if(err instanceof Error) err = err.stack
+          log("task/status", { id: task.id, err, code })
         }
 
       })
@@ -334,9 +337,40 @@ function getPlugin(name, cb) {
   })
 }
 
+/*    understand/
+ * record the new tasks in the user logs
+ */
+function addTasks(tasks, cb) {
+  add_ndx_1(0)
+
+  function add_ndx_1(ndx) {
+    if(ndx >= tasks.length) return cb()
+    const task = tasks[ndx]
+    getLogger(task, (err, log) => {
+      if(err) return cb(err)
+      log("task/new", task, err => {
+        if(err) return cb(err)
+        else add_ndx_1(ndx+1)
+      })
+    })
+  }
+}
+/*    understand/
+ * Promisi-fied version of `addTasks`
+ */
+function add(tasks) {
+  return new Promise((resolve, reject) => {
+    addTasks(tasks, (err, resp) => {
+      if(err) reject(err)
+      else resolve(resp)
+    })
+  })
+}
+
 module.exports = {
   get,
   info,
   chat,
   perform,
+  add,
 }

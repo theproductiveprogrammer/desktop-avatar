@@ -53,13 +53,11 @@ module.exports = {
   ],
 
   /*    way/
-   * get the tasks for the users, schedule and do them, then
-   * rest a bit before repeating
+   * schedule work for the user then rinse, rest, and repeat
    */
   dothework: [
     { call: "gettasks" },
-    schedule.tasks,
-    tasks.doWork,
+    schedule.work,
     schedule.takeANap,
     { call: "dothework" },
   ],

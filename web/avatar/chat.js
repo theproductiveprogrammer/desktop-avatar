@@ -59,8 +59,8 @@ Failed to get tasks from the server.
 `
 }
 
-function errDispatch(err) {
-  return `**Error Invoking Task**!
+function errScheduleWork(err) {
+  return `**Error Starting Task**!
 
 I couldn't get the task working. Please see the log for more details...
 `
@@ -102,7 +102,7 @@ function gettingTasks() {
   return dh.oneOf(opts) + dh.anEmoji("computer")
 }
 
-function gotTasks(tasks) {
+function sentTasks(tasks) {
   if(tasks.length == 0) {
     return dh.oneOf(
       "I haven't got anything new for you right now.\n\nCheck back later!",
@@ -120,16 +120,6 @@ function gotTasks(tasks) {
   )
 }
 
-function from(store, id) {
-  let ui = store.get("user.ui")
-  if(ui.id == id) return ui
-  let users = store.get("user.users")
-  for(let i = 0;i < users.length;i++) {
-    if(users[i].id == id) return users[i]
-  }
-}
-
-
 module.exports = {
   greeting,
   letsGetStarted,
@@ -141,8 +131,7 @@ module.exports = {
   manageUsers,
   noticeReport,
   gettingTasks,
-  gotTasks,
+  sentTasks,
   errGettingTasks,
-  errDispatch,
-  from,
+  errScheduleWork,
 }

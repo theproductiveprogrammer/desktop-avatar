@@ -67,6 +67,10 @@ function setupIPC(log) {
     return plugins.chat(task, status)
   })
 
+  ipcMain.handle("add-tasks", async (e, tasks) => {
+    return plugins.add(tasks)
+  })
+
   ipcMain.handle("set-users", async (e, uis) => {
     return users.set(uis)
   })
@@ -79,11 +83,11 @@ function setupIPC(log) {
     return users.setPuppetShow(show)
   })
 
-  ipcMain.handle("do-task", async (e, task) => {
+  ipcMain.handle("x-cute", async (e, task) => {
     return plugins.perform(task)
   })
 
-  ipcMain.handle("exit", async (e, task) => {
+  ipcMain.handle("x-it", async (e, task) => {
     app.quit()
   })
 }

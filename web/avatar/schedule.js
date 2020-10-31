@@ -11,95 +11,106 @@ function takeANap(env, cb) {
 }
 
 /*    way/
- * if the user has completed the last tasks assign him
- * another
+ * schedule work for every user, chatting when we do so
  */
-function tasks({store,log,say}, cb) {
-  const userTasks = store.get("user.userTasks")
-  if(!userTasks) return {}
+function work({store, log, say}, cb) {
   let chatting = false
-  for(let k in userTasks) {
-    let ut = userTasks[k]
-    if(!ut.assigned || finished_work_1(ut)) {
-      let prev = ut.assigned
-      if(prev) log.trace("user/task/done", prev)
-      let assigned = assign_1(ut)
-      if(assigned) {
-        store.event("user/task/assign", assigned)
-        log.trace("user/task/assigned", assigned)
-      } else {
-        if(prev) store.event("user/task/unassign", prev)
-        chatting = true
-        tell_user_about_1(ut, prev, cb)
-      }
-    }
-  }
+  store.getUsers().forEach(schedule_work_1)
   if(!chatting) return {}
 
   /*    way/
-   * find the corresponding task's status and get the chat
-   * from the plugin to tell the user
+   * if the user does not have work-in-progress, schedule
+   * a new task he can do
+   *    ...if he's not too tired (rate-limiting!)
+   *
+   *    problem/
+   * the task is scheduled by the main process who does the
+   * work. But that means that until we pull the latest
+   * status updates from the user log we will not know
+   * that the task is scheduled and could schedule it again
+   *
+   *    way/
+   * we will insert a "dummy" status record in the store
+   * that mimics the fact that the task has been scheduled.
+   * Having duplicate / similar records is not a problem
+   * as we can easily handle log messages.
    */
-  function tell_user_about_1(ut, task, cb) {
-    if(!task) return cb()
-    for(let i = 0;i < ut.tasks.length;i++) {
-      let t = ut.tasks[i]
-      if(t.id == task.id) {
-        if(!t.status || !t.status.length) return cb()
-        let status = t.status[t.status.length-1].data
-        if(status && status.data) status = status.data.status
-        if(!status) status = 200
-        window.get.taskchat(task, status)
-          .then(msg => {
-            say({
-              from: chat.from(store, ut.id),
-              chat: msg,
-            }, () => cb())
-          })
-          .catch(e => {
-            log("err/tellinguser", e)
-            cb()
-          })
-        return
+  function schedule_work_1(user) {
+    const tasks = store.getTasks(user.id)
+    if(!tasks || !tasks.length) return
+
+    if(wip_1(tasks)) return
+    if(too_tired_1(user, tasks)) return
+
+    const task = pick_task_1(tasks)
+    if(!task) return
+
+    chatting = true
+    log("scheduling/work", { task })
+    window.x.cute(task)
+      .then(msg => {
+        store.event("status/add", {
+          id: task.id,
+          msg: "task/started/dummymsg",
+          code: 102
+        })
+        cb({ from: user, chat: msg })
+      })
+      .catch(err => {
+        log("err/schedule/work", err)
+        cb({
+          from: user,
+          msg: chat.errScheduleWork(err)
+        })
+      })
+  }
+
+  /*    way/
+   * check for any new tasks or re-started tasks
+   */
+  function pick_task_1(tasks) {
+    for(let i = 0;i < tasks.length;i++) {
+      const curr = tasks[i]
+      const status = store.getTaskStatus(curr.id)
+      if(!status || status === "task/restart") return curr
+    }
+  }
+
+  /*    way/
+   * check for any tasks that are not done
+   */
+  function wip_1(tasks) {
+    for(let i = 0;i < tasks.length;i++) {
+      const status = store.getTaskStatus(tasks[i].id)
+      if(status && status.code == 102) return true
+    }
+    return false
+  }
+
+  /*    way/
+   * check limits on tasks done this hour / today
+   */
+  function too_tired_1(user) {
+    let hr = 0
+    let day = 0
+    const now = Date.now()
+    const status = store.get("user.status")
+    for(let i = 0;i < status.length;i++) {
+      const s = status[i]
+      if(s.id == user.id) {
+        const t = new Date(s.t).getTime()
+        if(now - t < 60 * 60 * 1000) hr++
+        if(now - t < 24 * 60 * 60 * 1000) day++
       }
     }
-    cb()
+    if(hr > 20) return true
+    if(day > 300) return true
+    return false
   }
-
-  /*    way/
-   * see if there are any tasks that can be assigned
-   */
-  function assign_1(ut) {
-    for(let i = 0;i < ut.tasks.length;i++) {
-      let task = ut.tasks[i]
-      if(task_done_1(task)) continue
-      return task
-    }
-  }
-
-  /*    way/
-   * check if the assigned task is not done
-   */
-  function finished_work_1(ut) {
-    for(let i = 0;i < ut.tasks.length;i++) {
-      let task = ut.tasks[i]
-      if(task.id === ut.assigned.id) return task_done_1(task)
-    }
-    log("err/scheduleTasks/badAssignment", { assigned })
-  }
-
-  /*    way/
-   * a task is done when it's not new or started
-   */
-  function task_done_1(task) {
-    if(!task.status || !task.status.length) return false
-    let s = task.status[task.status.length-1].e
-    return !(s === "task/new" || s === "task/started")
-  }
-
 }
+
 
 module.exports = {
   takeANap,
-  tasks,
+  work,
 }
