@@ -148,7 +148,7 @@ function getChat(task, status, cb) {
   })
 
   function chatname_1(status) {
-    if(!status) return "sayOnStart"
+    if(status == 102) return "sayOnStart"
     if(status == 200) return "sayOnEnd"
   }
 
