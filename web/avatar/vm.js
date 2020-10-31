@@ -92,9 +92,15 @@ function run_(env) {
   const p = proc(env, env.runptr.name)
   const line = p[env.runptr.ndx]
 
-  env.log.trace("avatarvm/running", {
-    ptr: env.runptr, line
-  })
+  if(typeof line === "function") {
+    env.log.trace("avatarvm/running", {
+      ptr: env.runptr, line: line.name
+    })
+  } else {
+    env.log.trace("avatarvm/running", {
+      ptr: env.runptr, line: line
+    })
+  }
 
   if(!line) {
     env.log.trace("avatarvm/run/fin", env.runptr.name)
