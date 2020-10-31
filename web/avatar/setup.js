@@ -1,6 +1,8 @@
 'use strict'
 const chat = require('./chat.js')
 
+const users = require('./users.js')
+
 /*    understand/
  * if we have a server URL to connect to RETURN from this
  * sub-procedure otherwise let it proceed to do other
@@ -63,9 +65,21 @@ function getPlugins({store, log}, cb) {
     })
 }
 
+/*    understand/
+ * in many cases we want to process logs "from now on" rather
+ * than from the past. So we keep track of the current position
+ * of our logs so we will know new entries when they come in
+ */
+function fromNow({store}) {
+  store.event("hist/task", store.get("user.tasks").length)
+  store.event("hist/status", store.get("user.status").length)
+  return {}
+}
+
 module.exports = {
   checkServerURL,
   openSettingsWindow,
   waitForServerURL,
   getPlugins,
+  fromNow,
 }

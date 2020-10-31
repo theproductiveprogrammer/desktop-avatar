@@ -36,6 +36,7 @@ module.exports = {
     chat.gettingUsers,
     users.get,
     chat.noticeReport,
+    { call: "sethistory" },
     { call: "dothework" },
   ],
 
@@ -50,6 +51,21 @@ module.exports = {
     chat.needServerURL,
     setup.openSettingsWindow,
     setup.waitForServerURL,
+  ],
+
+  /*    problem/
+   * our user logs contain historical information that we
+   * need to retrive but not respond - for example, we
+   * should not be chatting to the user about work already
+   * completed.
+   *
+   *    way/
+   * we fetch the user logs then setup historical markers
+   * so that whoever wants can find the newer records
+   */
+  sethistory: [
+    tasks.userStatus,
+    setup.fromNow,
   ],
 
   /*    way/

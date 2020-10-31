@@ -19,6 +19,10 @@ const store = enrich(dux.createStore(reducer, {
     assigned: {},
     dispatched: {},
   },
+  hist: {
+    task: 0,
+    status: 0,
+  },
   view: {
     logviewOpen: false,
   },
@@ -31,6 +35,7 @@ function reducer(state, type, payload) {
     logs: r_1(logReducer, state.logs),
     time: r_1(timeReducer, state.time),
     user: r_1(userReducer, state.user),
+    hist: r_1(histReducer, state.hist),
     view: r_1(viewReducer, state.view),
     settings: r_1(settingsReducer, state.settings),
   }
@@ -103,6 +108,15 @@ function userReducer(state, type, payload) {
     default: return state
   }
 }
+function histReducer(state, type, payload) {
+  switch(type) {
+    case "hist/task":
+      return { ...state, task: payload }
+    case "hist/status":
+      return { ...state, status: payload }
+    default: return state
+  }
+}
 function viewReducer(state, type, payload) {
   switch(type) {
     case "logview/show":
@@ -142,6 +156,13 @@ function enrich(store) {
     const status = store.get("user.status")
     for(let i = status.length-1;i >= 0;i--) {
       if(status[i].id == taskId) return status[i]
+    }
+  }
+
+  store.getTaskUser = task => {
+    const users = store.getUsers()
+    for(let i = 0;i < users.length;i++) {
+      if(task.userId == users[i].id) return users[i]
     }
   }
 

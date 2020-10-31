@@ -2,6 +2,7 @@
 const req = require('@tpp/req')
 
 const kc = require('../../kafclient.js')
+const dh = require('../display-helpers.js')
 
 const chat = require('./chat.js')
 
@@ -30,47 +31,66 @@ function getUsers({vars,log,store}, cb) {
       log("avatar/gotusers", { num: users.length })
       log.trace("avatar/gotusers", users)
       store.event("users/set", users)
-      setupFroms(store.getUsers(), log, err => {
-        if(err) {
-          log("err/avatar/setupFroms", err)
-          cb({
-            chat: chat.errSettingFroms(),
-            call: "exit"
-          })
-        } else {
-          cb({
-            from: -1,
-            chat: chat.manageUsers(users),
-          })
-        }
+      cb({
+        from: -1,
+        chat: chat.manageUsers(users),
       })
     }
   })
 }
 
-let froms = {}
-function setupFroms(users, log, cb) {
-  if(!users) return cb()
-  setup_ndx_1(0)
+/*    way/
+ * get all new statuses and talk about them. If nothing has
+ * been done tell the user we're lazing around.
+ *
+ *    problem/
+ * when doing work (see `schedule.work()` function) we insert
+ * a dummy 'start' message. This comes before the actual 'start'
+ * message. Because both messages are start messages the chat
+ * will say "starting xxx" twice
+ *
+ *    way/
+ * if the message has "dummy" in it we will ignore it
+ */
+let talkedTill
+function talkShop({store, say, log}, cb) {
+  const status = get_new_1()
+  let lazying = true
+  if(status && status.length) talk_about_tasks_1(0)
+  if(lazying) lazying_1()
 
-  function setup_ndx_1(ndx) {
-    if(ndx >= users.length) return cb()
-    const user = users[ndx]
-    const name = `User-${user.id}`
-    log.trace("setupFroms/getting", { name })
-    kc.get(name, () => 1, (err, end, from) => {
-      if(err) return cb(err)
-      if(!end) return 10
-      if(!from) return cb(`Invalid from: ${from}`)
-      from += 1
-      log.trace("setupFroms/got", { from })
-      froms[user.id] = from
-      setup_ndx_1(ndx+1)
-    })
+  function talk_about_tasks_1(ndx) {
+    if(ndx >= status.length) return cb()
+    const s = status[ndx]
+    if(!s.msg || !s.code) return talk_about_tasks_1(ndx+1)
+    if(s.msg.indexOf("/dummy") !== -1) return talk_about_tasks_1(ndx+1)
+    lazying = false
+    const t = store.getTask(s.id)
+    window.get.taskchat(t, s.code)
+      .then(msg => {
+        say({
+          from: store.getTaskUser(t),
+          chat: msg,
+        }, () => talk_about_tasks_1(ndx+1))
+      })
+      .catch(err_ => {
+        log("err/talkShop", err)
+        talk_about_tasks_1(ndx+1)
+      })
   }
-}
 
-function talkShop({store, say}, cb) {
+
+  /*    way/
+   * get the latest status from the last time we got it or
+   * start from the new status's (past the ones historically)
+   */
+  function get_new_1() {
+    if(!talkedTill) talkedTill = store.get("hist.status")
+    const all = store.get("user.status")
+    const status = all.slice(talkedTill)
+    talkedTill = all.length
+    return status
+  }
 
 
   function lazying_1() {
@@ -85,4 +105,5 @@ function talkShop({store, say}, cb) {
 
 module.exports = {
   get: getUsers,
+  talkShop,
 }
