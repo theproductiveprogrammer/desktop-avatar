@@ -48,7 +48,7 @@ function newEnv(log, store, program) {
   }
 }
 
-function proc(env, name) { return env.program[name] }
+function proc_(env, name) { return env.program[name] }
 
 /*    way/
  * set up the run pointer to point to the proc, pushing the last caller
@@ -58,7 +58,7 @@ function loadProc(name, env) {
   const old = env.runptr
   env.runptr = {}
 
-  const p = proc(env, name)
+  const p = proc_(env, name)
   if(!p) {
     env.log("err/avatarvm/run/noproc", {
       name,
@@ -67,7 +67,7 @@ function loadProc(name, env) {
     return
   }
 
-  const op = proc(env, old.name)
+  const op = proc_(env, old.name)
   const is_tail_call = op && name == old.name && old.ndx == op.length-1
 
   if(old.name && !is_tail_call) {
@@ -89,20 +89,36 @@ function run_(env) {
     env.recursion_depth = 0
     return setTimeout(() => run_(env))
   }
-  const p = proc(env, env.runptr.name)
-  const line = p[env.runptr.ndx]
+  const p = proc_(env, env.runptr.name)
+  if(env.runptr.ndx < p.length) {
+    const line = p[env.runptr.ndx]
 
-  if(typeof line === "function") {
-    env.log.trace("avatarvm/running", {
-      ptr: env.runptr, line: line.name
-    })
+    if(typeof line === "function") {
+      env.log.trace("avatarvm/running", {
+        ptr: env.runptr, line: line.name
+      })
+    } else {
+      env.log.trace("avatarvm/running", {
+        ptr: env.runptr, line: line
+      })
+    }
+
+    if(!line) {
+      env.log("err/avatarvm/run/step/missing", {
+        ptr: env.runptr
+      })
+
+    } else {
+
+      env.runptr.ndx++
+      exec_(env, line, proc => {
+        if(proc) loadProc(proc, env)
+        run_(env)
+      })
+    }
+
   } else {
-    env.log.trace("avatarvm/running", {
-      ptr: env.runptr, line: line
-    })
-  }
 
-  if(!line) {
     env.log.trace("avatarvm/run/fin", env.runptr.name)
 
     if(env.runptr.name !== "exit") {
@@ -110,14 +126,6 @@ function run_(env) {
       if(!env.runptr.name) loadProc("exit", env)
       run_(env)
     }
-
-  } else {
-
-    env.runptr.ndx++
-    exec_(env, line, proc => {
-      if(proc) loadProc(proc, env)
-      run_(env)
-    })
 
   }
 
