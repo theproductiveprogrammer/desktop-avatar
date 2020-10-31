@@ -52,6 +52,13 @@ I will notify the developers of this issue. In the meantime you can check the me
 `
 }
 
+function errSettingFroms() {
+  return `**Error Setting up Users**!
+
+I will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.
+`
+}
+
 function errGettingTasks() {
   return `**Error Getting Tasks**!
 
@@ -128,6 +135,7 @@ module.exports = {
   looksGood,
   gettingUsers,
   errGettingUsers,
+  errSettingFroms,
   manageUsers,
   noticeReport,
   gettingTasks,

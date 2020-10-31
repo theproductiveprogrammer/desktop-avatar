@@ -244,8 +244,9 @@ function exec_(env, line, cb) {
  */
 function newMsg(env, msg) {
   if(!msg) return
-  if(typeof msg == "string") msg = { chat: msg }
+  if(typeof msg === "string") msg = { chat: msg }
   if(!msg.chat) return
+  if(typeof msg.chat !== "string") msg.chat = JSON.stringify(msg.chat)
 
   let from = find_bot_1(env, msg)
 

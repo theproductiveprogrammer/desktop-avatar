@@ -58,6 +58,7 @@ module.exports = {
   dothework: [
     { call: "gettasks" },
     schedule.work,
+    users.talkShop,
     schedule.takeANap,
     { call: "dothework" },
   ],

@@ -7,6 +7,7 @@ const store = enrich(dux.createStore(reducer, {
     now: 0,
     lastUserStatus: 0,
     lastServerTasks: 0,
+    lastLazy: 0,
   },
   user: {
     ui: null,
@@ -62,6 +63,8 @@ function timeReducer(state, type, payload) {
       return { ...state, lastUserStatus: payload }
     case "lastServerTasks/set":
       return { ...state, lastServerTasks: payload }
+    case "lastLazy/set":
+      return { ...state, lastLazy: payload }
     default: return state
   }
 }
