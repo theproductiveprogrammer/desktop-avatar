@@ -183,6 +183,7 @@ function getChat(task, status, cb) {
         `The site has refused to accept this user! Please see how you can get back on...`
       ],
     }
+    return dh.oneOf(msgs[status])
   }
 
 }
