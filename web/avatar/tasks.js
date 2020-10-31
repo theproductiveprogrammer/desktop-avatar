@@ -27,9 +27,9 @@ function userStatus({store, log}, cb) {
 
   function process_ndx_1(ndx) {
     if(ndx >= users.length) return cb()
-    let ui = users[ndx]
-    let from = store.getMsgFrom(ui.id)
-    let name = `User-${ui.id}`
+    const ui = users[ndx]
+    const from = store.getMsgFrom(ui.id)
+    const name = `User-${ui.id}`
     log.trace("userStatus/checking", { name, from })
 
     kc.get(name, (recs, from) => {
