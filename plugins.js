@@ -140,7 +140,8 @@ function getChat(task, status, cb) {
       } else {
         chat = "" + chat
       }
-      return cb(null, chat)
+      if(!chat) cb(`Error getting chat for status: ${JSON.stringify(status)}`)
+      else cb(null, chat)
     } catch(e) {
       cb(e)
     }
@@ -153,9 +154,8 @@ function getChat(task, status, cb) {
 
   function default_chat_1(task, status, name) {
     if(!name) name = task.action
-    if(!status) status = -1
     const msgs = {
-      0: [
+      102: [
         `Ok trying ${name}...`,
         `Doing ${name}...`,
         `I'm going to do ${name} now...`,
@@ -183,9 +183,6 @@ function getChat(task, status, cb) {
         `The site has refused to accept this user! Please see how you can get back on...`
       ],
     }
-    const m = msg[status]
-    if(m) return m
-    return `Something wrong with the status of ${task.id}!`
   }
 
 }
