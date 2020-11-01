@@ -57,6 +57,18 @@ function e(ui, log, store) {
   function load_work_table_1() {
     if(wstore) wstore.destroy()
     wstore = store.ffork()
+    let tbl = h("table")
+    const hdr = h("tr", [
+      h("th", "Id"),
+      h("th", "Rule Id"),
+      h("th", "User Id"),
+      h("th", "Action"),
+      h("th", "URL"),
+      h("th", "Message"),
+    ])
+    worktable.c(
+      tbl.c(hdr)
+    )
   }
 
   function show_users_1() {
