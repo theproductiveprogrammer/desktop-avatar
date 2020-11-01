@@ -164,6 +164,51 @@ function serverTasks({vars, store, say, log}, cb) {
 
 }
 
+/*    way/
+ * send finished task status's to the server, ignoring those
+ * that have already been sent (status 202)
+ */
+function sendToServer({vars, store, say, log}, cb) {
+  const tasks = store.get("user.tasks")
+  const ts = tasks.map(t => store.getTaskStatus(t.id))
+  const status = ts.filter(s => s && s.code >= 200 && s.code != 202)
+
+  const statusUpdates = status.map(s => {
+    const status = s.code == 200 ? "success" : "failed"
+    return { id: s.id, status }
+  })
+
+  if(!status.length) return {}
+  log("sendToServer/statusUpdates", { num: status.length })
+
+  const ui = store.get("user.ui")
+  const p = `${vars.serverURL}/dapp/v2/status`
+
+  req.post(p, {
+    id: ui.id,
+    seed: ui.seed,
+    authKey: ui.authKey,
+    statusUpdates,
+  }, (err, resp) => {
+    if(err) {
+      log("err/sendToServer", err)
+      cb(chat.errSendingStatus())
+    } else {
+      const tasks = statusUpdates.map(s => store.getTask(s.id))
+      say({
+        from: -1,
+        chat: chat.gotStatus(tasks),
+      }, () => {
+        window.add.sent(tasks)
+          .then(() => 1)
+          .catch(err => {
+            log("err/recordingSend", err)
+          })
+      })
+    }
+  })
+}
+
 /*    problem/
  * a problem we faced when running linked in tasks was that
  * sometimes the server would ask us to do the same thing
@@ -228,4 +273,5 @@ function isSimilar(s1, s2) {
 module.exports = {
   userStatus,
   fromServer: serverTasks,
+  sendToServer,
 }

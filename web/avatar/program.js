@@ -76,6 +76,7 @@ module.exports = {
     schedule.work,
     tasks.userStatus,
     users.talkShop,
+    tasks.sendToServer,
     schedule.takeANap,
     { call: "dothework" },
   ],

@@ -73,6 +73,14 @@ I couldn't get the task working. Please see the log for more details...
 `
 }
 
+function errSendingStatus(err) {
+  return `**Error Sending Status**!
+
+I couldn't send the tasks updates to the server. I'll try again soon. Please see the log for more details...
+`
+}
+
+
 function manageUsers(users) {
   if(users.length == 0) {
     return dh.oneOf(
@@ -127,6 +135,16 @@ function sentTasks(tasks) {
   )
 }
 
+function gotStatus(tasks) {
+  return dh.oneOf(
+    `Thanks for the update :+1:`,
+    `Updated the backend for ${tasks.length} tasks`,
+    `Thanks. Have recorded the status updates`,
+    `Thanks. Have recorded the status updates for ${tasks.length} tasks`
+  )
+}
+
+
 module.exports = {
   greeting,
   letsGetStarted,
@@ -140,6 +158,8 @@ module.exports = {
   noticeReport,
   gettingTasks,
   sentTasks,
+  gotStatus,
   errGettingTasks,
   errScheduleWork,
+  errSendingStatus,
 }

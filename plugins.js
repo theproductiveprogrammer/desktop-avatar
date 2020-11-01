@@ -164,6 +164,10 @@ function getChat(task, status, cb) {
         `${name} completed!`,
         `Done with ${name}...`,
       ],
+      202: [
+        `${name} sent to server!`,
+        `Completed ${name}...`,
+      ],
       400: [
         `Error in task data for "${name}" (id: ${task.id})`,
         `Cannot perform task (id: ${task.id})`,
@@ -375,13 +379,43 @@ function restartTask(task, cb) {
     log("task/status", { id: task.id, msg, code: 0 }, cb)
   })
 }
-
 /*    understand/
  * Promisi-fied version of `restartTask`
  */
 function restart(task) {
   return new Promise((resolve, reject) => {
     restartTask(task, err => {
+      if(err) reject(err)
+      else resolve()
+    })
+  })
+}
+
+/*    understand/
+ * record task updates sent to server
+ */
+function sentTasks(tasks, cb) {
+  record_ndx_1(0)
+
+  function record_ndx_1(ndx) {
+    if(ndx >= tasks.length) return cb()
+    const task = tasks[ndx]
+    getLogger(task, (err, log) => {
+      if(err) return cb(err)
+      const msg = "task/completed"
+      log("task/status", { id:task.id, msg, code:202 }, err => {
+        if(err) return cb(err)
+        else record_ndx_1(ndx+1)
+      })
+    })
+  }
+}
+/*    understand/
+ * Promisi-fied version of `sentTasks`
+ */
+function sent(tasks) {
+  return new Promise((resolve, reject) => {
+    sentTasks(tasks, err => {
       if(err) reject(err)
       else resolve()
     })
@@ -395,4 +429,5 @@ module.exports = {
   perform,
   add,
   restart,
+  sent,
 }

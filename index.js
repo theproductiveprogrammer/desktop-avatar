@@ -71,6 +71,10 @@ function setupIPC(log) {
     return plugins.add(tasks)
   })
 
+  ipcMain.handle("add-sent", async (e, tasks) => {
+    return plugins.sent(tasks)
+  })
+
   ipcMain.handle("set-users", async (e, uis) => {
     return users.set(uis)
   })

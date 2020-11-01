@@ -26,4 +26,5 @@ contextBridge.exposeInMainWorld("x", {
 })
 contextBridge.exposeInMainWorld("add", {
   tasks: t => ipcRenderer.invoke("add-tasks", t),
+  sent: tasks => ipcRenderer.invoke("add-sent", tasks),
 })

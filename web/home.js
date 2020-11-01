@@ -190,6 +190,7 @@ function e(ui, log, store) {
     if(!status) return
     if(status.code == 102) return "inprogress"
     if(status.code == 200) return "success"
+    if(status.code == 202) return "success"
     if(status.err) return "failure"
   }
 
