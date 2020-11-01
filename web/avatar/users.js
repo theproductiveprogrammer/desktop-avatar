@@ -67,6 +67,7 @@ function talkShop({store, say, log}, cb) {
     if(!s.msg || !s.code) return talk_about_tasks_1(ndx+1)
     if(s.msg.indexOf("/dummy") !== -1) return talk_about_tasks_1(ndx+1)
     lazying = false
+    store.event("lastLazy/set", Date.now())
     const t = store.getTask(s.id)
     window.get.taskchat(t, s.code)
       .then(msg => {
@@ -100,6 +101,7 @@ function talkShop({store, say, log}, cb) {
     let last = store.get("time.lastLazy")
     if(!last) last = 0
     if(Date.now() - last < TALK_WITH_USER_EVERY) return cb()
+    store.event("lastLazy/set", Date.now())
     cb(`Nothing to do...${dh.anEmoji("sleepy")}`)
   }
 }
