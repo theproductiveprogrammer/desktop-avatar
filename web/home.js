@@ -15,8 +15,23 @@ function e(ui, log, store) {
 
   let header = h('.header')
   let reports = h(".reports")
+  let worktable = h(".worktable")
+  let workreports = h(".workreports").c(
+    h(".title", [
+      "Work Report Details",
+      h(".close", {
+        onclick: () => workreports.classList.remove("visible"),
+      }, "X")
+    ]),
+    worktable
+  )
   let reportpane = h('.reportpane').c(
-    h('.title', "Work Reports"),
+    h('.title', [
+      "Work Reports ",
+      h("span.open", {
+        onclick: () => workreports.classList.add("visible"),
+      }, "Open")
+    ]),
     reports
   )
 
@@ -26,14 +41,23 @@ function e(ui, log, store) {
     ),
     user_pane_1(),
     avatar_pane_1(),
-    reportpane
+    reportpane,
+    workreports,
   )
 
   let ustore
   store.react("user.ui", show_users_1)
   store.react("user.users", show_users_1)
+  let wstore
+  store.react("user.tasks", load_work_table_1)
+  store.react("user.status", load_work_table_1)
 
   return page
+
+  function load_work_table_1() {
+    if(wstore) wstore.destroy()
+    wstore = store.ffork()
+  }
 
   function show_users_1() {
     if(ustore) ustore.destroy()

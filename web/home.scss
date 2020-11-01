@@ -140,6 +140,19 @@
       margin: 0;
       background: $bgwhite;
       border: 1px solid $lightgrey;
+
+      .open {
+        font-size: 0.8em;
+        font-variant: all-small-caps;
+        padding-left: 0.5em;
+        vertical-align: middle;
+        color: $salesblue;
+        cursor: pointer;
+      }
+      .open:hover {
+        color: $deepblue;
+        text-decoration: underline;
+      }
     }
 
     .userreport {
@@ -246,6 +259,50 @@
     }
 
   }
+
+  .workreports {
+    position: fixed;
+    top: $workreportTop;
+    left: 20%;
+    height: $workreportHeight;
+    overflow: scroll;
+    border: 1px solid $colorFaded;
+    width: 70%;
+    background: #f6f8f8;
+
+    .title {
+      font-size: 1.2em;
+      font-weight: thin;
+      background: $bgwhite;
+      padding: 1em;
+      border: 1px solid $lightgrey;
+    }
+    .close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 0.8em;
+      font-weight: bold;
+      width: 2em;
+      height: 2em;
+      line-height: 2em;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      cursor: pointer;
+      color: $colorFaded;
+      border-radius: 50%;
+      border: 1px solid $colorBorder;
+    }
+    .close:hover {
+      color: $deepblue;
+      border-color: $deepblue;
+    }
+  }
+  .workreports.visible {
+    top: $headerHeight + 20px;
+    animation: slideInBottom 600ms ease-in-out;
+  }
 }
 
 @keyframes slideIn {
@@ -271,6 +328,16 @@
     }
     100%{
         transform: skew(0deg) translateX(0);
+    }
+}
+
+@keyframes slideInBottom {
+  0%{
+        transform: translateY(500px);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0);
     }
 }
 

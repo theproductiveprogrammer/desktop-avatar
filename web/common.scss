@@ -23,6 +23,9 @@ $msgHeight: 500px;
 $pageHeight: 780px;
 $headerHeight: 56px;
 
+$workreportTop: $pageHeight + 100px;
+$workreportHeight: $pageHeight - $headerHeight - 28px;
+
 
 @keyframes shake {
   10%, 90% {
