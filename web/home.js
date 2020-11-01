@@ -65,10 +65,13 @@ function e(ui, log, store) {
       h("th", "Action"),
       h("th", "URL"),
       h("th", "Message"),
+      h("th", "Status"),
+      h("th.action", "Action"),
     ])
     worktable.c(
       tbl.c(hdr)
     )
+    
   }
 
   function show_users_1() {
