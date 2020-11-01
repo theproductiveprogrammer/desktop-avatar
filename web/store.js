@@ -27,6 +27,7 @@ const store = enrich(dux.createStore(reducer, {
     logviewOpen: false,
   },
   settings: {},
+  expectlogs: false,
 }))
 
 function reducer(state, type, payload) {
@@ -38,6 +39,7 @@ function reducer(state, type, payload) {
     hist: r_1(histReducer, state.hist),
     view: r_1(viewReducer, state.view),
     settings: r_1(settingsReducer, state.settings),
+    expectlogs: r_1(expectReducer, state.expectlogs),
   }
   if(!changes) {
     console.error("WARNING(store.js):UNHANDLED STATE", type)
@@ -129,6 +131,12 @@ function viewReducer(state, type, payload) {
 function settingsReducer(state, type, payload) {
   switch(type) {
     case "settings/set": return payload
+    default: return state
+  }
+}
+function expectReducer(state, type, payload) {
+  switch(type) {
+    case "expect/logs": return payload
     default: return state
   }
 }

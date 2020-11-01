@@ -16,55 +16,67 @@ const chat = require('./chat.js')
  * them - both task records and their status.
  */
 function userStatus({store, log}, cb) {
-  const CHECK_EVERY = 30 * 1000
-  let last = store.get("time.lastUserStatus")
-  if(!last) last = 0
-  if(Date.now() - last < CHECK_EVERY) return cb()
-  store.event("lastUserStatus/set", Date.now())
-
-  let users = store.getUsers()
-  process_ndx_1(0)
-
-  function process_ndx_1(ndx) {
-    if(ndx >= users.length) return cb()
-    const ui = users[ndx]
-    const from = store.getMsgFrom(ui.id)
-    const name = `User-${ui.id}`
-    log.trace("userStatus/checking", { name, from })
-
-    kc.get(name, (recs, from) => {
-
-      store.event("from/set", { userId: ui.id, from })
-      recs.forEach(msg => {
-        if(msg.e.startsWith("trace/")) {
-          /* ignore */
-        } else if(msg.e === "task/new") {
-          store.event("task/add", msg.data)
-        } else if(msg.e === "task/status") {
-          store.event("status/add", msg.data)
-        } else {
-          log("err/processing/unknown", { msg })
-        }
-      })
-
-    }, (err, end) => {
-
-      if(err) {
-        log("err/userStatus/get", err)
-        process_ndx_1(ndx+1)
-        return 0
-      }
-
-      if(!end) return 10
-
-      let curr = store.getMsgFrom(ui.id)
-      if(curr != from) log("userStatus/got", { name, from })
-      process_ndx_1(ndx+1)
-      return 0
-
-    }, from)
+  const expecting = store.get("expectlogs")
+  if(expecting) {
+    log.trace("expect/logs")
+    setTimeout(() => do_1(), 10000)
+  } else {
+    const CHECK_EVERY = 30 * 1000
+    let last = store.get("time.lastUserStatus")
+    if(!last) last = 0
+    if(Date.now() - last < CHECK_EVERY) return cb()
+    store.event("lastUserStatus/set", Date.now())
+    do_1()
   }
 
+  function do_1() {
+    let users = store.getUsers()
+    process_ndx_1(0)
+
+    function process_ndx_1(ndx) {
+      if(ndx >= users.length) return cb()
+      const ui = users[ndx]
+      const from = store.getMsgFrom(ui.id)
+      const name = `User-${ui.id}`
+      log.trace("userStatus/checking", { name, from })
+
+      kc.get(name, (recs, from) => {
+
+        store.event("from/set", { userId: ui.id, from })
+        recs.forEach(msg => {
+          if(msg.e.startsWith("trace/")) {
+            /* ignore */
+          } else if(msg.e === "task/new") {
+            store.event("task/add", msg.data)
+          } else if(msg.e === "task/status") {
+            store.event("status/add", msg.data)
+          } else {
+            log("err/processing/unknown", { msg })
+          }
+        })
+
+      }, (err, end) => {
+
+        if(err) {
+          log("err/userStatus/get", err)
+          process_ndx_1(ndx+1)
+          return 0
+        }
+
+        if(!end) return 10
+
+        let curr = store.getMsgFrom(ui.id)
+        if(curr != from) {
+          log("userStatus/got", { name, from })
+          if(expecting) store.event("expect/logs", false)
+        }
+        process_ndx_1(ndx+1)
+        return 0
+
+      }, from)
+    }
+
+  }
 }
 
 /*    way/
@@ -72,6 +84,17 @@ function userStatus({store, log}, cb) {
  * the user's log file for processing checking that they
  * are not duplicate as the server will keep sending us
  * the same tasks until we inform them it is done.
+ *
+ *    problem/
+ * when we add a task, we tell the user about it but the
+ * system itself picks up the task from the user log which
+ * can longer. So we reach an absurd state where the USER
+ * knows more about the state of the system than the SYSTEM
+ * itself!
+ *    way/
+ * we will place a 'notice' on the store that new logs are
+ * expected - this will allow other processes to decide
+ * to read them earlier and/or handle delays and messages.
  */
 function serverTasks({vars, store, say, log}, cb) {
   const CHECK_EVERY = 2 * 60 * 1000
@@ -111,7 +134,10 @@ function serverTasks({vars, store, say, log}, cb) {
         }, () => {
           if(!tasks || !tasks.length) return cb()
           window.add.tasks(tasks)
-            .then(() => cb())
+            .then(() => {
+              store.event("expect/logs", true)
+              cb()
+            })
             .catch(err => {
               log("err/adding/tasks", err)
               cb()

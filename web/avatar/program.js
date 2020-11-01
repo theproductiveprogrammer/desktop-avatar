@@ -74,6 +74,7 @@ module.exports = {
   dothework: [
     { call: "gettasks" },
     schedule.work,
+    tasks.userStatus,
     users.talkShop,
     schedule.takeANap,
     { call: "dothework" },
@@ -86,6 +87,7 @@ module.exports = {
   gettasks: [
     tasks.userStatus,
     tasks.fromServer,
+    tasks.userStatus,
   ],
 
 

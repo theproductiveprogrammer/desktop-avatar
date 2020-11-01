@@ -54,6 +54,8 @@ function getUsers({vars,log,store}, cb) {
  */
 let talkedTill
 function talkShop({store, say, log}, cb) {
+  if(store.get("expectlogs")) return {}
+
   const status = get_new_1()
   let lazying = true
   if(status && status.length) talk_about_tasks_1(0)
@@ -94,8 +96,7 @@ function talkShop({store, say, log}, cb) {
 
 
   function lazying_1() {
-    //const TALK_WITH_USER_EVERY = 5 * 60 * 1000
-    const TALK_WITH_USER_EVERY = 5 * 1000 //TODO: remove
+    const TALK_WITH_USER_EVERY = 5 * 60 * 1000
     let last = store.get("time.lastLazy")
     if(!last) last = 0
     if(Date.now() - last < TALK_WITH_USER_EVERY) return cb()

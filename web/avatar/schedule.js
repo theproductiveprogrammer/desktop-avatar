@@ -6,7 +6,10 @@ const chat = require('./chat.js')
  * server
  */
 function takeANap(env, cb) {
-  let delay = Math.random() * 20000 + 1000
+  const expecting = env.store.get("expectlogs")
+  let delay
+  if(expecting) delay = Math.random() * 1000
+  else delay = Math.random() * 20000 + 1000
   setTimeout(() => cb(), delay)
 }
 
@@ -54,6 +57,7 @@ function work({store, log, say}, cb) {
           msg: "task/started/dummymsg",
           code: 102
         })
+        store.event("expect/logs", true)
         cb({ from: user, chat: msg })
       })
       .catch(err => {
