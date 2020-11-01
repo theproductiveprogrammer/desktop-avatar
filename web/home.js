@@ -103,7 +103,7 @@ function e(ui, log, store) {
   }
 
   function status_1(task) {
-    const status = store.getTaskStatus(task)
+    const status = store.getTaskStatus(task.id)
     if(!status) return
     if(status.code == 102) return "inprogress"
     if(status.code == 200) return "success"
