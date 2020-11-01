@@ -49,6 +49,7 @@ function userStatus({store, log}, cb) {
           } else if(msg.e === "task/new") {
             store.event("task/add", msg.data)
           } else if(msg.e === "task/status") {
+            msg.data.t = msg.t
             store.event("status/add", msg.data)
           } else {
             log("err/processing/unknown", { msg })
@@ -124,7 +125,7 @@ function serverTasks({vars, store, say, log}, cb) {
         log("err/serverTasks", err)
         cb(chat.errGettingTasks())
       } else {
-        let tasks = resp.body
+        let tasks = resp.body || []
         log("serverTasks/got", { num: tasks.length })
         log.trace("serverTasks/gottasks", tasks)
         tasks = dedup_1(tasks)

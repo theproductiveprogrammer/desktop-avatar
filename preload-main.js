@@ -22,6 +22,7 @@ contextBridge.exposeInMainWorld("set", {
 contextBridge.exposeInMainWorld("x", {
   cute: t => ipcRenderer.invoke("x-cute", t),
   it: () => ipcRenderer.invoke("x-it"),
+  cute2: t => ipcRenderer.invoke("x-cute-again", t),
 })
 contextBridge.exposeInMainWorld("add", {
   tasks: t => ipcRenderer.invoke("add-tasks", t),

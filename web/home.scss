@@ -269,6 +269,7 @@
     border: 1px solid $colorFaded;
     width: 70%;
     background: #f6f8f8;
+    box-shadow: 1px 1px 3px 0px #9E9E9E;
 
     .title {
       font-size: 1.2em;
@@ -329,6 +330,22 @@
       font-variant: all-small-caps;
       font-style: italic;
       padding: 0;
+    }
+    td.details {
+      white-space: pre;
+      text-align: left;
+      overflow: scroll;
+      height: 3em;
+      font-family: monospace;
+    }
+    td.action {
+      font-size: 0.6em;
+      text-decoration: underline;
+      color: $salesblue;
+      cursor: pointer;
+    }
+    td.action:hover {
+      color: $deepblue;
     }
 
 

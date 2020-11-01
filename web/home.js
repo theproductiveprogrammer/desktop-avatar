@@ -59,19 +59,63 @@ function e(ui, log, store) {
     wstore = store.ffork()
     let tbl = h("table")
     const hdr = h("tr", [
+      h("th", "On"),
       h("th", "Id"),
-      h("th", "Rule Id"),
       h("th", "User Id"),
       h("th", "Action"),
-      h("th", "URL"),
-      h("th", "Message"),
+      h("th", "Details"),
       h("th", "Status"),
       h("th.action", "Action"),
     ])
     worktable.c(
       tbl.c(hdr)
     )
-    
+    const tasks = wstore.get("user.tasks")
+    tasks.forEach(task => {
+      let status = store.getTaskStatus(task.id)
+      if(!status) status = {
+        t: (new Date()).toISOString(),
+        msg: "task/new",
+      }
+      let statusmsg = status.err ? "(ERROR)" : status.msg
+      if(!statusmsg) statusmsg = ""
+      else statusmsg = statusmsg.replace("/dummy", "")
+      const details = JSON.stringify(task, (k, v) => {
+        const ignore = [ "id", "userId", "action" ]
+        if(ignore.indexOf(k) !== -1) return undefined
+        if(!v) return undefined
+        if(k === "linkedInURL") {
+          v = v.split('/')
+          v = v[v.length-1] || v[v.length-2] || v
+        }
+        return v
+      }, 2)
+      let action = h("td.action", "")
+      if(status.code >= 200) {
+        action = h("td.action", {
+          onclick: () => {
+            window.x.cute2(task)
+              .then(() => 1)
+              .catch(err => console.error(err))
+            store.event("status/add", {
+              t: (new Date()).toISOString(),
+              id: task.id,
+              msg: "task/restart/dummy",
+              code: 0,
+            })
+          },
+        }, "restart")
+      }
+      tbl.add(h("tr", [
+        h("td.on", status.t.replace("T", "<br/>")),
+        h("td", task.id),
+        h("td", task.userId),
+        h("td", task.action),
+        h("td.details", details),
+        h("td", statusmsg),
+        action,
+      ]))
+    })
   }
 
   function show_users_1() {

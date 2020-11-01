@@ -53,8 +53,9 @@ function work({store, log, say}, cb) {
     window.x.cute(task)
       .then(msg => {
         store.event("status/add", {
+          t: (new Date()).toISOString(),
           id: task.id,
-          msg: "task/started/dummymsg",
+          msg: "task/started/dummy",
           code: 102
         })
         store.event("expect/logs", true)
@@ -76,7 +77,7 @@ function work({store, log, say}, cb) {
     for(let i = 0;i < tasks.length;i++) {
       const curr = tasks[i]
       const status = store.getTaskStatus(curr.id)
-      if(!status || status === "task/restart") return curr
+      if(!status || status.code === 0) return curr
     }
   }
 
