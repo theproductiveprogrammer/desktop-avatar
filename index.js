@@ -91,8 +91,8 @@ function setupIPC(log) {
     return plugins.perform(task)
   })
 
-  ipcMain.handle("x-cute-again", async (e, task) => {
-    return plugins.restart(task)
+  ipcMain.handle("x-xtry", async (e, task) => {
+    return plugins.retry(task)
   })
 
   ipcMain.handle("x-it", async (e, task) => {

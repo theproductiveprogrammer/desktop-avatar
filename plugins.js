@@ -370,21 +370,21 @@ function add(tasks) {
 }
 
 /*    understand/
- * record an intent to restart this task in the user's log
+ * record an intent to retry this task in the user's log
  */
-function restartTask(task, cb) {
+function retryTask(task, cb) {
   getLogger(task, (err, log) => {
     if(err) return cb(err)
-    const msg = "task/restarted"
+    const msg = "task/retry"
     log("task/status", { id: task.id, msg, code: 0 }, cb)
   })
 }
 /*    understand/
- * Promisi-fied version of `restartTask`
+ * Promisi-fied version of `retryTask`
  */
-function restart(task) {
+function retry(task) {
   return new Promise((resolve, reject) => {
-    restartTask(task, err => {
+    retryTask(task, err => {
       if(err) reject(err)
       else resolve()
     })
@@ -428,6 +428,6 @@ module.exports = {
   chat,
   perform,
   add,
-  restart,
+  retry,
   sent,
 }

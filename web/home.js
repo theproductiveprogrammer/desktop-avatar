@@ -91,7 +91,7 @@ function e(ui, log, store) {
         return v
       }, 2)
       let action = h("td.action", "")
-      if(status.code >= 200) {
+      if(status.code > 299) {
         action = h("td.action", {
           onclick: () => {
             window.x.cute2(task)
@@ -100,11 +100,11 @@ function e(ui, log, store) {
             store.event("status/add", {
               t: (new Date()).toISOString(),
               id: task.id,
-              msg: "task/restart/dummy",
+              msg: "task/retry/dummy",
               code: 0,
             })
           },
-        }, "restart")
+        }, "retry")
       }
       tbl.add(h("tr", [
         h("td.on", status.t.replace("T", "<br/>")),
