@@ -292,7 +292,7 @@ function newMsg(env, msg) {
     return {
       id: -1,
       userName: "salesbox.ai",
-      firstName: "SalesBox",
+      firstName: "SalesBox (Server)",
       logo: "./bothead.png",
     }
   }
