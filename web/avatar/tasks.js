@@ -200,9 +200,10 @@ function sendToServer({vars, store, say, log}, cb) {
         chat: chat.gotStatus(tasks),
       }, () => {
         window.add.sent(tasks)
-          .then(() => 1)
+          .then(() => cb())
           .catch(err => {
             log("err/recordingSend", err)
+            cb()
           })
       })
     }
