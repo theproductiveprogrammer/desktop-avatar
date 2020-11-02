@@ -65,6 +65,7 @@ function talkShop({store, say, log}, cb) {
     if(ndx >= status.length) return cb()
     const s = status[ndx]
     if(!s.msg || !s.code) return talk_about_tasks_1(ndx+1)
+    if(s.code == 202) return talk_about_tasks_1(ndx+1)
     if(s.msg.indexOf("/dummy") !== -1) return talk_about_tasks_1(ndx+1)
     lazying = false
     store.event("lastLazy/set", Date.now())
