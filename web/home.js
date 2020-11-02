@@ -72,12 +72,12 @@ function e(ui, log, store) {
     )
     const tasks = wstore.get("user.tasks")
     tasks.forEach(task => {
-      let status = store.getTaskStatus(task.id)
+      let status = store.getTaskStatus(task.id, 202)
       if(!status) status = {
         t: (new Date()).toISOString(),
         msg: "task/new",
       }
-      let statusmsg = status.err ? "(ERROR)" : status.msg
+      let statusmsg = status.err ? "task/FAILED" : status.msg
       if(!statusmsg) statusmsg = ""
       else statusmsg = statusmsg.replace("/dummy", "")
       const details = JSON.stringify(task, (k, v) => {
@@ -186,11 +186,10 @@ function e(ui, log, store) {
   }
 
   function status_1(task) {
-    const status = store.getTaskStatus(task.id)
+    const status = store.getTaskStatus(task.id, 202)
     if(!status) return
     if(status.code == 102) return "inprogress"
     if(status.code == 200) return "success"
-    if(status.code == 202) return "success"
     if(status.err) return "failure"
   }
 

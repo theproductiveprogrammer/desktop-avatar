@@ -160,10 +160,11 @@ function enrich(store) {
     return tasks.filter(t => t.userId == userId)
   }
 
-  store.getTaskStatus = taskId => {
+  store.getTaskStatus = (taskId,ignore) => {
     const status = store.get("user.status")
     for(let i = status.length-1;i >= 0;i--) {
-      if(status[i].id == taskId) return status[i]
+      if(status[i].id == taskId
+        && status[i].code != ignore) return status[i]
     }
   }
 
