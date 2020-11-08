@@ -217,92 +217,119 @@ function getLogger(task, cb) {
 }
 
 /*    way/
- * get the plugin, the user's browser, logger, and set
- * up the environment to call the plugin that will
- * perform the task.
+ * provide a valid browser (non-capcha) and context to the task
+ * plugin and start the task, recording all status in the user's
+ * log.
  */
 function performTask(task, cb) {
-  getPlugin(task.action, (err, plugin) => {
+  getLogger(task, (err, log) => {
     if(err) return cb(err)
-    let uctx = users.get(task.userId)
-    if(!uctx) {
-      log("err/task/user/notfound", task.userId)
-      return cb("invalid task: user not found")
-    }
-    users.browser(uctx)
+    users.browser(users.get(task.userId))
     .then(browser => {
-      getLogger(task, (err, log) => {
-        if(err) return cb(err)
-        let timeout = task.timeout || 30 * 1000
-        let context = {
-          trace: m => log.trace(`trace/${task.action}.${task.id}`, m),
-          timeout,
-          status: {
-            done: status_done_1,
-            usererr: status_usererr_1,
-            timeout: status_timeout_1,
-            servererr: status_servererr_1,
-            errcapcha: status_capcha_1,
-            baduser: status_baduser_1,
-          },
-          browser,
-          console,
-          plugin: {name: task.action, info:{}, task},
+      getPlugin(task.action, (err, plugin) => {
+        if(err) {
+          status_noplugin_1("err/task/noplugin")
+          return cb(err)
         }
 
-        log("task/status", {
-          id: task.id,
-          msg: "task/started",
-          code: 102,
-        }, err => {
-          cb(err)
-          if(!err) {
-            try {
-              vm.createContext(context)
-              plugin.code.runInContext(context)
-            } catch(e) {
-              console.error(e)
-              status_servererr_1(e)
-            }
+        status_started_1(err => {
+          if(err) {
+            status_servererr_1(err)
+            return cb(err)
+          }
+          try {
+            cb()
+            let context = context_1(browser, task)
+            vm.createContext(context)
+            plugin.code.runInContext(context)
+          } catch(e) {
+            console.error(e)
+            status_servererr_1(e)
           }
         })
 
-        let status_set = false
-
-        function status_done_1(msg) {
-          if(status_set) return
-          status_set = true
-          if(!msg) msg = "task/done"
-          log("task/status",{ id: task.id, msg, code: 200 })
-        }
-        function status_usererr_1(err) {
-          status_with_1(400, err)
-        }
-        function status_timeout_1(err) {
-          status_with_1(504, err)
-        }
-        function status_servererr_1(err) {
-          status_with_1(500, err)
-        }
-        function status_capcha_1(err) {
-          status_with_1(401, err)
-        }
-        function status_baduser_1(err) {
-          status_with_1(403, err)
-        }
-        function status_with_1(code, err) {
-          if(status_set) return
-          status_set = true
-          if(!err) err = "err/task"
-          else if(err instanceof Error) err = err.stack
-          log("task/status", { id: task.id, err, code })
-        }
-
       })
-    })
-    .catch(cb)
-  })
 
+    })
+    .catch(err => {
+      status_servererr_1(err)
+      cb(err)
+    })
+
+    /*    way/
+     * create a context to provide the plugin access to
+     *  (a) the status logging functions,
+     *  (b) the browser, console, and so on and
+     *  (c) parameters: the time outs etc
+     */
+    function context_1(browser, task) {
+      const timeout = task.timeout || 30 * 1000
+      return {
+        trace: m => {
+          log.trace(`trace/${task.action}.${task.id}`, m)
+        },
+        timeout,
+        status: {
+          done: status_done_1,
+          usererr: status_usererr_1,
+          timeout: status_timeout_1,
+          servererr: status_servererr_1,
+          errcapcha: status_capcha_1,
+          baduser: status_baduser_1,
+        },
+        browser,
+        console,
+        plugin: {name: task.action, info:{}, task},
+      }
+    }
+
+    /*    way/
+     * log task as started in the user log so we can keep
+     * track of it going forward
+     */
+    function status_started_1(cb) {
+      log("task/status", {
+        id: task.id,
+        msg: "task/started",
+        code: 102
+      }, cb)
+    }
+
+    let status_set = false
+
+    function status_done_1(msg) {
+      if(status_set) return
+      status_set = true
+      if(!msg) msg = "task/done"
+      log("task/status",{ id: task.id, msg, code: 200 })
+    }
+    function status_usererr_1(err) {
+      status_with_1(400, err)
+    }
+    function status_timeout_1(err) {
+      status_with_1(504, err)
+    }
+    function status_servererr_1(err) {
+      status_with_1(500, err)
+    }
+    function status_noplugin_1(err) {
+      status_with_1(501, err)
+    }
+    function status_capcha_1(err) {
+      status_with_1(401, err)
+    }
+    function status_baduser_1(err) {
+      status_with_1(403, err)
+    }
+    function status_with_1(code, err) {
+      if(status_set) return
+      status_set = true
+      if(!err) err = "err/task"
+      else if(err instanceof Error) err = err.stack
+      log("task/status", { id: task.id, err, code })
+    }
+
+  })
 }
 function perform(task) {
   return new Promise((resolve, reject) => {
