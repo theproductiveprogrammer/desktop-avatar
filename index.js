@@ -87,8 +87,8 @@ function setupIPC(log) {
     return users.setPuppetShow(show)
   })
 
-  ipcMain.handle("x-cute", async (e, task) => {
-    return plugins.perform(task)
+  ipcMain.handle("x-cute", async (e, { a, t }) => {
+    return plugins.perform(a, t)
   })
 
   ipcMain.handle("x-cute-again", async (e, task) => {

@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld("set", {
   puppetShow: show => ipcRenderer.invoke("set-puppetShow", show),
 })
 contextBridge.exposeInMainWorld("x", {
-  cute: t => ipcRenderer.invoke("x-cute", t),
+  cute: (a,t) => ipcRenderer.invoke("x-cute", { a, t }),
   it: () => ipcRenderer.invoke("x-it"),
   cute2: t => ipcRenderer.invoke("x-cute-again", t),
 })

@@ -50,7 +50,12 @@ function work({store, log, say}, cb) {
 
     chatting = true
     log("scheduling/work", { task })
-    window.x.cute(task)
+    const auth = {
+      id: user.id,
+      linkedinUsername: user.linkedinUsername,
+      linkedinPassword: user.linkedinPassword,
+    }
+    window.x.cute(auth, task)
       .then(msg => {
         store.event("status/add", {
           t: (new Date()).toISOString(),

@@ -180,6 +180,9 @@ function getChat(task, status, cb) {
         `Hit an unexpected error when trying to do "${name}"`,
         `Unexpected error caused ${name} task ${task.id} to fail...`,
       ],
+      501: [
+        `No plugin found to perform ${name}`,
+      ],
       401: [
         `User intervention required! The site needs you to prove that you are a human (and I'm not!) ` + dh.anEmoji("face"),
       ],
@@ -217,37 +220,60 @@ function getLogger(task, cb) {
 }
 
 /*    way/
- * provide a valid browser (non-capcha) and context to the task
- * plugin and start the task, recording all status in the user's
- * log.
+ * provide a valid browser logged in to linkedin page as context
+ * to the task plugin and record the start and all other status
+ * in the user log.
  */
-function performTask(task, cb) {
+function performTask(auth, task, cb) {
   getLogger(task, (err, log) => {
     if(err) return cb(err)
-    users.browser(users.get(task.userId))
-    .then(browser => {
-      getPlugin(task.action, (err, plugin) => {
-        if(err) {
-          status_noplugin_1("err/task/noplugin")
-          return cb(err)
-        }
+    users.browser(users.get(task.userId)).then(browser => {
+      const cfg = {
+        timeout: task.timeout || 30 * 1000
+      }
+      users.linkedInPage(cfg, auth, browser).then(page => {
 
-        status_started_1(err => {
+        getPlugin(task.action, (err, plugin) => {
           if(err) {
-            status_servererr_1(err)
+            status_noplugin_1("err/task/noplugin")
+            page.close().catch(e => console.error(e))
             return cb(err)
           }
-          try {
-            cb()
-            let context = context_1(browser, task)
-            vm.createContext(context)
-            plugin.code.runInContext(context)
-          } catch(e) {
-            console.error(e)
-            status_servererr_1(e)
-          }
+
+          status_started_1(err => {
+            if(err) {
+              status_servererr_1(err)
+              page.close().catch(e => console.error(e))
+              return cb(err)
+            }
+            try {
+              cb()
+              let context = context_1(browser, cfg, page, task)
+              vm.createContext(context)
+              plugin.code.runInContext(context)
+            } catch(e) {
+              console.error(e)
+              status_servererr_1(e)
+            }
+          })
+
         })
 
+      })
+      .catch(err => {
+        if(err === users.NEEDS_CAPCHA) {
+          status_capcha_1("err/task/capcha")
+          return cb("Need CAPCHA")
+        }
+        if(err === users.LOGIN_ERR) {
+          status_baduser_1("err/login/err")
+          return cb("Login failed")
+        }
+        if(err === users.PREMIUM_ERR) {
+          status_baduser_1("err/need/salesnavigator")
+          return cb("You need a Sales Navigator or Premium account")
+        }
+        return cb(err.stack? err.stack : err)
       })
 
     })
@@ -259,25 +285,25 @@ function performTask(task, cb) {
     /*    way/
      * create a context to provide the plugin access to
      *  (a) the status logging functions,
-     *  (b) the browser, console, and so on and
+     *  (b) the browser, page, console, and so on and
      *  (c) parameters: the time outs etc
      */
-    function context_1(browser, task) {
-      const timeout = task.timeout || 30 * 1000
+    function context_1(browser, cfg, page, task) {
       return {
         trace: m => {
           log.trace(`trace/${task.action}.${task.id}`, m)
         },
-        timeout,
+        cfg,
         status: {
-          done: status_done_1,
-          usererr: status_usererr_1,
-          timeout: status_timeout_1,
-          servererr: status_servererr_1,
-          errcapcha: status_capcha_1,
-          baduser: status_baduser_1,
+          done: m => status_done_1(page, m),
+          usererr: m => status_usererr_1(page, m),
+          timeout: m => status_timeout_1(page, m),
+          servererr: m => status_servererr_1(page, m),
+          errcapcha: m => status_capcha_1(page, m),
+          baduser: m => status_baduser_1(page, m),
         },
         browser,
+        page,
         console,
         plugin: {name: task.action, info:{}, task},
       }
@@ -297,43 +323,46 @@ function performTask(task, cb) {
 
     let status_set = false
 
-    function status_done_1(msg) {
+    function status_done_1(page, msg) {
       if(status_set) return
       status_set = true
       if(!msg) msg = "task/done"
       log("task/status",{ id: task.id, msg, code: 200 })
+      page.close().catch(e => console.error(e))
     }
-    function status_usererr_1(err) {
-      status_with_1(400, err)
+    function status_usererr_1(page, err) {
+      status_with_1(page, 400, err)
     }
-    function status_timeout_1(err) {
-      status_with_1(504, err)
+    function status_timeout_1(page, err) {
+      status_with_1(page, 504, err)
     }
-    function status_servererr_1(err) {
-      status_with_1(500, err)
+    function status_servererr_1(page, err) {
+      status_with_1(page, 500, err)
     }
-    function status_noplugin_1(err) {
-      status_with_1(501, err)
+    function status_noplugin_1(page, err) {
+      status_with_1(page, 501, err)
     }
-    function status_capcha_1(err) {
-      status_with_1(401, err)
+    function status_capcha_1(page, err) {
+      status_with_1(page, 401, err)
     }
-    function status_baduser_1(err) {
-      status_with_1(403, err)
+    function status_baduser_1(page, err) {
+      status_with_1(page, 403, err)
     }
-    function status_with_1(code, err) {
+    function status_with_1(page, code, err) {
       if(status_set) return
       status_set = true
       if(!err) err = "err/task"
       else if(err instanceof Error) err = err.stack
       log("task/status", { id: task.id, err, code })
+      page.close()
     }
+
 
   })
 }
-function perform(task) {
+function perform(auth, task) {
   return new Promise((resolve, reject) => {
-    performTask(task, (err, resp) => {
+    performTask(auth, task, (err, resp) => {
       if(err) reject(err)
       else resolve(resp)
     })
