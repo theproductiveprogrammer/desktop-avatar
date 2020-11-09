@@ -243,6 +243,7 @@ module.exports = {
   browser,
   setPuppetShow,
   linkedInPage,
+  autoScroll,
 
   NEEDS_CAPCHA,
   LOGIN_ERR,

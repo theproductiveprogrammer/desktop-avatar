@@ -305,6 +305,7 @@ function performTask(auth, task, cb) {
         browser,
         page,
         console,
+        autoScroll: users.autoScroll,
         plugin: {name: task.action, info:{}, task},
       }
     }
