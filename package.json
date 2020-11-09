@@ -5,8 +5,8 @@
   "scripts": {
     "start": "electron .",
     "clean": "rm -rf .parcel-cache && rm -rf pub && rm -rf dist",
-    "build": "npm run clean && npm run parcel-build",
-    "dist": "npm run build && electron-builder",
+    "build": "npm run parcel-build",
+    "dist": "npm run parcel-build && electron-builder",
     "copy": "mkdir -p pub && cp web/*.svg web/*.png pub/",
     "with-parcel": "PARCEL_PORT=3001 electron .",
     "parcel-build": "npm run clean && npm run copy && parcel build web/*.html --dist-dir pub --public-url=./",
