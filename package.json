@@ -4,8 +4,9 @@
   "description": "The new/server version of the Salesbox Desktop Avatar",
   "scripts": {
     "start": "electron .",
-    "clean": "rm -rf .parcel-cache && rm -rf pub",
+    "clean": "rm -rf .parcel-cache && rm -rf pub && rm -rf dist",
     "build": "npm run clean && npm run parcel-build",
+    "dist": "npm run build && electron-builder",
     "copy": "mkdir -p pub && cp web/*.svg web/*.png pub/",
     "with-parcel": "PARCEL_PORT=3001 electron .",
     "parcel-build": "npm run clean && npm run copy && parcel build web/*.html --dist-dir pub --public-url=./",
@@ -23,6 +24,7 @@
   "homepage": "https://github.com/theproductiveprogrammer/desktop-avatar#readme",
   "devDependencies": {
     "electron": "^10.1.3",
+    "electron-builder": "^22.9.1",
     "parcel": "^2.0.0-beta.1",
     "sass": "^1.26.11"
   },
@@ -37,5 +39,8 @@
     "puppeteer": "^5.3.1",
     "string-similarity": "^4.0.2",
     "striptags": "^3.1.1"
+  },
+  "build": {
+    "asarUnpack": "node_modules/puppeteer"
   }
 }
