@@ -355,7 +355,7 @@ function performTask(auth, task, cb) {
       if(!err) err = "err/task"
       else if(err instanceof Error) err = err.stack
       log("task/status", { id: task.id, err, code })
-      page.close()
+      page && page.close && page.close()
     }
 
 
