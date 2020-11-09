@@ -33,11 +33,17 @@ function plugin() {
 }
 
 /*    outcome/
+ * Return the location of the cookies directory
+ */
+function cookies() {
+  return path.join(home(), 'cookies')
+}
+
+/*    outcome/
  * Return the location of a user's cookie file
  */
-function cookieFile(name) {
-  let fname = util.sanitizeFilename(`cookies-${name}.json`)
-  return path.join(home(), fname)
+function cookieFile(userid) {
+  return path.join(cookies(), `${userid}`)
 }
 
 /*    outcome/
@@ -52,6 +58,7 @@ module.exports = {
   home,
   db,
   plugin,
+  cookies,
   cookieFile,
   dmp,
 }

@@ -1,6 +1,5 @@
 'use strict'
 const { app, dialog, Menu, ipcMain } = require('electron')
-const util = require('util')
 
 const db = require('./db.js')
 const kc = require('./kafclient.js')
@@ -8,6 +7,8 @@ const lg = require('./logger.js')
 const wins = require('./wins.js')
 const plugins = require('./plugins.js')
 const users = require('./users.js')
+const loc = require('./loc.js')
+const util = require('./util.js')
 
 /*    understand/
  * main entry point into our program - called
@@ -16,17 +17,25 @@ const users = require('./users.js')
 function onReady() {
   const log = lg(generateName(), process.env.DEBUG)
 
-  db.start(log, err => {
+  util.ensureExists(loc.cookies(), err => {
     if(err) {
       dialog.showErrorBox("DB", err.toString())
       app.quit()
-    } else {
-      log("app/info", `Logging to ${log.getName()}`)
-
-      setupIPC(log)
-      setupUI()
+      return
     }
+    db.start(log, err => {
+      if(err) {
+        dialog.showErrorBox("DB", err.toString())
+        app.quit()
+      } else {
+        log("app/info", `Logging to ${log.getName()}`)
+
+        setupIPC(log)
+        setupUI()
+      }
+    })
   })
+
 }
 
 app.whenReady().then(onReady)
