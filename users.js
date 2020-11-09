@@ -65,15 +65,29 @@ function browser(user) {
   }
   return new Promise((resolve, reject) => {
     let puppetShow = PUPPET_SHOW
-    puppeteer.launch({ headless:!puppetShow, args })
-      .then(browser => {
-        user.browserCache = {
-          proxy: user.proxy,
-          puppetShow,
-          browser,
-        }
-        resolve(browser)
-      })
+
+    let pexe = puppeteer.executablePath()
+    let rx_isasar1 = /\\app.asar\\/
+    if(pexe.match(rx_isasar1)) {
+      pexe = pexe.replace(rx_isasar1, "\\app.asar.unpacked\\")
+    }
+    let rx_isasar2 = /\/app.asar\//
+    if(pexe.match(rx_isasar2)) {
+      pexe = pexe.replace(rx_isasar2, "/app.asar.unpacked/")
+    }
+
+    puppeteer.launch({
+      headless:!puppetShow,
+      executablePath: pexe,
+      args
+    }).then(browser => {
+      user.browserCache = {
+        proxy: user.proxy,
+        puppetShow,
+        browser,
+      }
+      resolve(browser)
+    })
       .catch(reject)
   })
 }
