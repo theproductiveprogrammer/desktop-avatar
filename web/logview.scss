@@ -16,7 +16,7 @@
 
   .logs {
     height: $msgHeight - 24px;
-    overflow: scroll;
+    overflow: auto;
   }
 
   .closebtn {
@@ -74,7 +74,7 @@
       .padded {
         padding: 4px;
         padding-left: 8px;
-        overflow: scroll;
+        overflow: auto;
       }
 
     }

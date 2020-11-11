@@ -4,7 +4,7 @@
   background: #f0f3f4;
   width: 100%;
   height: $pageHeight;
-  overflow: scroll;
+  overflow: auto;
 
   .header {
     background: $colorDark;
@@ -23,7 +23,7 @@
     margin-left: 1%;
     width: 45%;
     height: $pageHeight - $headerHeight;
-    overflow: scroll;
+    overflow: auto;
     border-right: 2px solid #edf1f2;
     border-left: 2px solid #edf1f2;
     background: linear-gradient($bgwhite, #f7f7ff);
@@ -45,7 +45,7 @@
     }
 
     .msgblock {
-      overflow: scroll;
+      overflow: auto;
       height: $pageHeight - $headerHeight - 200px;
     }
 
@@ -78,7 +78,7 @@
       .txt {
         line-height: 1.4rem;
         font-weight: 400;
-        overflow: scroll;
+        overflow: auto;
       }
       .txt.just-emojis {
         line-height: 1em;
@@ -130,7 +130,7 @@
     width: 38%;
     height: $pageHeight - $headerHeight;
     background: #f6f8f8;
-    overflow: scroll;
+    overflow: auto;
     color: #334;
 
     .title {
@@ -265,7 +265,7 @@
     top: $workreportTop;
     left: 20%;
     height: $workreportHeight;
-    overflow: scroll;
+    overflow: auto;
     border: 1px solid $colorFaded;
     width: 70%;
     background: #f6f8f8;
@@ -334,7 +334,7 @@
     td.details {
       white-space: pre;
       text-align: left;
-      overflow: scroll;
+      overflow: auto;
       height: 3em;
       font-family: monospace;
     }
