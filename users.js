@@ -110,7 +110,8 @@ async function linkedInPage(cfg, auth, browser) {
     await auth_login_1(auth, page)
     await save_login_cookie_1(page, auth)
   }
-  if(!process.env.DEBUG) await check_premium_enabled_1(page)
+  //TODO: re-enable this check after QA cycle
+  //if(!process.env.DEBUG) await check_premium_enabled_1(page)
 
   await randomly_scroll_sometimes_1()
   await check_capcha_1()
