@@ -4,13 +4,13 @@
   "description": "The new/server version of the Salesbox Desktop Avatar",
   "scripts": {
     "start": "electron .",
-    "clean": "rm -rf .parcel-cache && rm -rf pub && rm -rf dist",
+    "clean": "node scripts/clean.js",
     "build": "npm run parcel-build",
     "dist": "npm run parcel-build && electron-builder",
-    "copy": "mkdir -p pub && cp web/*.svg web/*.png pub/",
+    "copy": "node scripts/copy.js",
     "with-parcel": "PARCEL_PORT=3001 electron .",
-    "parcel-build": "npm run clean && npm run copy && parcel build web/*.html --dist-dir pub --public-url=./",
-    "parcel-watch": "npm run clean && npm run copy && parcel serve -p 3001 web/*.html --dist-dir pub"
+    "parcel-build": "node scripts/clean.js && node scripts/copy.js && parcel build web/*.html --dist-dir pub --public-url=./",
+    "parcel-watch": "node scripts/clean.js && node scripts/copy.js && parcel serve -p 3001 web/*.html --dist-dir pub"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "kafjs": "^1.2.2",
     "marked": "^1.2.0",
     "puppeteer": "^5.3.1",
+    "shelljs": "^0.8.4",
     "string-similarity": "^4.0.2",
     "striptags": "^3.1.1"
   },
