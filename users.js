@@ -160,9 +160,15 @@ async function linkedInPage(cfg, auth, browser) {
 
       return true
 
-    } catch(e) {
-      return false
-    }
+    } catch(e) {}
+
+    try {
+      await page.waitFor('[data-resource="feed/badge"]')
+
+      return true
+    } catch (e) {}
+
+    return false
   }
 
   async function save_login_cookie_1(page, auth) {
@@ -178,21 +184,21 @@ async function linkedInPage(cfg, auth, browser) {
   async function auth_login_1(auth, page) {
     if(!auth.linkedinUsername || !auth.linkedinPassword) throw LOGIN_ERR
 
-    await page.goto('https://www.linkedin.com/uas/login')
-
-    const user_name = "input#username"
-    await page.waitForSelector(user_name)
-    await page.type(user_name, auth.linkedinUsername)
-
-    const pass_word = "input#password"
-    await page.waitForSelector(pass_word)
-    await page.type(pass_word, auth.linkedinPassword)
-
-    const submitButton = "button.btn__primary--large"
-    await page.waitForSelector(submitButton)
-    await page.click(submitButton)
-
     try {
+      await page.goto('https://www.linkedin.com/uas/login')
+
+      const user_name = "input#username"
+      await page.waitForSelector(user_name)
+      await page.type(user_name, auth.linkedinUsername)
+
+      const pass_word = "input#password"
+      await page.waitForSelector(pass_word)
+      await page.type(pass_word, auth.linkedinPassword)
+
+      const submitButton = "button.btn__primary--large"
+      await page.waitForSelector(submitButton)
+      await page.click(submitButton)
+
       await page.waitFor('input[role=combobox]',{timeout:200000})
     } catch(e) {
       throw LOGIN_ERR
