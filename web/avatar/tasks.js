@@ -48,6 +48,12 @@ function userStatus({store, log}, cb) {
             /* ignore */
           } else if(msg.e === "task/new") {
             store.event("task/add", msg.data)
+            store.event("status/add", {
+              t: (new Date()).toISOString(),
+              id: msg.id,
+              msg: "task/new/dummy",
+              code: 0,
+            })
           } else if(msg.e === "task/status") {
             msg.data.t = msg.t
             store.event("status/add", msg.data)
