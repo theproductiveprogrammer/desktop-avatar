@@ -423,7 +423,8 @@ try {
       status.done()
     })
     .catch(err => {
-      status.servererr(err)
+      if(err.name != 'TimeoutError') status.timeout(err)
+      else status.servererr(err)
     })
 } catch(err) {
   if(err.name != 'TimeoutError') status.timeout(err)
