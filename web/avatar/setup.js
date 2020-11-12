@@ -60,7 +60,7 @@ function getPlugins({store, log}, cb) {
       log("err/getPlugins", err)
       cb({
         chat: "**Error downloading plugins**!\n\nI will notify the developers of this issue. In the meantime you can check the message logs and see if that gives you any ideas.",
-        proc: "exit"
+        call: "exit"
       })
     })
 }
