@@ -171,8 +171,8 @@ function serverTasks({vars, store, say, log}, cb) {
 }
 
 /*    way/
- * send finished task status's to the server, ignoring those
- * that have already been sent (status 202)
+ * send finished task status's and notifications to the server,
+ * ignoring those that have already been sent (status 202)
  */
 function sendToServer({vars, store, say, log}, cb) {
   const tasks = store.get("user.tasks")
@@ -181,7 +181,9 @@ function sendToServer({vars, store, say, log}, cb) {
 
   const statusUpdates = status.map(s => {
     const status = s.code == 200 ? "success" : "failed"
-    return { id: s.id, status }
+    let updt = { id: s.id, status }
+    if(s.notify) updt.notify = s.notify
+    return updt
   })
 
   if(!status.length) return {}
