@@ -6,6 +6,22 @@ const dh = require('./display-helpers.js')
 import "./home.scss"
 
 /*    understand/
+ * we cache the tasknames here because (a) they shouldn't change
+ * and (b) we often need them
+ */
+let TASKNAMES = {}
+function getTaskname(action) {
+  if(!TASKNAMES[action]) {
+    TASKNAMES[action] = new Promise((resolve, reject) => {
+      window.get.taskname(action)
+      .then(n => resolve(n))
+      .catch(e => resolve(action))
+    })
+  }
+  return TASKNAMES[action]
+}
+
+/*    understand/
  * the home page shows a user pane on the left, a report
  * pane on the right and the middle contains a view of
  * the avatar that is doing work chatting with you
@@ -169,10 +185,8 @@ function e(ui, log, store) {
       }
       for(let action in summary) {
         let name = h("td", action)
-        window.get.taskname(action)
-          .then(n => {
-            name.innerText = n
-          })
+        getTaskname(action)
+          .then(n => name.innerText = n)
           .catch(e => console.error(e))
         tbl.add(h("tr", [
           name,
