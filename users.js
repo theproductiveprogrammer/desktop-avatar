@@ -100,6 +100,7 @@ function browser(user) {
  */
 async function linkedInPage(cfg, auth, browser) {
   const page = await browser.newPage()
+  await page.setViewport({ width: 1920, height: 1080 })
   page.setCacheEnabled(false)
   if(cfg.timeout) await page.setDefaultTimeout(cfg.timeout)
   if(process.env.DEBUG) {
