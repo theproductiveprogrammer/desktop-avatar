@@ -292,7 +292,7 @@ function performTask(auth, task, cb) {
       return {
         log: {
           trace: m => {
-            log.trace(`trace/${task.action}/${task.id}`, m)
+            log(`trace/${task.action}/${task.id}`, m)
           },
           err: m => {
             log(`err/${task.action}/${task.id}`, m)
