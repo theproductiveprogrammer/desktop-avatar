@@ -394,7 +394,7 @@ function getPlugin(name, cb) {
     if(err) cb(err)
     else {
       try {
-        plugin.code = new vm.Script(code)
+        plugin.code = new vm.Script(wrap_1(code))
         state.plugins[name] = plugin
         cb(null, plugin)
       } catch(e) {
@@ -402,6 +402,37 @@ function getPlugin(name, cb) {
       }
     }
   })
+
+  /*    problem/
+   * while plugin authors will do their best it is possible
+   * they could throw some error/exception without meaning to
+   * during the execution of the plugin. This error is hard
+   * to find/see in the logs once the program is running.
+   *    way/
+   * wrap a call to a "standard" function we expect called
+   * "performTask" in a try catch block and report it as an
+   * error to the user
+   */
+  function wrap_1(code) {
+    return `${code}
+
+if(plugin.task) {
+try {
+  performTask(plugin.task)
+    .then(() => {
+      status.done()
+    })
+    .catch(err => {
+      status.servererr(err)
+    })
+} catch(err) {
+  if(err.name != 'TimeoutError') status.timeout(err)
+  else status.servererr(err)
+}
+}
+
+`
+  }
 }
 
 /*    understand/
