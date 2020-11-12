@@ -290,8 +290,13 @@ function performTask(auth, task, cb) {
      */
     function context_1(browser, cfg, page, task) {
       return {
-        trace: m => {
-          log.trace(`trace/${task.action}.${task.id}`, m)
+        log: {
+          trace: m => {
+            log.trace(`trace/${task.action}/${task.id}`, m)
+          },
+          err: m => {
+            log(`err/${task.action}/${task.id}`, m)
+          }
         },
         cfg,
         status: {
