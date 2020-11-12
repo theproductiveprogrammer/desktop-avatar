@@ -410,8 +410,8 @@ function getPlugin(name, cb) {
    * to find/see in the logs once the program is running.
    *    way/
    * wrap a call to a "standard" function we expect called
-   * "performTask" in a try catch block and report it as an
-   * error to the user
+   * "performTask" in a try catch block and report it as the
+   * correct error to the user
    */
   function wrap_1(code) {
     return `${code}
@@ -423,11 +423,11 @@ try {
       status.done()
     })
     .catch(err => {
-      if(err.name != 'TimeoutError') status.timeout(err)
+      if(err.name == 'TimeoutError') status.timeout(err)
       else status.servererr(err)
     })
 } catch(err) {
-  if(err.name != 'TimeoutError') status.timeout(err)
+  if(err.name == 'TimeoutError') status.timeout(err)
   else status.servererr(err)
 }
 }
