@@ -8,7 +8,7 @@ const emoji = require('emojilib')
  */
 function userName(ui) {
   if(!ui) return "(no user)"
-  let r = ui.title ? u.title + " " : ""
+  let r = ui.title ? ui.title + " " : ""
   if(ui.firstName && ui.lastName) {
     return r + ui.firstName + " " + ui.lastName
   }
