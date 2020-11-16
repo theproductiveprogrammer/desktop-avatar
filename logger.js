@@ -82,7 +82,7 @@ module.exports = (LOGNAME, traceOn) => {
   if(traceOn) {
     log.trace = trace
   } else {
-    log.trace = silentlyIgnore
+    log.trace = trace /*TODO: silentlyIgnore */
   }
 
   return log
