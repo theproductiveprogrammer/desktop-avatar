@@ -69,9 +69,9 @@ function show(settings, log) {
     value: settings.serverURL || "",
   })
 
-  let plugins = h("input.plugins", {
-    placeholder: "https://bitbucket.org/sbox_charles/dapp-plugins/",
-    value: settings.plugins || "",
+  let timeout = h("input.timeout", {
+    placeholder: "30000",
+    value: settings.timeout || "",
   })
 
   let userips = h("textarea.userips", {
@@ -79,10 +79,14 @@ function show(settings, log) {
     onblur: () => userips.value=user_ip_vals_1(user_ips_1())
   }, user_ip_vals_1(settings.userips))
 
-  let chkbox = h("input", { type: "checkbox" })
-  let puppetShow = h(".puppetShow", [
-    chkbox,
+  let chkbox = h("input.puppetShow", { type: "checkbox" })
+  let adv = h(".adv", [
+    h(".left", timeout),
+    h("label", "Timeout"),
+    h(".clearfix"),
+    h(".left", chkbox),
     h("label", "Show Browser Windows"),
+    h(".clearfix"),
   ])
   if(settings.puppetShow) chkbox.attr({ checked : true })
 
@@ -110,11 +114,9 @@ function show(settings, log) {
   form.c(
     h(".label", "Server URL"),
     svr,
-    h(".label", "Plugins URL"),
-    plugins,
     h(".label", "User IP Mapping"),
     userips,
-    puppetShow,
+    adv,
     submit
   )
 
@@ -131,21 +133,21 @@ function show(settings, log) {
 
   function submit_1() {
     let svrURL = svr.value
-    let pluginURL = plugins.value
+    let to = timeout.value ? parseInt(timeout.value) : null
     if(svrURL && !valid_1(svrURL)) {
       alert("Invalid server URL")
       svr.focus()
       return
     }
-    if(pluginURL && !valid_1(pluginURL)) {
-      alert("Invalid pluginURL URL")
-      plugins.focus()
+    if(isNaN(to)) {
+      alert("Invalid timeout value")
+      timeout.focus()
       return
     }
     settings = {
       t: (new Date()).toISOString(),
       serverURL: svrURL,
-      pluginURL: pluginURL,
+      timeout: to,
       userips: user_ips_1(),
       puppetShow: chkbox.checked ? true : false,
     }
