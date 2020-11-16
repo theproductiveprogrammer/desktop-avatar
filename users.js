@@ -8,6 +8,8 @@ const loc = require('./loc.js')
  */
 let USERS = {}
 let PUPPET_SHOW = false
+const DEFAULT_TIMEOUT = 30 * 1000
+let TIMEOUT = DEFAULT_TIMEOUT
 
 /*    understand/
  * keep unique objects to track errors
@@ -17,6 +19,11 @@ const LOGIN_ERR = {}
 const PREMIUM_ERR = {}
 
 function setPuppetShow(show) { PUPPET_SHOW = show }
+function setTimeout(tm) {
+  tm = parseInt(tm)
+  if(isNaN(tm)) TIMEOUT = DEFAULT_TIMEOUT
+  else TIMEOUT = tm
+}
 
 /*    way/
  * Close any existing browsers and link up the ui's (user
@@ -103,6 +110,7 @@ async function linkedInPage(cfg, auth, browser) {
   await page.setViewport({ width: 1920, height: 1080 })
   page.setCacheEnabled(false)
   if(cfg.timeout) await page.setDefaultTimeout(cfg.timeout)
+  else await page.setDefaultTimeout(TIMEOUT)
   if(process.env.DEBUG) {
     page.on("console", msg => console.log(msg.text()))
   }
@@ -264,6 +272,7 @@ module.exports = {
   setips,
   browser,
   setPuppetShow,
+  setTimeout,
   linkedInPage,
   autoScroll,
 

@@ -229,7 +229,7 @@ function performTask(auth, task, cb) {
     if(err) return cb(err)
     users.browser(users.get(task.userId)).then(browser => {
       const cfg = {
-        timeout: task.timeout || 30 * 1000
+        timeout: task.timeout || undefined
       }
       users.linkedInPage(cfg, auth, browser).then(page => {
 

@@ -115,6 +115,10 @@ function setupIPC(log, store) {
     window.set.puppetShow(show)
   })
 
+  store.react("settings.timeout", timeout => {
+    window.set.pageTimeout(timeout)
+  })
+
   function send_users_1() {
     let ui = store.get('user.ui')
     if(!ui) window.set.users(null)

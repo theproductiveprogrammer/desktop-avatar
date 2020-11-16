@@ -96,6 +96,10 @@ function setupIPC(log) {
     return users.setPuppetShow(show)
   })
 
+  ipcMain.handle("set-timeout", async (e, t) => {
+    return users.setTimeout(t)
+  })
+
   ipcMain.handle("x-cute", async (e, { a, t }) => {
     return plugins.perform(a, t)
   })

@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld("set", {
   users: uis => ipcRenderer.invoke("set-users", uis),
   userips: uips => ipcRenderer.invoke("set-userips", uips),
   puppetShow: show => ipcRenderer.invoke("set-puppetShow", show),
+  pageTimeout: t => ipcRenderer.invoke("set-timeout", t),
 })
 contextBridge.exposeInMainWorld("x", {
   cute: (a,t) => ipcRenderer.invoke("x-cute", { a, t }),
