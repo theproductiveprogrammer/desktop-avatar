@@ -315,7 +315,7 @@ function performTask(auth, task, cb) {
         autoScroll: users.autoScroll,
         util: {
           compareTwoStrings: ss.compareTwoStrings,
-        }
+        },
         plugin: {name: task.action, info:{}, task},
       }
     }
