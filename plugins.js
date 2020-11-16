@@ -5,6 +5,7 @@ const vm = require('vm')
 
 const { clone, pull } = require('isomorphic-git')
 const http = require('isomorphic-git/http/node')
+const ss = require('string-similarity')
 
 const loc = require('./loc.js')
 const dh = require('./web/display-helpers.js')
@@ -312,6 +313,9 @@ function performTask(auth, task, cb) {
         page,
         console,
         autoScroll: users.autoScroll,
+        util: {
+          compareTwoStrings: ss.compareTwoStrings,
+        }
         plugin: {name: task.action, info:{}, task},
       }
     }
