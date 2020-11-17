@@ -133,16 +133,13 @@ function getChat(task, status, cb) {
     try {
       vm.createContext(context)
       plugin.code.runInContext(context)
-      let chat = context.plugin.info[chatname_1(status)]
-      if(!chat) {
-        chat = default_chat_1(task, status, context.plugin.name)
-      } else if(typeof chat==="function") {
-        chat = chat(task)
-      } else {
-        chat = "" + chat
+      let chat = context.plugin.info.chat
+      if(!chat || typeof chat !== "function") {
+        chat = default_chat_1
       }
-      if(!chat) cb(`Error getting chat for status: ${JSON.stringify(status)}`)
-      else cb(null, chat)
+      const chatmsg = chat(task, status, context.plugin.name)
+      if(!chatmsg) cb(`Error getting chat for status: ${JSON.stringify(status)}`)
+      else cb(null, chatmsg)
     } catch(e) {
       cb(e)
     }
@@ -191,7 +188,7 @@ function getChat(task, status, cb) {
         `The site has refused to accept this user! Please see how you can get back on...`
       ],
     }
-    return dh.oneOf(msgs[status])
+    return dh.oneOf(msgs[status.code])
   }
 
 }

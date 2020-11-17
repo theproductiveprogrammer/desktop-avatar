@@ -70,7 +70,7 @@ function talkShop({store, say, log}, cb) {
     lazying = false
     store.event("lastLazy/set", Date.now())
     const t = store.getTask(s.id)
-    window.get.taskchat(t, s.code)
+    window.get.taskchat(t, s)
       .then(msg => {
         say({
           from: store.getTaskUser(t),
