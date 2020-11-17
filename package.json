@@ -1,6 +1,6 @@
 {
   "name": "desktop-avatar",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "The new/server version of the Salesbox Desktop Avatar",
   "scripts": {
     "start": "electron .",
