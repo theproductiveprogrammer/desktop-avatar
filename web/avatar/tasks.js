@@ -183,6 +183,7 @@ function sendToServer({vars, store, say, log}, cb) {
     const status = s.code == 200 ? "success" : "failed"
     let updt = { id: s.id, status }
     if(s.notify) updt.notify = s.notify
+    if(s.notifydata) updt.notifydata = s.notifydata
     return updt
   })
 
