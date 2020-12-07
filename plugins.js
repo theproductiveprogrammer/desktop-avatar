@@ -299,7 +299,7 @@ function performTask(auth, task, cb) {
         cfg,
         status: {
           done: m => status_done_1(page, m),
-          notify: m => status_done_1(page, null, m),
+          notify: (m,d) => status_done_1(page, null, m, d),
           usererr: m => status_usererr_1(page, m),
           timeout: m => status_timeout_1(page, m),
           servererr: m => status_servererr_1(page, m),
@@ -331,12 +331,13 @@ function performTask(auth, task, cb) {
 
     let status_set = false
 
-    function status_done_1(page, msg, notify) {
+    function status_done_1(page, msg, notify, notifydata) {
       if(status_set) return
       status_set = true
       if(!msg) msg = "task/done"
       let s = { id: task.id, msg, code: 200 }
       if(notify) s.notify = notify
+      if(notifydata) s.notifydata = notifydata
       log("task/status", s)
       page.close().catch(e => console.error(e))
     }
