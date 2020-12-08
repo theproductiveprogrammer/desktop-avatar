@@ -246,10 +246,10 @@ function findDuplicate(tasks, task) {
     if(curr.userId !== task.userId) continue
     switch(task.action) {
       case "LINKEDIN_CONNECT":
-        if(curr.linkedinURL == task.linkedinURL) return curr
+        if(curr.linkedInURL == task.linkedInURL) return curr
         break;
       case "LINKEDIN_MSG":
-        if(curr.linkedinURL == task.linkedinURL
+        if(curr.linkedInURL == task.linkedInURL
           && isSimilar(curr.msg, task.msg)) {
           return curr
         }
