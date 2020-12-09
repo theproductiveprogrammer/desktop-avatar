@@ -69,6 +69,11 @@ function show(settings, log) {
     value: settings.serverURL || "",
   })
 
+  let mxbr = h("input.mxbr", {
+    placeholder: "0",
+    value: settings.maxbrowsers || "",
+  })
+
   let timeout = h("input.timeout", {
     placeholder: "30000",
     value: settings.timeout || "",
@@ -114,6 +119,8 @@ function show(settings, log) {
   form.c(
     h(".label", "Server URL"),
     svr,
+    h(".label", "Max Simultaneous Users"),
+    mxbr,
     h(".label", "User IP Mapping"),
     userips,
     adv,
@@ -133,7 +140,10 @@ function show(settings, log) {
 
   function submit_1() {
     let svrURL = svr.value
-    let to = timeout.value ? parseInt(timeout.value) : null
+    let to = parseInt(timeout.value)
+    if(isNaN(to)) to = null
+    let maxbrowsers = parseInt(mxbr.value)
+    if(isNaN(maxbrowsers)) maxbrowsers = null
     if(svrURL && !valid_1(svrURL)) {
       alert("Invalid server URL")
       svr.focus()
@@ -150,6 +160,7 @@ function show(settings, log) {
       timeout: to,
       userips: user_ips_1(),
       puppetShow: chkbox.checked ? true : false,
+      maxbrowsers,
     }
     log.trace("settings/saving", settings)
     kc.put(settings, NAME)
