@@ -93,6 +93,12 @@ function browser(user) {
         puppetShow,
         browser,
       }
+      browser.on("disconnect", () => {
+        if(user.browserCache) {
+          user.browserCache = null
+          delete user.browserCache
+        }
+      })
       resolve(browser)
     })
       .catch(reject)
