@@ -44,6 +44,7 @@ function work({store, log, say}, cb) {
 
     if(wip_1(tasks)) return
     if(too_tired_1(user, tasks)) return
+    if(too_lazy_1(user)) return
 
     const task = pick_task_1(tasks)
     if(!task) return
@@ -116,6 +117,13 @@ function work({store, log, say}, cb) {
     if(hr > 20) return true
     if(day > 300) return true
     return false
+  }
+
+  /*    way/
+   * randomly decide the user is too lazy
+   */
+  function too_lazy_1(user) {
+    return Math.random() < 0.3
   }
 }
 
