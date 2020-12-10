@@ -69,9 +69,16 @@ module.exports = {
   ],
 
   /*    way/
-   * schedule work for the user then rinse, rest, and repeat
+   * select users to work and schedule work for them then
+   * rest, rinse, and repeat.
    */
   dothework: [
+    schedule.pickUsers,
+    schedule.takeANap,
+    { call: "dothework" },
+  ],
+  dothework1: [
+    schedule.pickUsers,
     { call: "gettasks" },
     schedule.work,
     tasks.userStatus,

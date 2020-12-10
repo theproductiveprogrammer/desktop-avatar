@@ -18,6 +18,7 @@ const store = enrich(dux.createStore(reducer, {
     status: [],
     assigned: {},
     dispatched: {},
+    active: [],
   },
   hist: {
     task: 0,
@@ -107,6 +108,8 @@ function userReducer(state, type, payload) {
         dispatched[payload.userId] = payload.taskId
         return { ...state, dispatched }
       }
+    case "activeusers/set":
+      return { ...state, active: payload }
     default: return state
   }
 }

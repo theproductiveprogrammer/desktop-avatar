@@ -10,7 +10,7 @@ function takeANap(env, cb) {
   let delay
   if(expecting) delay = Math.random() * 1000
   else delay = Math.random() * 20000 + 1000
-  setTimeout(() => cb(), delay)
+  setTimeout(() => cb(), 100)
 }
 
 /*    way/
@@ -119,8 +119,48 @@ function work({store, log, say}, cb) {
   }
 }
 
+let ACTIVEUSERS = {
+  when: 0,
+  ndx: 0,
+}
+
+/*    problem/
+ * machines have limitations as to the number of simultaneous
+ * puppeteer browsers that can reasonably be open. As we have a
+ * a one-browser-per-user policy we may need to pick a set of
+ * users to do jobs at any given time to avoid overwhelming
+ * the machine.
+ *    way/
+ * Every hour or so we pick a new set of users to perform tasks
+ */
+function pickUsers(env, cb) {
+  const mxbr = env.store.get("settings.maxbrowsers")
+  const users = env.store.getUsers()
+  const activeusers = pick_new_1(users, mxbr)
+  if(activeusers) env.store.event("activeusers/set",activeusers)
+  cb()
+
+  /*    way/
+   * If the max browser setting is less than the actual
+   * number of users then every hour we rotate through
+   * the list of users
+   */
+  function pick_new_1(users, mxbr) {
+    if(!users || !users.length) return
+    mxbr = parseInt(mxbr)
+    if(isNaN(mxbr) || mxbr >= users.length) return
+    const n = Date.now()
+    if((n - ACTIVEUSERS.when) < 1000 * 6) return
+    const ndx = (ACTIVEUSERS.ndx + 1) % users.length
+    ACTIVEUSERS.when = n
+    ACTIVEUSERS.ndx = ndx
+    return users.concat(users).slice(ndx, ndx+mxbr)
+  }
+}
+
 
 module.exports = {
+  pickUsers,
   takeANap,
   work,
 }
