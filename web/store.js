@@ -158,6 +158,12 @@ function enrich(store) {
     return users.concat(ui)
   }
 
+  store.getActiveUsers = () => {
+    const active = store.get("user.active")
+    if(active && active.length) return active
+    else return store.getUsers()
+  }
+
   store.getTasks = userId => {
     const tasks = store.get("user.tasks")
     return tasks.filter(t => t.userId == userId)
