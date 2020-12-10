@@ -74,11 +74,6 @@ module.exports = {
    */
   dothework: [
     schedule.pickUsers,
-    schedule.takeANap,
-    { call: "dothework" },
-  ],
-  dothework1: [
-    schedule.pickUsers,
     { call: "gettasks" },
     schedule.work,
     tasks.userStatus,

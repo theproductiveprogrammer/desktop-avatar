@@ -10,7 +10,7 @@ function takeANap(env, cb) {
   let delay
   if(expecting) delay = Math.random() * 1000
   else delay = Math.random() * 20000 + 1000
-  setTimeout(() => cb(), 100)
+  setTimeout(() => cb(), delay)
 }
 
 /*    way/
@@ -158,7 +158,7 @@ function pickUsers(env, cb) {
     mxbr = parseInt(mxbr)
     if(isNaN(mxbr) || mxbr >= users.length) return
     const n = Date.now()
-    if((n - ACTIVEUSERS.when) < 1000 * 6) return
+    if((n - ACTIVEUSERS.when) < 1000 * 60 * 60) return
     const ndx = (ACTIVEUSERS.ndx + 1) % users.length
     ACTIVEUSERS.when = n
     ACTIVEUSERS.ndx = ndx
