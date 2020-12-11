@@ -20,6 +20,9 @@ contextBridge.exposeInMainWorld("set", {
   puppetShow: show => ipcRenderer.invoke("set-puppetShow", show),
   pageTimeout: t => ipcRenderer.invoke("set-timeout", t),
 })
+contextBridge.exposeInMainWorld("clear", {
+  browsers: () => ipcRenderer.invoke("clear-browsers"),
+})
 contextBridge.exposeInMainWorld("x", {
   cute: (a,t) => ipcRenderer.invoke("x-cute", { a, t }),
   it: () => ipcRenderer.invoke("x-it"),

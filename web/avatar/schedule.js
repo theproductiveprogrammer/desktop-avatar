@@ -18,7 +18,7 @@ function takeANap(env, cb) {
  */
 function work({store, log, say}, cb) {
   let chatting = false
-  store.getUsers().forEach(schedule_work_1)
+  store.getActiveUsers().forEach(schedule_work_1)
   if(!chatting) return {}
 
   /*    way/
@@ -145,7 +145,9 @@ function pickUsers(env, cb) {
   const mxbr = env.store.get("settings.maxbrowsers")
   const users = env.store.getUsers()
   const activeusers = pick_new_1(users, mxbr)
-  if(activeusers) env.store.event("activeusers/set",activeusers)
+  if(!activeusers) return
+  env.store.event("activeusers/set", activeusers)
+  window.clear.browsers()
   cb()
 
   /*    way/

@@ -109,7 +109,7 @@ function serverTasks({vars, store, say, log}, cb) {
   if(Date.now() - last < CHECK_EVERY) return cb()
   store.event("lastServerTasks/set", Date.now())
 
-  const users = store.getUsers()
+  const users = store.getActiveUsers()
   log("serverTasks/getting", {forUsers:users.map(u=>u.id)})
   const ui = store.get("user.ui")
   say(chat.gettingTasks(), () => {

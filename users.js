@@ -281,6 +281,7 @@ module.exports = {
   setTimeout,
   linkedInPage,
   autoScroll,
+  closeBrowsers,
 
   NEEDS_CAPCHA,
   LOGIN_ERR,

@@ -111,6 +111,10 @@ function setupIPC(log) {
   ipcMain.handle("x-it", async (e, task) => {
     app.quit()
   })
+
+  ipcMain.handle("clear-browsers", async () => {
+    users.closeBrowsers()
+  })
 }
 
 /*    way/
