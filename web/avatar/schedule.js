@@ -123,7 +123,10 @@ function work({store, log, say}, cb) {
    * randomly decide the user is too lazy
    */
   function too_lazy_1(user) {
-    return Math.random() < 0.3
+    if(Math.random() < 0.3) {
+      log("user/onabreak")
+      return true
+    }
   }
 }
 
@@ -145,7 +148,7 @@ function pickUsers(env, cb) {
   const mxbr = env.store.get("settings.maxbrowsers")
   const users = env.store.getUsers()
   const activeusers = pick_new_1(users, mxbr)
-  if(!activeusers) return
+  if(!activeusers) return cb()
   env.store.event("activeusers/set", activeusers)
   window.clear.browsers()
   cb()
