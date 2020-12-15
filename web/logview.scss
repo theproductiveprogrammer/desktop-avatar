@@ -27,6 +27,13 @@
     color: $bgwhite;
     padding-left: 32px;
   }
+  .dwnbtn {
+    position: absolute;
+    top: 6px;
+    right: 24px;
+    cursor: pointer;
+    color: $bgwhite;
+  }
   .title {
     padding: 6px 12px;
     font-variant: all-small-caps;

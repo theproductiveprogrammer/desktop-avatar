@@ -39,11 +39,14 @@ function e(log, store) {
   let closebtn = h(".closebtn", {
     onclick: () => store.event("logview/hide")
   }, "X")
+  let dwnbtn = h(".dwnbtn", {
+    onclick: () => troubleshoot(log, store),
+  }, "\u21E9")
 
   let loglist = h(".logs")
 
   logview.c(
-    title, closebtn, loglist
+    title, closebtn, dwnbtn, loglist
   )
 
   let scrolledon = 0
@@ -113,6 +116,10 @@ function e(log, store) {
     if(v < 10) return "0"+v;
     return v
   }
+}
+
+function troubleshoot(log, store) {
+  window.show.trouble()
 }
 
 /*    way/

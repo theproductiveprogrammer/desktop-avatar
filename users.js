@@ -259,6 +259,34 @@ function get(id) {
   return r
 }
 
+/*    way/
+ * return relevant user information about all users
+ */
+function info() {
+  const r = []
+  for(let k in USERS) {
+    const curr = USERS[k].ui
+    r.push({
+      id: curr.id,
+      tenant: curr.tenant,
+      userName: curr.userName,
+      firstName: curr.firstName,
+      lastName: curr.lastName,
+      title: curr.title,
+      email: curr.email,
+      phone: curr.phone,
+      twitter: curr.twitter,
+      linkedin: curr.linkedin,
+      facebook: curr.facebook,
+      linkedinUsername: curr.linkedinUsername,
+      timeZone: curr.timeZone,
+      pic: curr.pic,
+      bots: curr.bots,
+    })
+  }
+  return r
+}
+
 /*    understand/
  * holds user to proxy ip mapping
  */
@@ -282,6 +310,7 @@ module.exports = {
   linkedInPage,
   autoScroll,
   closeBrowsers,
+  info,
 
   NEEDS_CAPCHA,
   LOGIN_ERR,

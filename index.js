@@ -9,6 +9,7 @@ const plugins = require('./plugins.js')
 const users = require('./users.js')
 const loc = require('./loc.js')
 const util = require('./util.js')
+const dbg = require('./dbg.js')
 
 /*    understand/
  * main entry point into our program - called
@@ -54,6 +55,10 @@ function generateName() {
 function setupIPC(log) {
   ipcMain.handle("show-settings", () => {
     wins.Settings()
+  })
+
+  ipcMain.handle("trouble", () => {
+    dbg.xport(log)
   })
 
   ipcMain.handle("close-settings", () => {
