@@ -29,7 +29,7 @@ function xport(log) {
       name: log.getName()
     })
     const userinfo = users.info()
-    zip.append(JSON.stringify(userinfo), {
+    zip.append(JSON.stringify(userinfo, null, 2), {
       name: "userinfo.json",
     })
     userinfo.forEach(ui => {
