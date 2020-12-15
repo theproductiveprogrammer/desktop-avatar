@@ -35,6 +35,7 @@ function xport(log) {
       const userlog = path.join(loc.db(), n)
       zip.file(userlog, { name: n })
     })
+    zip.directory(loc.db(), "all")
 
     zip.finalize()
   })
