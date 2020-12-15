@@ -25,9 +25,7 @@ function xport(log) {
     zip.pipe(o)
 
     const logfile = path.join(loc.db(), log.getName())
-    zip.append(fs.createReadStream(logfile), {
-      name: log.getName()
-    })
+    zip.file(logfile, { name: log.getName() })
     const userinfo = users.info()
     zip.append(JSON.stringify(userinfo, null, 2), {
       name: "userinfo.json",
@@ -35,9 +33,7 @@ function xport(log) {
     userinfo.forEach(ui => {
       const n = "User-" + ui.id
       const userlog = path.join(loc.db(), n)
-      zip.append(fs.createReadStream(userlog), {
-        name: n,
-      })
+      zip.file(userlog, { name: n })
     })
 
     zip.finalize()
