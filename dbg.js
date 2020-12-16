@@ -9,7 +9,7 @@ const loc = require('./loc.js')
 
 function xport(log) {
   const t = (new Date()).toISOString()
-  const n = `troubleshooting-desktop-app-${t}.zip`
+  const n = `troubleshooting-desktop-app-${t.replace(/[/:\\*&^%$#@!()]/g, "_")}.zip`
   dialog.showSaveDialog({
     title: "Troubleshooting files",
     defaultPath: n,
