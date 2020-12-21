@@ -135,6 +135,7 @@ function serverTasks({vars, store, say, log}, cb) {
         log("serverTasks/got", { num: tasks.length })
         log.trace("serverTasks/gottasks", tasks)
         tasks = dedup_1(tasks)
+        tasks = skipCheckConnectTask(tasks)
         say({
           from: -1,
           chat: chat.sentTasks(tasks),
@@ -166,6 +167,41 @@ function serverTasks({vars, store, say, log}, cb) {
       if(!t) r.push(task)
     }
     return r
+  }
+
+  /**
+   *   way/
+   * skip check connect task if withdraw connection task is there for a specific profile
+   */
+  function skipCheckConnectTask(tasks) {
+    let r = []
+    let withdrawTask = []
+    let checkConnectTask = []
+    for(let i = 0; i < tasks.length; i++) {
+      if(tasks[i].action == 'LINKEDIN_DISCONNECT'){
+        withdrawTask.push(tasks[i])
+        r.push(tasks[i])
+      }
+      else if (tasks[i].action == 'LINKEDIN_CHECK_CONNECT')
+        checkConnectTask.push(tasks[i])
+      else
+        r.push(tasks[i])
+    }
+    for(let i=0 ; i < checkConnectTask.length;i++){
+      if(!isWithdrawConnectionExist(withdrawTask, checkConnectTask[i].linkedInURL)) r.push(checkConnectTask[i])
+    }
+    return r
+
+    function isWithdrawConnectionExist(arr, linkedInURL) {
+      var found = false;
+      for(var i = 0; i < arr.length; i++) {
+        if (arr[i].linkedInURL == linkedInURL) {
+          found = true;
+          break;
+        }
+      }
+      return found
+    }
   }
 
 }
