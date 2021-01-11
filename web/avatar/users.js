@@ -28,15 +28,25 @@ function getUsers({vars,log,store}, cb) {
       })
     } else {
       let users = resp.body
-      log("avatar/gotusers", { num: users.length })
-      log.trace("avatar/gotusers", users)
-      store.event("users/set", users)
+      let allowedUsers = getUserList(store)
+      let t = []
+      for(let i=0; i < users.length; i++) {
+          if(allowedUsers.includes(users[i]['userName'].toLowerCase())) t.push(users[i])
+      }
+      log("avatar/gotusers", { num: t.length })
+      log.trace("avatar/gotusers", t)
+      store.event("users/set", t)
       cb({
         from: -1,
         chat: chat.manageUsers(users),
       })
     }
   })
+
+  function getUserList(store) {
+    let userList = store.get("settings.userList").toLowerCase()
+    return userList.trim().replace(/\r?\n|\r/g,'').split(",")
+  }
 }
 
 /*    way/

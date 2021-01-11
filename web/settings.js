@@ -84,6 +84,11 @@ function show(settings, log) {
     onblur: () => userips.value=user_ip_vals_1(user_ips_1())
   }, user_ip_vals_1(settings.userips))
 
+  let userList = h("textarea.userList", {
+    placeholder: "Allowed user list. ex: jennifer,pharma",
+    value: settings.userList || "",
+  },settings.userList)
+
   let chkbox = h("input.puppetShow", { type: "checkbox" })
   let adv = h(".adv", [
     h(".left", timeout),
@@ -123,6 +128,8 @@ function show(settings, log) {
     mxbr,
     h(".label", "User IP Mapping"),
     userips,
+    h(".label", "Allowed User List"),
+    userList,
     adv,
     submit
   )
@@ -156,11 +163,12 @@ function show(settings, log) {
     }
     settings = {
       t: (new Date()).toISOString(),
-      serverURL: svrURL,
+      serverURL: removeSlashAtEnd(svrURL),
       timeout: to,
       userips: user_ips_1(),
       puppetShow: chkbox.checked ? true : false,
       maxbrowsers,
+      userList: userList.value,
     }
     log.trace("settings/saving", settings)
     kc.put(settings, NAME)
@@ -174,6 +182,11 @@ function show(settings, log) {
     } catch(e) {
       return false
     }
+  }
+
+  function removeSlashAtEnd(str){
+    if(str.endsWith('/')) return str.substring(0, str.length - 1)
+    else return str
   }
 
 }
