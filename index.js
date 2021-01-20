@@ -10,7 +10,7 @@ const users = require('./users.js')
 const loc = require('./loc.js')
 const util = require('./util.js')
 const dbg = require('./dbg.js')
-
+const fs = require('fs')
 /*    understand/
  * main entry point into our program - called
  * when electron is ready
@@ -18,7 +18,7 @@ const dbg = require('./dbg.js')
 function onReady() {
   const log = lg(generateName(), process.env.DEBUG)
 
-  util.ensureExists(loc.cookies(), err => {
+  setupFolders(err => {
     if(err) {
       dialog.showErrorBox("DB", err.toString())
       app.quit()
@@ -37,6 +37,13 @@ function onReady() {
     })
   })
 
+}
+
+function setupFolders(cb) {
+  util.ensureExists(loc.cookies(), err => {
+    if(err) cb(err)
+    else util.ensureExists(loc.savedCookies(), cb)
+  })
 }
 
 app.whenReady().then(onReady)
@@ -120,6 +127,10 @@ function setupIPC(log) {
   ipcMain.handle("clear-browsers", async () => {
     users.closeBrowsers()
   })
+
+  ipcMain.handle("save-usercookie", async (e, info) => {
+    users.saveCookieFile(info)
+  })
 }
 
 /*    way/
@@ -157,6 +168,10 @@ function setupMenu() {
         {
           label: 'Settings',
           click: () => wins.Settings()
+        },
+        {
+          label: "User Cookies",
+          click: () => wins.UserCookie()
         }
       ]
     },

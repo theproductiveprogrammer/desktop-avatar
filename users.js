@@ -120,7 +120,10 @@ async function linkedInPage(cfg, auth, browser) {
   if(process.env.DEBUG) {
     page.on("console", msg => console.log(msg.text()))
   }
-  const loggedin = await cookie_login_1(page, auth)
+  const cookie_f1 = loc.savedCookieFile(auth.id)
+  const cookie_f2 = loc.cookieFile(auth.id)
+  const loggedin = await cookie_login_1(cookie_f1, page)
+                    || await cookie_login_1(cookie_f2, page)
   if(!loggedin) {
     await auth_login_1(auth, page)
     await save_login_cookie_1(page, auth)
@@ -164,7 +167,7 @@ async function linkedInPage(cfg, auth, browser) {
     if(!enabled) throw PREMIUM_ERR
   }
 
-  async function cookie_login_1(page, auth) {
+  async function cookie_login_1(cookie_f, page) {
     try {
       let cookie_f = loc.cookieFile(auth.id)
       let cookie_s = await fs.readFile(cookie_f)
@@ -176,6 +179,25 @@ async function linkedInPage(cfg, auth, browser) {
 
       return true
 
+    } catch(e) {}
+
+    try {
+      await page.waitFor('[data-resource="feed/badge"]')
+
+      return true
+    } catch (e) {}
+
+    return false
+  }
+
+  async function saved_cookie_login_1(page, auth) {
+    try {
+      const cookie_s = await fs.readFile(cookie_f)
+      const cookie = JSON.parse(cookie_s)
+      await page.setCookie({ name: "li_at", value: cookie.cookievalue, domain: "www.linkedin.com" })
+      await page.goto('https://www.linkedin.com/')
+      await page.waitFor('input[role=combobox]')
+      return true
     } catch(e) {}
 
     try {
@@ -298,7 +320,21 @@ function setips(uips) {
   }
 }
 
-
+/*    understand/
+ * save the cookie provided to use manually by the user
+ */
+function saveCookieFile(info) {
+  const cookie_f = loc.savedCookieFile(info.userid)
+  fs.writeFile(cookie_f, JSON.stringify(info.cookie), err => {
+    if(err) {
+      console.error("Error while writing cookie file")
+      console.error(err)
+      throw err
+    } else {
+      users.closeBrowsers()
+    }
+  })
+}
 
 module.exports = {
   set,
@@ -311,6 +347,7 @@ module.exports = {
   autoScroll,
   closeBrowsers,
   info,
+  saveCookieFile,
 
   NEEDS_CAPCHA,
   LOGIN_ERR,

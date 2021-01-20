@@ -40,10 +40,24 @@ function cookies() {
 }
 
 /*    outcome/
- * Return the location of a user's cookie file
+ * return the location of a user's cookie file
  */
 function cookieFile(userid) {
   return path.join(cookies(), `${userid}`)
+}
+
+/*    outcome/
+ * Return the location of the user-saved cookies directory
+ */
+function savedCookies() {
+  return path.join(home(), 'saved-cookies')
+}
+
+/*    outcome/
+ * return the location of a saved user cookie file
+ */
+function savedCookieFile(userid) {
+  return path.join(savedCookies(), `${userid}`)
 }
 
 /*    outcome/
@@ -60,5 +74,7 @@ module.exports = {
   plugin,
   cookies,
   cookieFile,
+  savedCookies,
+  savedCookieFile,
   dmp,
 }

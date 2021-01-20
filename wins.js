@@ -80,6 +80,40 @@ function closeSettings() {
   if(wins.settings) wins.settings.close()
 }
 
+/*    understand/
+ * in order to simplify login we also provide an option
+ * for the user to extract and save their login cookies
+ * which we can then use without needing their credentials
+ */
+function createCookieWin() {
+  if(wins.cookie) return wins.cookie.focus()
+  wins.cookie = new BrowserWindow({
+    width: 600,
+    height: 600,
+    resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, "preload-user-cookie.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+    },
+    backgroundColor: "#0490f9",
+  })
+
+  wins.cookie.on("close", () => wins.cookie = null)
+
+  wins.cookie.webContents.on("will-navigate", (e, url) => {
+    if(url && url.indexOf("src=desktop-avatar") > 0) {
+      e.preventDefault()
+      shell.openExternal(url)
+    }
+  })
+
+
+  loadWin("user-cookie.html", wins.cookie)
+}
+
+
 /*    problem/
  * In dev mode we want to use the parcel development server so we can
  * have hot-reloading and all that good stuff but for testing/production
@@ -108,6 +142,7 @@ function None() {
 module.exports = {
   Main: createMainWin,
   Settings: createSettingsWin,
+  UserCookie: createCookieWin,
   closeSettings,
   None,
 }
