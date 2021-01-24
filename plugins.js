@@ -265,7 +265,7 @@ function performTask(auth, task, cb) {
         }
         if(err === users.LOGIN_ERR) {
           status_baduser_1("err/login/err")
-          return cb("Login failed")
+          return cb(`Invalid Linkedin credential`)
         }
         if(err === users.PREMIUM_ERR) {
           status_baduser_1("err/need/salesnavigator")
