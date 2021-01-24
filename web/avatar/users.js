@@ -14,11 +14,12 @@ function getUsers({vars,log,store}, cb) {
   log("avatar/gettingusers")
   let p = `${vars.serverURL}/dapp/v2/myusers`
   let ui = store.get("user.ui")
-
+  let allowedUsers = getUserList(store)
   req.post(p, {
     id: ui.id,
     seed: ui.seed,
-    authKey: ui.authKey
+    authKey: ui.authKey,
+    users: allowedUsers
   }, (err, resp) => {
     if(err || !resp || !resp.body) {
       log("err/avatar/gettingusers", err)
@@ -28,17 +29,19 @@ function getUsers({vars,log,store}, cb) {
       })
     } else {
       let users = resp.body
-      let allowedUsers = getUserList(store)
       let t = []
       for(let i=0; i < users.length; i++) {
-          if(allowedUsers.includes(users[i]['userName'].toLowerCase())) t.push(users[i])
+          if(users[i]['userName']){
+            if(allowedUsers.includes(users[i]['userName'].toLowerCase())) t.push(users[i])
+          }
+          
       }
       log("avatar/gotusers", { num: t.length })
       log.trace("avatar/gotusers", t)
       store.event("users/set", t)
       cb({
         from: -1,
-        chat: chat.manageUsers(users),
+        chat: chat.manageUsers(t),
       })
     }
   })
