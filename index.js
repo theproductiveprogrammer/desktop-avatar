@@ -180,3 +180,18 @@ function setupMenu() {
   let menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
+/**
++ *  understand/
++ * To prevent multiple time application open
++ */
+const gotTheLock = electron.app.requestSingleInstanceLock()
+if(!gotTheLock) {
+  electron.app.quit()
+} else {
+  electron.app.on('second-instance', (event, commandLine, workingDirectory) => {
+    if(wins.Main()) {
+      if(wins.Main().isMinimized()) wins.Main().restore()
+      wins.Main().focus()
+    }
+  })
+}
