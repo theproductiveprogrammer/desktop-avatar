@@ -43,7 +43,8 @@ function userStatus({store, log}, cb) {
       kc.get(name, (recs, from) => {
 
         store.event("from/set", { userId: ui.id, from })
-        recs.forEach(msg => {
+        let unique_tasks = duplicate_removal(recs)
+        unique_tasks.forEach(msg => {
           if(msg.e.startsWith("trace/")) {
             /* ignore */
           } else if(msg.e === "task/new") {
@@ -84,6 +85,35 @@ function userStatus({store, log}, cb) {
     }
 
   }
+}
+/* problem
+*  There might be duplicates tasks present in the logs.  
+* Some of the tasks present may have duplicates
+* way
+* Filter out duplicate tasks and have a set of unique tasks
+*/
+
+function duplicateremoval(tasks){
+  let newtasks = []
+  let taskwithstatus = []
+  let uniquetasks = [] 
+  for(let i =0;i<tasks.length;i++){
+  if(tasks[i].e == "task/new"){
+      if(!newtasks.includes(tasks[i].data.id)) {
+          newtasks.push(tasks[i].data.id)
+          uniquetasks.push(tasks[i])
+      }    
+  }else if(tasks[i].e == "task/status"){
+      if(!taskwithstatus.includes(tasks[i].data.id)){
+          taskwithstatus.push(tasks[i].data.id)
+          uniquetasks.push(tasks[i])
+      }
+    else{
+      uniquetasks.push(tasks[i])
+      }
+    }
+  }
+  return uniquetasks
 }
 
 /*    way/
@@ -160,15 +190,32 @@ function serverTasks({vars, store, say, log}, cb) {
    */
   function dedup_1(tasks) {
     const existing = store.get("user.tasks")
+    const unique_existing = filter_duplicates(existing)
     let r = []
     for(let i = 0;i < tasks.length;i++) {
       const task = tasks[i]
-      const t = findDuplicate(existing, task)
+      const t = findDuplicate(unique_existing, task)
       if(!t) r.push(task)
     }
     return r
   }
 
+ /* problem
+  * There are chances that there may be duplicates among existing tasks as well. 
+  * Way
+  * We need to  filter it out and get the unique tasks as well
+  */
+  function filter_duplicates(tasks){
+    let unique_ids = []
+    let filtered_existing = []
+    tasks.forEach(element => {
+        if(!unique_ids.includes(element.id)){
+            unique_ids.push(element.id)
+            filtered_existing.push(element)            
+        }        
+    });
+    return filtered_existing
+  }
   /**
    *   way/
    * skip check connect task if withdraw connection task is there for a specific profile
