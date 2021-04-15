@@ -43,7 +43,7 @@ function userStatus({store, log}, cb) {
       kc.get(name, (recs, from) => {
 
         store.event("from/set", { userId: ui.id, from })
-        let unique_tasks = duplicate_removal(recs)
+        let unique_tasks = local_dedupe(recs)
         unique_tasks.forEach(msg => {
           if(msg.e.startsWith("trace/")) {
             /* ignore */
@@ -87,13 +87,13 @@ function userStatus({store, log}, cb) {
   }
 }
 /* problem
-*  There might be duplicates tasks present in the logs.  
+* There might be duplicates tasks present in the logs.  
 * Some of the tasks present may have duplicates
 * way
 * Filter out duplicate tasks and have a set of unique tasks
 */
 
-function duplicateremoval(tasks){
+function local_dedupe(tasks){
   let newtasks = []
   let taskwithstatus = []
   let uniquetasks = [] 
@@ -164,7 +164,7 @@ function serverTasks({vars, store, say, log}, cb) {
         let tasks = resp.body || []
         log("serverTasks/got", { num: tasks.length })
         log.trace("serverTasks/gottasks", tasks)
-        tasks = dedup_1(tasks)
+        tasks = server_dedupe(tasks)
         tasks = skipCheckConnectTask(tasks)
         say({
           from: -1,
@@ -185,37 +185,34 @@ function serverTasks({vars, store, say, log}, cb) {
     })
   })
 
-  /*    way/
-   * filter out duplicate tasks the server has sent us
-   */
-  function dedup_1(tasks) {
+
+  /* problem
+  * Filter out duplicate tasks the server has sent us also 
+  * there are chances that there may be duplicates among 
+  * existing tasks as well. 
+  * Way
+  * We need to  filter it out and get the unique tasks as well
+  */
+
+  function server_dedupe(tasks) {
     const existing = store.get("user.tasks")
-    const unique_existing = filter_duplicates(existing)
+    let unique_ids = []
+    let sorted_existing = []
+    tasks.forEach(element => {
+        if(!unique_ids.includes(element.id)){
+            unique_ids.push(element.id)
+            sorted_existing.push(element)            
+        }        
+    });
     let r = []
     for(let i = 0;i < tasks.length;i++) {
       const task = tasks[i]
-      const t = findDuplicate(unique_existing, task)
+      const t = findDuplicate(sorted_existing, task)
       if(!t) r.push(task)
     }
     return r
   }
 
- /* problem
-  * There are chances that there may be duplicates among existing tasks as well. 
-  * Way
-  * We need to  filter it out and get the unique tasks as well
-  */
-  function filter_duplicates(tasks){
-    let unique_ids = []
-    let filtered_existing = []
-    tasks.forEach(element => {
-        if(!unique_ids.includes(element.id)){
-            unique_ids.push(element.id)
-            filtered_existing.push(element)            
-        }        
-    });
-    return filtered_existing
-  }
   /**
    *   way/
    * skip check connect task if withdraw connection task is there for a specific profile
