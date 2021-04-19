@@ -184,11 +184,11 @@ function setupMenu() {
 + *  understand/
 + * To prevent multiple time application open
 + */
-const gotTheLock = electron.app.requestSingleInstanceLock()
+const gotTheLock = app.requestSingleInstanceLock()
 if(!gotTheLock) {
-  electron.app.quit()
+  app.quit()
 } else {
-  electron.app.on('second-instance', (event, commandLine, workingDirectory) => {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
     if(wins.Main()) {
       if(wins.Main().isMinimized()) wins.Main().restore()
       wins.Main().focus()
