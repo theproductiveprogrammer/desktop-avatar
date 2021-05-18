@@ -258,7 +258,7 @@ function sendToServer({vars, store, say, log}, cb) {
   const tasks = store.get("user.tasks")
   const ts = tasks.map(t => store.getTaskStatus(t.id))
   const status = ts.filter(s => s && s.code >= 200 && s.code != 202)
-
+  
   const statusUpdates = status.map(s => {
     const status = s.code == 200 ? "success" : "failed"
     let updt = { id: s.id, status }
@@ -266,37 +266,59 @@ function sendToServer({vars, store, say, log}, cb) {
     if(s.notifydata) updt.notifydata = s.notifydata
     return updt
   })
-
+  
   if(!status.length) return {}
   log("sendToServer/statusUpdates", { num: status.length })
-
+  
   const ui = store.get("user.ui")
   const p = `${vars.serverURL}/dapp/v2/status`
-
-  req.post(p, {
-    id: ui.id,
-    seed: ui.seed,
-    authKey: ui.authKey,
-    statusUpdates,
-  }, (err, resp) => {
-    if(err) {
-      log("err/sendToServer", err)
-      cb(chat.errSendingStatus())
-    } else {
-      const tasks = statusUpdates.map(s => store.getTask(s.id))
-      say({
-        from: -1,
-        chat: chat.gotStatus(tasks),
-      }, () => {
-        window.add.sent(tasks)
-          .then(() => cb())
-          .catch(err => {
-            log("err/recordingSend", err)
-            cb()
-          })
-      })
+  
+  const users = store.get("user.users")
+  users.push(ui)
+  for(let i=0;i<statusUpdates.length;i++) {
+    const task = getTaskById(statusUpdates[i].id) 
+    const user = getUserById(task.userId)
+    req.post(p, {
+      id: user.id,
+      seed: user.seed,
+      authKey: user.authKey,
+      statusUpdates:[statusUpdates[i]],
+    }, (err, resp) => {
+      if(err) {
+        log("err/sendToServer", err)
+        cb(chat.errSendingStatus())
+      } else {
+        const tasks = statusUpdates.map(s => store.getTask(s.id))
+        say({
+          from: -1,
+          chat: chat.gotStatus(tasks),
+        }, () => {
+          window.add.sent(tasks)
+            .then(() => cb())
+            .catch(err => {
+              log("err/recordingSend", err)
+              cb()
+            })
+        })
+      }
+    })
+  }
+  function getUserById(id) {
+    for(let i=0; i < users.length; i++) {
+      if(users[i].id==id){
+          return users[i]
+      }
     }
-  })
+  }
+  function getTaskById(id) {
+    for(let i=0;i<tasks.length;i++){
+      if(tasks[i].id==id) {
+        return tasks[i];
+      }
+    }
+  }
+  
+
 }
 
 /*    problem/

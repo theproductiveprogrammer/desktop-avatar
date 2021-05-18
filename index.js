@@ -180,3 +180,18 @@ function setupMenu() {
   let menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
+/**
++ *  understand/
++ * To prevent multiple time application open
++ */
+const gotTheLock = app.requestSingleInstanceLock()
+if(!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    if(wins.Main()) {
+      if(wins.Main().isMinimized()) wins.Main().restore()
+      wins.Main().focus()
+    }
+  })
+}
