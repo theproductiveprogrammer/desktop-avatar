@@ -44,25 +44,22 @@ function userStatus({store, log}, cb) {
 
         store.event("from/set", { userId: ui.id, from })
         let unique_tasks = local_dedupe(recs)
+        let new_tasks_list = []
+        let tasks_status_list = []
         unique_tasks.forEach(msg => {
           if(msg.e.startsWith("trace/")) {
             /* ignore */
           } else if(msg.e === "task/new") {
-            store.event("task/add", msg.data)
-            store.event("status/add", {
-              t: (new Date()).toISOString(),
-              id: msg.id,
-              msg: "task/new/dummy",
-              code: 0,
-            })
+            new_tasks_list.push(msg.data)
           } else if(msg.e === "task/status") {
             msg.data.t = msg.t
-            store.event("status/add", msg.data)
+            tasks_status_list.push(msg.data)
           } else {
             log("err/processing/unknown", { msg })
           }
         })
-
+        store.event("task/add", new_tasks_list)
+        store.event("status/add", tasks_status_list)
       }, (err, end) => {
 
         if(err) {
@@ -196,17 +193,25 @@ function serverTasks({vars, store, say, log}, cb) {
 
   function server_dedupe(tasks) {
     const existing = store.get("user.tasks")
-    let unique_ids = []
+    let existing_ids = []
     let sorted_existing = []
+    existing.forEach(element => {
+      if(!existing_ids.includes(element.id)){
+          existing_ids.push(element.id)
+          sorted_existing.push(element)            
+      }        
+    });
+    let tasks_ids = []
+    let sorted_tasks = []
     tasks.forEach(element => {
-        if(!unique_ids.includes(element.id)){
-            unique_ids.push(element.id)
-            sorted_existing.push(element)            
+        if(!tasks_ids.includes(element.id)){
+          tasks_ids.push(element.id)
+          sorted_tasks.push(element)            
         }        
     });
     let r = []
-    for(let i = 0;i < tasks.length;i++) {
-      const task = tasks[i]
+    for(let i = 0;i < sorted_tasks.length;i++) {
+      const task = sorted_tasks[i]
       const t = findDuplicate(sorted_existing, task)
       if(!t) r.push(task)
     }
