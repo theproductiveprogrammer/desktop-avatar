@@ -43,25 +43,23 @@ function userStatus({store, log}, cb) {
       kc.get(name, (recs, from) => {
 
         store.event("from/set", { userId: ui.id, from })
-        recs.forEach(msg => {
+        let unique_tasks = local_dedupe(recs)
+        let new_tasks_list = []
+        let tasks_status_list = []
+        unique_tasks.forEach(msg => {
           if(msg.e.startsWith("trace/")) {
             /* ignore */
           } else if(msg.e === "task/new") {
-            store.event("task/add", msg.data)
-            store.event("status/add", {
-              t: (new Date()).toISOString(),
-              id: msg.id,
-              msg: "task/new/dummy",
-              code: 0,
-            })
+            new_tasks_list.push(msg.data)
           } else if(msg.e === "task/status") {
             msg.data.t = msg.t
-            store.event("status/add", msg.data)
+            tasks_status_list.push(msg.data)
           } else {
             log("err/processing/unknown", { msg })
           }
         })
-
+        store.event("task/add", new_tasks_list)
+        store.event("status/add", tasks_status_list)
       }, (err, end) => {
 
         if(err) {
@@ -84,6 +82,35 @@ function userStatus({store, log}, cb) {
     }
 
   }
+}
+/* problem
+* There might be duplicates tasks present in the logs.  
+* Some of the tasks present may have duplicates
+* way
+* Filter out duplicate tasks and have a set of unique tasks
+*/
+
+function local_dedupe(tasks){
+  let newtasks = []
+  let taskwithstatus = []
+  let uniquetasks = [] 
+  for(let i =0;i<tasks.length;i++){
+  if(tasks[i].e == "task/new"){
+      if(!newtasks.includes(tasks[i].data.id)) {
+          newtasks.push(tasks[i].data.id)
+          uniquetasks.push(tasks[i])
+      }    
+  }else if(tasks[i].e == "task/status"){
+      if(!taskwithstatus.includes(tasks[i].data.id)){
+          taskwithstatus.push(tasks[i].data.id)
+          uniquetasks.push(tasks[i])
+      }
+    else{
+      uniquetasks.push(tasks[i])
+      }
+    }
+  }
+  return uniquetasks
 }
 
 /*    way/
@@ -134,7 +161,7 @@ function serverTasks({vars, store, say, log}, cb) {
         let tasks = resp.body || []
         log("serverTasks/got", { num: tasks.length })
         log.trace("serverTasks/gottasks", tasks)
-        tasks = dedup_1(tasks)
+        tasks = server_dedupe(tasks)
         tasks = skipCheckConnectTask(tasks)
         say({
           from: -1,
@@ -155,15 +182,37 @@ function serverTasks({vars, store, say, log}, cb) {
     })
   })
 
-  /*    way/
-   * filter out duplicate tasks the server has sent us
-   */
-  function dedup_1(tasks) {
+
+  /* problem
+  * Filter out duplicate tasks the server has sent us also 
+  * there are chances that there may be duplicates among 
+  * existing tasks as well. 
+  * Way
+  * We need to  filter it out and get the unique tasks as well
+  */
+
+  function server_dedupe(tasks) {
     const existing = store.get("user.tasks")
+    let existing_ids = []
+    let sorted_existing = []
+    existing.forEach(element => {
+      if(!existing_ids.includes(element.id)){
+          existing_ids.push(element.id)
+          sorted_existing.push(element)            
+      }        
+    });
+    let tasks_ids = []
+    let sorted_tasks = []
+    tasks.forEach(element => {
+        if(!tasks_ids.includes(element.id)){
+          tasks_ids.push(element.id)
+          sorted_tasks.push(element)            
+        }        
+    });
     let r = []
-    for(let i = 0;i < tasks.length;i++) {
-      const task = tasks[i]
-      const t = findDuplicate(existing, task)
+    for(let i = 0;i < sorted_tasks.length;i++) {
+      const task = sorted_tasks[i]
+      const t = findDuplicate(sorted_existing, task)
       if(!t) r.push(task)
     }
     return r
