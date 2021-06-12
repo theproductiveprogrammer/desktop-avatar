@@ -13,7 +13,7 @@ function copy_code() {
   rm dbg.js
 
   echo copying index.js...
-  cp ../src-patches/index.js .
+  cp ../index.js .
 
   cd ..
 }
