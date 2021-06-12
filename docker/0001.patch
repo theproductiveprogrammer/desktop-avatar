@@ -1,0 +1,21 @@
+diff --git a/docker/src/loc.js b/docker/src/loc.js
+index c24d7d8..0b20304 100644
+--- a/docker/src/loc.js
++++ b/docker/src/loc.js
+@@ -7,15 +7,7 @@ const util = require('./util.js')
+  * configuration files, data etc
+  */
+ function home() {
+-  if(process.env.DESKTOP_AVATAR_HOME) return process.env.DESKTOP_AVATAR_HOME
+-
+-  let root = process.env.APPDATA
+-  if(root) {
+-    root = path.join(root, "Local")
+-  } else {
+-    root = process.env.HOME
+-  }
+-  return path.join(root, "desktop-avatar")
++  return "desktop-avatar-home"
+ }
+ 
+ /*    outcome/

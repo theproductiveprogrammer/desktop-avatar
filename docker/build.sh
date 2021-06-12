@@ -11,6 +11,8 @@ function copy_code() {
   rm preload-*.js
   rm dbg.js
 
+  patch < ../*patch
+
   cd ..
 }
 
