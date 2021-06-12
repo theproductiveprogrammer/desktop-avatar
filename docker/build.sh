@@ -12,8 +12,6 @@ function copy_code() {
   rm preload-*.js
   rm dbg.js
 
-  patch < ../src-patches/*patch
-
   echo copying index.js...
   cp ../src-patches/index.js .
 

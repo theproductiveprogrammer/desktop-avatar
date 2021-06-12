@@ -15,7 +15,7 @@ index c24d7d8..0b20304 100644
 -    root = process.env.HOME
 -  }
 -  return path.join(root, "desktop-avatar")
-+  return "desktop-avatar-home"
++  return path.resolve("desktop-avatar-home")
  }
  
  /*    outcome/
