@@ -1,6 +1,5 @@
 {
   "name": "desktop-avatar-docker",
-  "version": "0.0.0",
   "description": "A docker bundle of the desktop avatar",
   "main": "index.js",
   "scripts": {

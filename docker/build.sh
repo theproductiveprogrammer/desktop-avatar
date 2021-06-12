@@ -1,6 +1,6 @@
 #!/bin/bash
-VERSION=$(cat package.json | grep '^[\t ]*"version"[ \t]*:' | sed 's/.*"version".*"\(.*\)",/\1/')
 set -e
+VERSION=$(cat ../package.json | grep '^[\t ]*"version"[ \t]*:' | sed 's/.*"version".*"\(.*\)",/\1/')
 
 function copy_code() {
   cd src
