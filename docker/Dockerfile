@@ -11,4 +11,4 @@ COPY .vimrc /root/.vimrc
 WORKDIR /desktop-avatar
 COPY . .
 RUN npm install
-CMD ["/bin/bash"]
+CMD ["/usr/local/bin/node", "."]
