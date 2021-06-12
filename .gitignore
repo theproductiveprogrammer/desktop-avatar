@@ -2,3 +2,4 @@
 node_modules/
 pub/
 dist/
+docker/desktop-avatar-docker-db
