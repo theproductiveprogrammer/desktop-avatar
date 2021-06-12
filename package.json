@@ -23,23 +23,24 @@
   },
   "homepage": "https://github.com/theproductiveprogrammer/desktop-avatar#readme",
   "devDependencies": {
-    "electron": "^10.1.3",
-    "electron-builder": "^22.9.1",
-    "parcel": "^2.0.0-beta.1",
-    "sass": "^1.26.11"
+    "@parcel/transformer-sass": "^2.0.0-nightly.720",
+    "electron": "^13.1.2",
+    "electron-builder": "^22.11.7",
+    "parcel": "^2.0.0-beta.2",
+    "sass": "^1.34.1"
   },
   "dependencies": {
     "@tpp/dux": "^4.0.5",
-    "@tpp/htm-x": "^3.4.0",
+    "@tpp/htm-x": "^5.3.2",
     "@tpp/req": "^3.1.3",
-    "archiver": "^5.1.0",
-    "emojilib": "^2.4.0",
-    "isomorphic-git": "^1.7.8",
+    "archiver": "^5.3.0",
+    "emojilib": "^3.0.2",
+    "isomorphic-git": "^1.8.2",
     "kafjs": "^1.3.0",
-    "marked": "^1.2.0",
-    "puppeteer": "^5.3.1",
+    "marked": "^2.0.7",
+    "puppeteer": "^10.0.0",
     "shelljs": "^0.8.4",
-    "string-similarity": "^4.0.3",
+    "string-similarity": "^4.0.4",
     "striptags": "^3.1.1"
   },
   "build": {
