@@ -8,7 +8,7 @@ const http = require('isomorphic-git/http/node')
 const ss = require('string-similarity')
 
 const loc = require('./loc.js')
-const dh = require('./web/display-helpers.js')
+const dh = require('./display-helpers.js')
 const users = require('./users.js')
 const lg = require('./logger.js')
 

@@ -2,7 +2,7 @@
 const req = require('@tpp/req')
 
 const kc = require('../../kafclient.js')
-const dh = require('../display-helpers.js')
+const dh = require('../../display-helpers.js')
 
 const chat = require('./chat.js')
 

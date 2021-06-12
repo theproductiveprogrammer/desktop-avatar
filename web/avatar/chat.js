@@ -1,5 +1,5 @@
 'use strict'
-const dh = require('../display-helpers.js')
+const dh = require('../../display-helpers.js')
 
 function greeting({store}) {
   return dh.greeting(store.get("user.ui"))

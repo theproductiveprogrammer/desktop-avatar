@@ -1,7 +1,7 @@
 'use strict'
 const { h } = require('@tpp/htm-x')
 
-const dh = require('./display-helpers.js')
+const dh = require('../display-helpers.js')
 
 import "./home.scss"
 
