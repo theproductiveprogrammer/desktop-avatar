@@ -1,17 +1,18 @@
 #!/bin/bash
 VERSION=$(cat package.json | grep '^[\t ]*"version"[ \t]*:' | sed 's/.*"version".*"\(.*\)",/\1/')
+set -e
 
 function copy_code() {
   cd src
 
-  cp ../../*js . || exit 1
+  cp ../../*js .
 
-  rm index.js || exit 1
-  rm wins.js || exit 1
-  rm preload-*.js || exit 1
-  rm dbg.js || exit 1
+  rm index.js
+  rm wins.js
+  rm preload-*.js
+  rm dbg.js
 
-  patch < ../src-patches/*patch || exit 1
+  patch < ../src-patches/*patch
 
   cd ..
 }
