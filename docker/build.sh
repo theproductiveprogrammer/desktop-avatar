@@ -11,16 +11,15 @@ function copy_code() {
   rm preload-*.js
   rm dbg.js
 
-  patch < ../*patch
+  patch < ../src-patches/*patch
 
   cd ..
 }
 
 copy_code
 exit 
+
 docker build . -t desktop-avatar:latest
 docker tag desktop-avatar:latest desktop-avatar:$VERSION
 docker tag desktop-avatar:latest everlifeai/desktop-avatar:$VERSION
 docker tag desktop-avatar:latest everlifeai/desktop-avatar:latest
-
-
