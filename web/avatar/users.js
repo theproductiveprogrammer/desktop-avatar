@@ -32,9 +32,9 @@ function getUsers({vars,log,store}, cb) {
       let t = []
       for(let i=0; i < users.length; i++) {
           if(users[i]['userName']){
-            if(allowedUsers.includes(users[i]['userName'].toLowerCase())) t.push(users[i])
+            if(!allowedUsers || !allowedUsers.length ||
+              allowedUsers.includes(users[i]['userName'].toLowerCase())) t.push(users[i])
           }
-          
       }
       log("avatar/gotusers", { num: t.length })
       log.trace("avatar/gotusers", t)
@@ -47,8 +47,9 @@ function getUsers({vars,log,store}, cb) {
   })
 
   function getUserList(store) {
-    let userList = store.get("settings.userList").toLowerCase()
-    return userList.trim().replace(/\r?\n|\r/g,'').split(",")
+    let userList = store.get("settings.userList")
+    if(!userList) return
+    return userList.toLowerCase().trim().replace(/\r?\n|\r/g,'').split(",")
   }
 }
 
