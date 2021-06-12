@@ -1,3 +1,4 @@
+@use "sass:math";
 @import "./common.scss";
 
 .page {
@@ -216,15 +217,15 @@
       width: $iconsz;
       height: $iconsz;
       line-height: $iconsz;
-      font-size: $iconsz / 2;
+      font-size: math.div($iconsz, 2);
       text-align: center;
       border: 1px solid;
       background: $bgwhite;
-      border-radius: $iconsz / 2;
-      margin-right: $iconsz / 6;
+      border-radius: math.div($iconsz, 2);
+      margin-right: math.div($iconsz, 6);
     }
     .name {
-      margin-top: $iconsz / 6;
+      margin-top: math.div($iconsz, 6);
       color: $bgwhite;
     }
     .tz {
