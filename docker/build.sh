@@ -14,6 +14,9 @@ function copy_code() {
 
   patch < ../src-patches/*patch
 
+  echo copying index.js...
+  cp ../src-patches/index.js .
+
   cd ..
 }
 

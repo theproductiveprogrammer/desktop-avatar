@@ -1,7 +1,7 @@
 {
   "name": "desktop-avatar-docker",
   "description": "A docker bundle of the desktop avatar",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
