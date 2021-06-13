@@ -57,7 +57,10 @@ function setupFolders(cb) {
 }
 
 function login(cb) {
-  cb(1)
+  const username = process.env.SALESBOX_USERNAME
+  const password = process.env.SALESBOX_PASSWORD
+  chat(`Logging in....${dh.anEmoji("password")}`)
+  cb({ username, password})
 }
 
 /*    way/
