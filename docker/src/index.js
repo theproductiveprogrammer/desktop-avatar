@@ -7,6 +7,7 @@ const plugins = require('./plugins.js')
 const users = require('./users.js')
 const loc = require('./loc.js')
 const util = require('./util.js')
+const dh = require('./display-helpers.js')
 const fs = require('fs')
 
 
@@ -17,12 +18,22 @@ function main() {
   const log = lg(generateName(), process.env.DEBUG)
 
   setupFolders(err => {
-    if(err) return log("err/db", err.toString())
+    if(err) return console.error(err)
 
-    db.start(log, err => {
-      if(err) log("err/db", err.toString())
-      else log("app/info", `Logging to ${log.getName()}`)
+    login(err => {
+      if(err) {
+        console.error(err)
+        loginFailedMsg()
+        return
+      }
+
+      db.start(log, err => {
+        if(err) console.error(err)
+        else log("app/info", `Logging to ${log.getName()}`)
+      })
+
     })
+
   })
 
 }
@@ -41,6 +52,17 @@ function setupFolders(cb) {
     if(err) cb(err)
     else util.ensureExists(loc.savedCookies(), cb)
   })
+}
+
+function login(cb) {
+  cb(1)
+}
+
+/*    way/
+ * tell the user (nicely) that login failed and what he should do next
+ */
+function loginFailedMsg() {
+  console.log(dh.emojifyConsole(`Login failed! ${dh.anEmoji("sad")}`))
 }
 
 main()
