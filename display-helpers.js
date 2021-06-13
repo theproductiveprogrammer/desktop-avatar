@@ -91,6 +91,24 @@ function emojify(txt) {
 }
 
 /*    outcome/
+ * Find emoji shortcodes and replace them with the corresponding
+ * char
+ */
+function emojifyConsole(txt) {
+  return txt.replace(rxMoj, sc => {
+    return mojConsole(sc.substring(1, sc.length-1))
+  })
+}
+
+/*    outcome/
+ * return the emoji for the given shortcode
+ */
+function mojConsole(code) {
+  if(!emoji.lib[code]) return `:${code}:`
+  return emoji.lib[code].char
+}
+
+/*    outcome/
  * return the emoji for the given shortcode
  */
 function moj(code) {
@@ -138,4 +156,6 @@ module.exports = {
   isJustEmojis,
   oneOf,
   moj,
+  emojifyConsole,
+  mojConsole,
 }
