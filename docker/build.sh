@@ -13,6 +13,9 @@ function copy_code() {
   rm preload-*.js
   rm dbg.js
 
+  echo copying store reducer
+  cp ../../web/store.js ./engine/
+
   echo copying avatar engine code
   cp ../../web/avatar/*js ./engine/avatar/
 
