@@ -5,6 +5,7 @@ VERSION=$(cat ../package.json | grep '^[\t ]*"version"[ \t]*:' | sed 's/.*"versi
 function copy_code() {
   cd src
 
+  echo copying main code
   cp ../../*js .
 
   rm index.js
@@ -12,7 +13,10 @@ function copy_code() {
   rm preload-*.js
   rm dbg.js
 
-  echo copying index.js...
+  echo copying avatar engine code
+  cp ../../web/avatar/*js ./web/avatar/
+
+  echo setting index.js...
   cp ../index.js .
 
   cd ..
