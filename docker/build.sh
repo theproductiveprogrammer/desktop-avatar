@@ -19,8 +19,9 @@ function copy_code() {
   echo copying avatar engine code
   cp ../../web/avatar/*js ./engine/avatar/
 
-  echo setting index.js...
+  echo setting docker specific code..
   cp ../index.js .
+  cp ../chat.js .
 
   cd ..
 }

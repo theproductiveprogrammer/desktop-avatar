@@ -10,6 +10,8 @@ const util = require('./util.js')
 const dh = require('./display-helpers.js')
 const fs = require('fs')
 
+const chat = require('./chat.js')
+
 
 /*    understand/
  * main entry point into our program
@@ -62,7 +64,7 @@ function login(cb) {
  * tell the user (nicely) that login failed and what he should do next
  */
 function loginFailedMsg() {
-  console.log(dh.emojifyConsole(`Login failed! ${dh.anEmoji("sad")}`))
+  chat(`Login failed! ${dh.anEmoji("sad")}`)
 }
 
 main()
