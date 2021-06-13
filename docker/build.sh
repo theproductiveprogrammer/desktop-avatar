@@ -14,7 +14,7 @@ function copy_code() {
   rm dbg.js
 
   echo copying avatar engine code
-  cp ../../web/avatar/*js ./web/avatar/
+  cp ../../web/avatar/*js ./engine/avatar/
 
   echo setting index.js...
   cp ../index.js .
