@@ -17,11 +17,11 @@ function main() {
   const log = lg(generateName(), process.env.DEBUG)
 
   setupFolders(err => {
-    if(err) return log("err/db", err.toString())
+    if(err) return console.error(err)
 
     db.start(log, err => {
-      if(err) log("err/db", err.toString())
-      else log("app/info", `Logging to ${log.getName()}`)
+        if(err) console.error(err)
+        else log("app/info", `Logging to ${log.getName()}`)
     })
   })
 
