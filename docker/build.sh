@@ -2,6 +2,10 @@
 set -e
 VERSION=$(cat ../package.json | grep '^[\t ]*"version"[ \t]*:' | sed 's/.*"version".*"\(.*\)",/\1/')
 
+function show_help() {
+  echo ./build.sh [docker]
+}
+
 function copy_code() {
   cd src
 
@@ -27,9 +31,33 @@ function copy_code() {
   cd ..
 }
 
-copy_code
+function build_docker() {
+  docker build . -t desktop-avatar:latest
+  docker tag desktop-avatar:latest desktop-avatar:$VERSION
+  docker tag desktop-avatar:latest everlifeai/desktop-avatar:$VERSION
+  docker tag desktop-avatar:latest everlifeai/desktop-avatar:latest
+}
 
-docker build . -t desktop-avatar:latest
-docker tag desktop-avatar:latest desktop-avatar:$VERSION
-docker tag desktop-avatar:latest everlifeai/desktop-avatar:$VERSION
-docker tag desktop-avatar:latest everlifeai/desktop-avatar:latest
+
+
+
+SWITCH=$1
+if [ -z "$SWITCH" ]
+then
+  SWITCH="copy"
+fi
+
+case "$SWITCH" in
+"-h" | "--help" | "help")
+  show_help
+  ;;
+"docker")
+  build_docker
+  ;;
+"copy")
+  copy_code
+  ;;
+*)
+  show_help
+  ;;
+esac

@@ -1,11 +1,14 @@
 #!/bin/bash
+function login() {
+  echo 'Login'
+  echo '*****'
+  read -p "Username: " uname
+  read -sp "Password: " passw;echo
+  echo please wait...
+  echo
+}
 
-echo 'Login'
-echo '*****'
-read -p "Username: " uname
-read -sp "Password: " passw;echo
-echo please wait...
-echo
+login
 
 docker run -it --rm \
   -v $(pwd)/src:/desktop-avatar/src \

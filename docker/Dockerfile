@@ -9,6 +9,6 @@ RUN apt-get update \
 COPY .vimrc /root/.vimrc
 
 WORKDIR /desktop-avatar
-COPY . .
+COPY package.json package-lock.json .
 RUN npm install
 CMD ["/usr/local/bin/node", "."]
