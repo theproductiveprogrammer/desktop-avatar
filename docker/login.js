@@ -1,6 +1,8 @@
 'use strict'
 const req = require('@tpp/req')
 
+const dh = require('./display-helpers.js')
+
 module.exports = (store, cb) => {
   let serverURL = store.get("settings.serverURL")
   if(!serverURL || !serverURL.trim()) return cb(`Please set the 'serverURL' parameter in settings.json`)
@@ -11,7 +13,7 @@ module.exports = (store, cb) => {
 
   let u = dappURL(serverURL) + "/login"
   req.post(u, { usr, pwd }, (err, resp) => {
-    if(err) cb(err)
+    if(err) return cb(err)
     let ui = resp.body
     if(invalid_1(ui)) return cb(`Invalid login: ${JSON.stringify(ui)}`)
     store.event("ui/set", ui)
