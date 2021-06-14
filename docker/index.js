@@ -11,6 +11,7 @@ const dh = require('./display-helpers.js')
 const fs = require('fs')
 
 const chat = require('./chat.js')
+const settings = require('./settings.js')
 
 
 /*    understand/
@@ -21,6 +22,8 @@ function main() {
 
   setupFolders(err => {
     if(err) return console.error(err)
+
+    settings.load()
 
     login(err => {
       if(err) {

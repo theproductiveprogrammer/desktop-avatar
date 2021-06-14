@@ -22,6 +22,7 @@ function copy_code() {
   echo setting docker specific code..
   cp ../index.js .
   cp ../chat.js .
+  cp ../settings.js .
 
   cd ..
 }
