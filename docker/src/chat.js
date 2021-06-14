@@ -8,15 +8,12 @@ function init(store) {
   let shown = 0
   store.react('user.msgs', msgs => {
     if(!msgs || !msgs.length) return
-    if(shown >= msgs.length) shown = 0
+    if(shown > msgs.length) shown = 0
     say_1()
 
     function say_1() {
       if(shown >= msgs.length) return
-      chat(msgs[shown], () => {
-        shown++
-        say_1()
-      })
+      chat(msgs[shown++], say_1)
     }
 
   })
