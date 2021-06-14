@@ -3,6 +3,7 @@ const ss = require('string-similarity')
 const req = require('@tpp/req')
 const kc = require('../../kafclient.js')
 const chat = require('./chat.js')
+const ww = require('./ww.js')
 
 /*    understand/
  * as the avatar performs tasks it records them in the
@@ -168,7 +169,7 @@ function serverTasks({vars, store, say, log}, cb) {
           chat: chat.sentTasks(tasks),
         }, () => {
           if(!tasks || !tasks.length) return cb()
-          window.add.tasks(tasks)
+          ww.add.tasks(tasks)
             .then(() => {
               store.event("expect/logs", true)
               cb()
@@ -298,7 +299,7 @@ function sendToServer({vars, store, say, log}, cb) {
           from: -1,
           chat: chat.gotStatus(tasks),
         }, () => {
-          window.add.sent(tasks)
+          ww.add.sent(tasks)
             .then(() => cb())
             .catch(err => {
               log("err/recordingSend", err)

@@ -1,6 +1,8 @@
 'use strict'
 const chat = require('./chat.js')
 
+const ww = require('./ww.js')
+
 /*    way/
  * randomly sleep for a while to avoid overwhelming the
  * server
@@ -56,7 +58,7 @@ function work({store, log, say}, cb) {
       linkedinUsername: user.linkedinUsername,
       linkedinPassword: user.linkedinPassword,
     }
-    window.x.cute(auth, task)
+    ww.x.cute(auth, task)
       .then(msg => {
         store.event("status/add", {
           t: (new Date()).toISOString(),
@@ -150,7 +152,7 @@ function pickUsers(env, cb) {
   const activeusers = pick_new_1(users, mxbr)
   if(!activeusers) return cb()
   env.store.event("activeusers/set", activeusers)
-  window.clear.browsers()
+  ww.clear.browsers()
   cb()
 
   /*    way/
