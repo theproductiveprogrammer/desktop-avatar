@@ -27,6 +27,7 @@ function copy_code() {
   cp ../index.js .
   cp ../chat.js .
   cp ../settings.js .
+  cp ../login.js .
 
   cd ..
 }

@@ -13,6 +13,7 @@ const store = require('./engine/store.js')
 
 const chat = require('./chat.js')
 const settings = require('./settings.js')
+const login = require('./login.js')
 
 
 /*    understand/
@@ -60,13 +61,6 @@ function setupFolders(store, cb) {
     if(err) cb(err)
     else util.ensureExists(loc.savedCookies(), cb)
   })
-}
-
-function login(cb) {
-  const username = process.env.SALESBOX_USERNAME
-  const password = process.env.SALESBOX_PASSWORD
-  store.event("msg/add", `Logging in....${dh.anEmoji("password")}`)
-  cb({ username, password})
 }
 
 main()
