@@ -10,5 +10,6 @@ COPY .vimrc /root/.vimrc
 
 WORKDIR /desktop-avatar
 COPY package.json package-lock.json .
+COPY src src
 RUN npm install
 CMD ["/usr/local/bin/node", "."]
