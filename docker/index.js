@@ -20,14 +20,15 @@ const settings = require('./settings.js')
  */
 function main() {
   const log = lg(generateName(), process.env.DEBUG)
+  chat.init(store)
 
-  setupFolders(err => {
+  setupFolders(store, err => {
     if(err) return chat.say.foldersFailed(err)
 
     settings.load(store, err => {
       if(err) return chat.say.settingsFailed(err)
 
-      login(err => {
+      login(store, err => {
         if(err) return chat.say.loginFailed(err)
 
         db.start(log, err => {
@@ -53,7 +54,8 @@ function generateName() {
   return n.replace(/[/:\\*&^%$#@!()]/g, "_")
 }
 
-function setupFolders(cb) {
+function setupFolders(store, cb) {
+  store.event("msg/add", "setting up folders...")
   util.ensureExists(loc.cookies(), err => {
     if(err) cb(err)
     else util.ensureExists(loc.savedCookies(), cb)
@@ -63,7 +65,7 @@ function setupFolders(cb) {
 function login(cb) {
   const username = process.env.SALESBOX_USERNAME
   const password = process.env.SALESBOX_PASSWORD
-  chat(`Logging in....${dh.anEmoji("password")}`)
+  store.event("msg/add", `Logging in....${dh.anEmoji("password")}`)
   cb({ username, password})
 }
 

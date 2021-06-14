@@ -1,6 +1,26 @@
 'use strict'
 const dh = require('./display-helpers.js')
 
+/*    understand/
+ * react to chat messages
+ */
+function init(store) {
+  let shown = 0
+  store.react('user.msgs', msgs => {
+    if(!msgs || !msgs.length) return
+    if(shown >= msgs.length) shown = 0
+    say_1()
+
+    function say_1() {
+      if(shown >= msgs.length) return
+      chat(msgs[shown], () => {
+        shown++
+        say_1()
+      })
+    }
+
+  })
+}
 
 /*    understand/
  * add some helper messages
@@ -72,11 +92,19 @@ for(let k in say) {
  * using a slight (random) delay if the user has
  * a callback.
  */
-function chat(txt, cb) {
-  console.log(dh.emojifyConsole(txt))
+function chat(msg, cb) {
+  if(typeof msg === 'string') msg = { chat: msg }
+  if(!msg.t) msg.t = (new Date()).toISOString()
+  if(!msg.chat) return
+  if(typeof msg.chat !== "string") msg.chat = JSON.stringify(msg.chat)
+  if(!msg.from) msg.from = "desktop-avatar"
+
+  const txt = dh.emojifyConsole(msg.chat)
+  console.log(`${msg.from} (${msg.t}): ${txt}`)
   if(cb) setTimeout(cb, Math.random() * 1000 + 200)
 }
 
-chat.say = say
-
-module.exports = chat
+module.exports = {
+  init,
+  say
+}
