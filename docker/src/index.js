@@ -8,7 +8,8 @@ const users = require('./users.js')
 const loc = require('./loc.js')
 const util = require('./util.js')
 const dh = require('./display-helpers.js')
-const fs = require('fs')
+
+const store = require('./engine/store.js')
 
 const chat = require('./chat.js')
 const settings = require('./settings.js')
@@ -21,20 +22,20 @@ function main() {
   const log = lg(generateName(), process.env.DEBUG)
 
   setupFolders(err => {
-    if(err) return console.error(err)
+    if(err) return chat.say.foldersFailed(err)
 
-    settings.load()
+    settings.load(store, err => {
+      if(err) return chat.say.settingsFailed(err)
 
-    login(err => {
-      if(err) {
-        console.error(err)
-        loginFailedMsg()
-        return
-      }
+      login(err => {
+        if(err) return chat.say.loginFailed(err)
 
-      db.start(log, err => {
-        if(err) console.error(err)
-        else log("app/info", `Logging to ${log.getName()}`)
+        db.start(log, err => {
+          if(err) return chat.say.dbFailed(err)
+
+          log("app/info", `Logging to ${log.getName()}`)
+        })
+
       })
 
     })
@@ -64,13 +65,6 @@ function login(cb) {
   const password = process.env.SALESBOX_PASSWORD
   chat(`Logging in....${dh.anEmoji("password")}`)
   cb({ username, password})
-}
-
-/*    way/
- * tell the user (nicely) that login failed and what he should do next
- */
-function loginFailedMsg() {
-  chat(`Login failed! ${dh.anEmoji("sad")}`)
 }
 
 main()

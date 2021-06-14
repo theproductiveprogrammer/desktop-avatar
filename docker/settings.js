@@ -8,6 +8,7 @@ const chat = require('./chat.js')
 function load(store, cb) {
   const f = path.join(loc.db(), "settings.json")
   chat(`Loading from ${f}`)
+  cb()
 }
 
 module.exports = {
