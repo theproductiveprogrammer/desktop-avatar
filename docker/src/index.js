@@ -15,6 +15,7 @@ const chat = require('./chat.js')
 const settings = require('./settings.js')
 const login = require('./login.js')
 
+const avatar = require('./engine/avatar/')
 
 /*    understand/
  * main entry point into our program
@@ -26,17 +27,24 @@ function main() {
   setupFolders(store, err => {
     if(err) return chat.say.foldersFailed(err)
 
-    settings.load(store, err => {
-      if(err) return chat.say.settingsFailed(err)
+    db.start(log, err => {
+      if(err) return chat.say.dbFailed(err)
 
-      login(store, err => {
-        if(err) return chat.say.loginFailed(err)
+      log("app/info", `Logging to ${log.getName()}`)
 
-        db.start(log, err => {
-          if(err) return chat.say.dbFailed(err)
-
-          log("app/info", `Logging to ${log.getName()}`)
-        })
+      settings.load(store, err => {
+        if(err) {
+          chat.say.settingsFailed(err)
+          process.exit(1)
+        } else {
+          avatar.start(log, store)
+          login(store, err => {
+            if(err) {
+              chat.say.loginFailed(err)
+              process.exit(1)
+            }
+          })
+        }
 
       })
 

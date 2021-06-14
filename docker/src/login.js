@@ -9,7 +9,7 @@ module.exports = (store, cb) => {
 
   const usr = process.env.SALESBOX_USERNAME
   const pwd = process.env.SALESBOX_PASSWORD
-  store.event("msg/add", `Logging in ${usr}${pwd}....${dh.anEmoji("password")}`)
+  store.event("msg/add", `Logging in....${dh.anEmoji("password")}`)
 
   let u = dappURL(serverURL) + "/login"
   req.post(u, { usr, pwd }, (err, resp) => {

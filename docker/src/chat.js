@@ -7,15 +7,8 @@ const dh = require('./display-helpers.js')
 function init(store) {
   let shown = 0
   store.react('user.msgs', msgs => {
-    if(!msgs || !msgs.length) return
-    if(shown > msgs.length) shown = 0
-    say_1()
-
-    function say_1() {
-      if(shown >= msgs.length) return
-      chat(msgs[shown++], say_1)
-    }
-
+    if(!msgs || !msgs.length) shown = 0
+    else while(shown < msgs.length) chat(msgs[shown++])
   })
 }
 
@@ -96,11 +89,19 @@ function chat(msg, cb) {
   if(!msg.t) msg.t = (new Date()).toISOString()
   if(!msg.chat) return
   if(typeof msg.chat !== "string") msg.chat = JSON.stringify(msg.chat)
-  if(!msg.from) msg.from = "desktop-avatar"
 
   const txt = dh.emojifyConsole(msg.chat)
-  console.log(`${msg.from} (${msg.t}): ${txt}`)
+  console.log(`${from_1(msg)} (${msg.t}): ${txt}`)
   if(cb) setTimeout(cb, Math.random() * 1000 + 200)
+
+  function from_1(msg) {
+    if(!msg.from) return "desktop-avatar"
+    const from = msg.from
+    if(from.firstName && from.lastName) return `${from.firstName} ${from.lastName}`
+    if(from.firstName) return from.firstName
+    if(from.lastName) return from.lastName
+    return "desktop-avatar"
+  }
 }
 
 module.exports = {
