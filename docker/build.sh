@@ -28,6 +28,7 @@ function copy_code() {
   cp ../chat.js .
   cp ../settings.js .
   cp ../login.js .
+  cp ../ww.js ./engine/avatar/
 
   cd ..
 }
