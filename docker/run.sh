@@ -32,5 +32,5 @@ then
   shift
   run_dev "$@"
 else
-  run_prod
+  run_prod "$@"
 fi
