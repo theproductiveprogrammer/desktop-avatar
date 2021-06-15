@@ -14,6 +14,7 @@ function run_dev() {
     -v $(pwd)/desktop-avatar-docker-db:/root/desktop-avatar \
     -e "SALESBOX_USERNAME=$uname" \
     -e "SALESBOX_PASSWORD=$passw" \
+    -e "INDOCKER=1" \
     desktop-avatar:latest "$@"
 }
 
@@ -22,6 +23,7 @@ function run_prod() {
     -v $(pwd)/desktop-avatar-docker-db:/root/desktop-avatar \
     -e "SALESBOX_USERNAME=$uname" \
     -e "SALESBOX_PASSWORD=$passw" \
+    -e "INDOCKER=1" \
     desktop-avatar:latest "$@"
 }
 

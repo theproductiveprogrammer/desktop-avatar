@@ -83,11 +83,27 @@ function browser(user) {
       pexe = pexe.replace(rx_isasar2, "/app.asar.unpacked/")
     }
 
-    puppeteer.launch({
+    let lopts = {
       headless:!puppetShow,
       executablePath: pexe,
       args
-    }).then(browser => {
+    }
+    if(process.env.INDOCKER) {
+      lopts = {
+        headless: true,
+        args: [
+          // Required for Docker version of Puppeteer
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          // This will write shared memory files into /tmp instead of /dev/shm,
+          // because Docker’s default for /dev/shm is 64MB
+          '--disable-dev-shm-usage',
+        ]
+      }
+    }
+
+    puppeteer.launch(lopts)
+    .then(browser => {
       user.browserCache = {
         proxy: user.proxy,
         puppetShow,
