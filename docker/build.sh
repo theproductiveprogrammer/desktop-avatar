@@ -7,6 +7,8 @@ function show_help() {
 }
 
 function copy_code() {
+  rm -rf src
+  mkdir src
   cd src
 
   echo copying main code
