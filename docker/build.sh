@@ -34,6 +34,8 @@ function copy_code() {
 }
 
 function build_docker() {
+  copy_code
+
   docker build . -t desktop-avatar:latest
   docker tag desktop-avatar:latest desktop-avatar:$VERSION
   docker tag desktop-avatar:latest everlifeai/desktop-avatar:$VERSION
