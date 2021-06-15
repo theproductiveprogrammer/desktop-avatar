@@ -34,16 +34,12 @@ function main() {
 
       settings.load(store, err => {
         if(err) {
-          chat.say.settingsFailed(err)
-          process.exit(1)
+          chat.say.settingsFailed(err, () => process.exit(1))
         } else {
           setUsers(store)
           avatar.start(log, store)
           login(store, err => {
-            if(err) {
-              chat.say.loginFailed(err)
-              process.exit(1)
-            }
+            if(err) chat.say.loginFailed(err, () => process.exit(1))
           })
         }
 
