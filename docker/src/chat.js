@@ -22,7 +22,6 @@ const say = {
   ],
 
   settingsFailed: [
-    'ERR',
     `Failed to load settings - cannot start ${dh.anEmoji("sad")}`,
     `Please create a valid "settings.json" file under "desktop-avatar-docker-db/"`,
     `Something like this:`,
