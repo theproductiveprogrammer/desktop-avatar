@@ -1,7 +1,6 @@
 'use strict'
 const { h } = require('@tpp/htm-x')
 const req = require('@tpp/req')
-
 import "./login.scss"
 
 /*    understand/
@@ -9,6 +8,7 @@ import "./login.scss"
  * by pressing enter and spacebar etc
  */
 function e(log, store) {
+  if(document.getElementById("loader"))document.getElementById("loader").remove()
   let form = h(".loginForm")
 
   let title = h(".title", "Login")
@@ -110,14 +110,11 @@ function e(log, store) {
       log("login/done", { id:ui.id, usr })
       log.trace("login/info", ui)
       store.event("ui/set", ui)
+      window.login.saveInfo(usr,pwd)
     })
-  }
-
-  function invalid_1(resp) {
-    return !resp || !resp.authKey
-  }
+    
+  } 
 }
-
 
 function dappURL(u) {
   u = u.trim()
@@ -129,6 +126,34 @@ function dappURL(u) {
   return u + "dapp/v2"
 }
 
+ function auto(log,store,usr,pwd){
+    setTimeout(function(){
+      let serverURL = store.get("settings.serverURL")
+      let u = dappURL(serverURL) + "/login" 
+      req.post(u, {usr,pwd}, (err, resp) => {
+      if(err) {
+        log("err/login", err)
+        alert("auto Login failed")
+      }
+      let ui = resp.body
+      if(invalid_1(ui)) {
+        log("err/login/resp/invalid", resp)
+        alert("auto Login failed")      
+      }
+      log("login/done", { id:ui.id, usr })
+      log.trace("login/info", ui)
+      store.event("ui/set", ui)
+      
+    }) 
+  },3*1000)
+
+}
+
+function invalid_1(resp) {
+  return !resp || !resp.authKey
+}
+
 module.exports = {
-  e
+  e,
+  auto
 }

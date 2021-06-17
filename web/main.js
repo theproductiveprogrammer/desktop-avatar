@@ -46,7 +46,6 @@ function main() {
 function showUI(log, store) {
   let cont = h("#cont")
   document.body.appendChild(cont)
-
   let main = h('.main')
   let footer = h('.footer',
     h('span', [
@@ -69,10 +68,22 @@ function showUI(log, store) {
     if(curr.store) store.destroy(curr.store)
 
     curr.store = store.ffork()
-    if(!ui) curr.page = login.e(log, curr.store)
-    else curr.page = home.e(ui, log, curr.store)
-
-    main.c(curr.page)
+    if(!ui) {
+      window.autologin.getLoginInfo().then(function(result) {
+      if(result == null){       
+          curr.page =  login.e(log, curr.store)
+          main.c(curr.page)
+          document.body.firstElementChild.remove()
+        }
+        else{
+          result=JSON.parse(result)
+           login.auto(log,curr.store,result.username,result.password)
+        }        
+      })
+    }else{
+      curr.page = home.e(ui, log, curr.store)
+      main.c(curr.page)
+    } 
   })
 
 }

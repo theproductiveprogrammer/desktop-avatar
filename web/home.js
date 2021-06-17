@@ -27,6 +27,7 @@ function getTaskname(action) {
  * the avatar that is doing work chatting with you
  */
 function e(ui, log, store) {
+  if(document.getElementById("loader"))document.getElementById("loader").remove()
   let page = h('.page')
 
   let header = h('.header')
