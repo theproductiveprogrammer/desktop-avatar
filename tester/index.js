@@ -20,6 +20,8 @@ app.post('/dapp/v2/login', (req, res) => {
   else res.send(ui)
 })
 
+app.post('/dapp/v2/myusers', (req, res) => res.send("[]"))
+
 app.use('/', (req, res, next) => {
   console.log('UNHANDLED REQUEST:', `${req.originalUrl} ${req.method}`)
   console.log(req.body)
