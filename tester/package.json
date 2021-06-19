@@ -9,7 +9,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "baby-db": "^1.1.0",
+    "baby-db": "^1.2.0",
     "express": "^4.17.1"
   }
 }
