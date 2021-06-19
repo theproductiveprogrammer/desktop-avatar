@@ -21,7 +21,7 @@ taskdb.on('done', () => {
 })
 
 function add(task) {
-  task.id = ++maxid
+  task.id = task.id || ++maxid
   taskdb.add(task)
 }
 
