@@ -25,12 +25,12 @@ function add(task) {
   taskdb.add(task)
 }
 
-function getUserTasks(userid) {
-  return TASKS.filter(t => t.userid == userid)
+function getFor(users) {
+  return TASKS.filter(t => users.indexOf(t.userid) !== -1)
 }
 
 module.exports = {
   add,
-  getUserTasks,
+  getFor,
   ondone: cb => ondone_ = cb,
 }

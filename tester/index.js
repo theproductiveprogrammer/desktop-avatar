@@ -1,10 +1,12 @@
 'use strict'
 const express = require('express')
 const app = express()
+const babydb = require('babydb')
 
 const port = 5555
 
 const users = require('./users.js')
+const tasks = require('./tasks.js')
 
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
@@ -22,10 +24,25 @@ app.post('/dapp/v2/login', (req, res) => {
 
 app.post('/dapp/v2/myusers', (req, res) => res.send("[]"))
 
+app.post('/dapp/v2/tasks', (req, res) => {
+  const users = req.body.forUsers
+  if(!users) res.status(400).end()
+  else res.send(tasks.getFor(users.map(u => u.id)))
+})
+
 app.use('/', (req, res, next) => {
   console.log('UNHANDLED REQUEST:', `${req.originalUrl} ${req.method}`)
   console.log(req.body)
   next()
 })
 
-users.ondone(() => app.listen(port, () => console.log(`Listening at port ${port}...`)))
+babydb.onExitSignal(() => process.exit())
+
+users.ondone(ondbLoaded)
+tasks.ondone(ondbLoaded)
+
+let num_db_loaded = 0
+function ondbLoaded() {
+  num_db_loaded++
+  if(num_db_loaded === babydb.numdb()) app.listen(port, () => console.log(`Listening at port ${port}...`))
+}
