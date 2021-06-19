@@ -1,0 +1,11 @@
+{
+  "name": "tester",
+  "version": "0.1.0",
+  "description": "A tester for desktop avatar",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "UNLICENSED"
+}
