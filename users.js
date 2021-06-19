@@ -17,6 +17,7 @@ let TIMEOUT = DEFAULT_TIMEOUT
 const NEEDS_CAPCHA = {}
 const LOGIN_ERR = {}
 const PREMIUM_ERR = {}
+const COOKIE_EXP = {}
 
 function setPuppetShow(show) { PUPPET_SHOW = show }
 function setTimeout(tm) {
@@ -146,7 +147,6 @@ async function linkedInPage(cfg, auth, browser) {
   }
   //TODO: re-enable this check after QA cycle
   //if(!process.env.DEBUG) await check_premium_enabled_1(page)
-
   await randomly_scroll_sometimes_1()
   await check_capcha_1()
 
@@ -194,7 +194,16 @@ async function linkedInPage(cfg, auth, browser) {
 
       return true
 
-    } catch(e) {}
+    } catch(e) {
+      await page.waitForSelector('.error-code')
+        let text = await page.evaluate(()=>{
+          const e = document.querySelector('.error-code')
+          return e ? e.innerText : null
+        })
+        if(text.includes('ERR_TOO_MANY_REDIRECTS')){
+          throw COOKIE_EXP
+        }
+    }
 
     try {
       await page.waitFor('[data-resource="feed/badge"]')
@@ -350,4 +359,5 @@ module.exports = {
   NEEDS_CAPCHA,
   LOGIN_ERR,
   PREMIUM_ERR,
+  COOKIE_EXP
 }

@@ -2,7 +2,7 @@
 const path = require('path')
 const fs = require('fs')
 const vm = require('vm')
-
+const notifier = require('node-notifier');
 const { clone, pull } = require('isomorphic-git')
 const http = require('isomorphic-git/http/node')
 const ss = require('string-similarity')
@@ -187,6 +187,9 @@ function getChat(task, status, cb) {
       403: [
         `The site has refused to accept this user! Please see how you can get back on...`
       ],
+      423: [
+        `The linkedin page has been updated. Please contact the developer.`
+      ],
     }
     return dh.oneOf(msgs[status.code])
   }
@@ -261,15 +264,51 @@ function performTask(auth, task, cb) {
       .catch(err => {
         if(err === users.NEEDS_CAPCHA) {
           status_capcha_1("err/task/capcha")
+          notifier.notify({
+            title: 'CAPTCHA Error',
+            message: 'Captcha needs to be resolved.',
+            icon: path.join(__dirname, './build/icon.iconset/icon_16x16@2x.png'),
+            sound: true,
+            wait: true,
+            appName: "SalesboxAI Desktop Avatar"
+          })
           return cb("Need CAPCHA")
         }
         if(err === users.LOGIN_ERR) {
           status_baduser_1("err/login/err")
+          notifier.notify({
+            title: 'Login Error',
+            message: 'Invalid Linkedin credential',
+            icon: path.join(__dirname, './build/icon.iconset/icon_16x16@2x.png'),
+            sound: true,
+            wait: true,
+            appName: "Salesbox Desktop Avatar"
+          })
           return cb(`Invalid Linkedin credential`)
         }
         if(err === users.PREMIUM_ERR) {
           status_baduser_1("err/need/salesnavigator")
+          notifier.notify({
+            title: 'Premium Error',
+            message: 'You need a Sales Navigator or Premium account',
+            icon: path.join(__dirname, './build/icon.iconset/icon_16x16@2x.png'),
+            sound: true,
+            wait: true,
+            appName: "Salesbox Desktop Avatar"
+          })
           return cb("You need a Sales Navigator or Premium account")
+        }
+        if(err === users.COOKIE_EXP) {
+          status_baduser_1("err/cookie/expired")
+          notifier.notify({
+            title: 'Cookie Error',
+            message: `Cookie for user ${task.userId} expired. Please add a new cookie string`,
+            icon: path.join(__dirname, './build/icon.iconset/icon_16x16@2x.png'),
+            sound: true,
+            wait: true,
+            appName: "Salesbox Desktop Avatar"
+          })
+          return cb(`Cookie expired for User ${task.userId}. Please add new cookie string.`)
         }
         return cb(err.stack? err.stack : err)
       })
@@ -305,6 +344,7 @@ function performTask(auth, task, cb) {
           servererr: m => status_servererr_1(page, m),
           errcapcha: m => status_capcha_1(page, m),
           baduser: m => status_baduser_1(page, m),
+          pageerr: m => status_pageerr_1(page, m)
         },
         browser,
         page,
@@ -359,6 +399,10 @@ function performTask(auth, task, cb) {
     function status_baduser_1(page, err) {
       status_with_1(page, 403, err)
     }
+    function status_pageerr_1(page, err){
+      status_with_1(page, 424, err)
+    }
+
     function status_with_1(page, code, err) {
       if(status_set) return
       status_set = true
