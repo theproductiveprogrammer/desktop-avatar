@@ -20,4 +20,4 @@ app.use('/', (req, res, next) => {
   next()
 })
 
-app.listen(port, () => console.log(`Listening at port ${port}...`))
+users.ondone(() => app.listen(port, () => console.log(`Listening at port ${port}...`)))
