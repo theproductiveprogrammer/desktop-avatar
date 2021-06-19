@@ -20,7 +20,9 @@ userdb.on('done', () => {
 })
 
 function add(user) {
-  user.id = ++maxid
+  const existing = USERS[user.usr]
+  if(existing) user.id = existing.id
+  else user.id = ++maxid
   userdb.add(user)
 }
 
