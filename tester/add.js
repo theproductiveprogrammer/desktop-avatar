@@ -21,16 +21,24 @@ function main() {
 
 function help() {
   console.log(`Usage:
-  add user name password
+  add user name password [field value, field value, ....]
   add task [view|connect|msg] userid linkedin-url/id [field value, field value, ....]
 `)
 }
 
 function user(args) {
-  const usr = args[0]
-  const pwd = args[1]
-  if(!usr || !pwd) return err_(`Missing username/password`)
-  req.post(serverURL + '/user/add', { usr, pwd }, err => {
+  const u = {
+    usr: args[0],
+    pwd: args[1],
+  }
+  if(!u.usr || !u.pwd) return err_(`Missing username/password`)
+  for(let i = 2;i < args.length;i+=2) {
+    const n = args[i]
+    const v = args[i+1]
+    if(n && v) u[n] = v
+  }
+  console.log(`Saving task: ${JSON.stringify(u)}`)
+  req.post(serverURL + '/user/add', u, err => {
     if(err) err_(err)
   })
 }
