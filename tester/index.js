@@ -1,7 +1,7 @@
 'use strict'
 const express = require('express')
 const app = express()
-const babydb = require('babydb')
+const babydb = require('baby-db')
 
 const port = 5555
 
@@ -23,6 +23,11 @@ app.post('/dapp/v2/login', (req, res) => {
 })
 
 app.post('/dapp/v2/myusers', (req, res) => res.send("[]"))
+
+app.post('/tasks/add', (req, res) => {
+  tasks.add(req.body)
+  res.end()
+})
 
 app.post('/dapp/v2/tasks', (req, res) => {
   const users = req.body.forUsers
