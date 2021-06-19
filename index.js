@@ -2,7 +2,6 @@
 const { app, dialog, Menu, ipcMain } = require('electron')
 
 const db = require('./db.js')
-const kc = require('./kafclient.js')
 const lg = require('./logger.js')
 const wins = require('./wins.js')
 const plugins = require('./plugins.js')
