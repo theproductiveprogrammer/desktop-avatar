@@ -38,7 +38,7 @@ function user(args) {
 function task(args) {
   const t = {
     action: action_1(args[0]),
-    userid: args[1],
+    userId: args[1],
     linkedInURL: ll_url_1(args[2]),
   }
   for(let i = 3;i < args.length;i+=2) {

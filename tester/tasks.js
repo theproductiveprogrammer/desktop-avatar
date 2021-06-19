@@ -10,7 +10,7 @@ taskdb.on('error', err => console.error(err))
 taskdb.on('rec', rec => {
   if(!rec.id) throw `Missing id ${JSON.stringify(rec)}`
   if(!rec.action) throw `Missing action: ${JSON.stringify(rec)}`
-  if(!rec.userid) throw `Missing user: ${JSON.stringify(rec)}`
+  if(!rec.userId) throw `Missing userId: ${JSON.stringify(rec)}`
   if(rec.id > maxid) maxid = rec.id
   if(TASKS[rec.id]) Object.assign(TASKS[rec.id], rec)
   else TASKS[rec.id] = rec
