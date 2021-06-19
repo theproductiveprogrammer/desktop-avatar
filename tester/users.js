@@ -18,7 +18,6 @@ userdb.on('done', () => {
   console.log('User DB loaded...')
   ondone_ && ondone_()
 })
-userdb.onExitSignal(() => process.exit())
 
 function add(user) {
   user.id = ++maxid
