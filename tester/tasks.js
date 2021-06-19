@@ -1,7 +1,7 @@
 'use strict'
 const bdb = require('baby-db')
 
-const TASKS = []
+const TASKS = {}
 let maxid = 0
 let ondone_
 
@@ -26,7 +26,17 @@ function add(task) {
 }
 
 function getFor(users) {
-  return TASKS.filter(t => users.indexOf(t.userid) !== -1)
+  const ret = []
+  for(let k in TASKS) {
+    if(belongs_1(users, TASKS[k])) ret.push(TASKS[k])
+  }
+  return ret
+
+  function belongs_1(users, task) {
+    for(let i = 0;i < users.length;i++) {
+      if(users[i] == task.userId) return true
+    }
+  }
 }
 
 module.exports = {
