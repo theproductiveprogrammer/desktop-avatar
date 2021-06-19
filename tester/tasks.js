@@ -1,7 +1,7 @@
 'use strict'
 const bdb = require('baby-db')
 
-const TASKS = {}
+const TASKS = []
 let maxid = 0
 let ondone_
 
