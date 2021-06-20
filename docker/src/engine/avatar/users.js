@@ -118,7 +118,7 @@ function talkShop({store, say, log}, cb) {
     if(!last) last = 0
     if(Date.now() - last < TALK_WITH_USER_EVERY) return cb()
     store.event("lastLazy/set", Date.now())
-    cb(`Nothing to do...${dh.anEmoji("sleepy")}`)
+    cb(`Taking a short break...${dh.anEmoji("sleepy")}`)
   }
 }
 
