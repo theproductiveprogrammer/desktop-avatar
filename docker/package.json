@@ -9,10 +9,11 @@
   "dependencies": {
     "@tpp/dux": "^4.0.5",
     "@tpp/req": "^3.1.3",
-    "marked": "^2.0.7",
     "emojilib": "^2.4.0",
     "isomorphic-git": "^1.7.8",
     "kafjs": "^1.3.0",
+    "marked": "^2.0.7",
+    "node-notifier": "^10.0.0",
     "string-similarity": "^4.0.3"
   },
   "license": "UNLICENSED"
