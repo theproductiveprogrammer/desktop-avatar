@@ -126,19 +126,19 @@ function dappURL(u) {
   return u + "dapp/v2"
 }
 
- function auto(log,store,usr,pwd){
+ function auto(log,store,usr,pwd,cb){
     setTimeout(function(){
       let serverURL = store.get("settings.serverURL")
       let u = dappURL(serverURL) + "/login" 
       req.post(u, {usr,pwd}, (err, resp) => {
       if(err) {
         log("err/login", err)
-        alert("auto Login failed")
+         cb()
       }
       let ui = resp.body
       if(invalid_1(ui)) {
         log("err/login/resp/invalid", resp)
-        alert("auto Login failed")      
+        cb()      
       }
       log("login/done", { id:ui.id, usr })
       log.trace("login/info", ui)

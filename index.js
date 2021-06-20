@@ -12,6 +12,8 @@ const util = require('./util.js')
 const dbg = require('./dbg.js')
 const fs = require('fs')
 const login =require('./login')
+var CryptoJS = require("crypto-js");
+
 /*    understand/
  * main entry point into our program - called
  * when electron is ready
@@ -138,7 +140,13 @@ function setupIPC(log) {
   })
 
   ipcMain.handle("get-logininfo", async () => {
-    return  login.getUserLoginInfo()
+    return await new Promise((resolve, reject) => {
+      login.getUserLoginInfo((data) => {
+        resolve(data);
+      });
+    }).then((result) => {
+      return JSON.parse(result);
+    });
   })
 }
 

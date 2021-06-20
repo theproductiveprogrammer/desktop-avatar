@@ -69,21 +69,23 @@ function showUI(log, store) {
 
     curr.store = store.ffork()
     if(!ui) {
-      window.autologin.getLoginInfo().then(function(result) {
-      if(result == null){       
-          curr.page =  login.e(log, curr.store)
-          main.c(curr.page)
-          document.body.firstElementChild.remove()
-        }
-        else{
-          result=JSON.parse(result)
-           login.auto(log,curr.store,result.username,result.password)
-        }        
+      window.autologin.getLoginInfo()
+      .then((result)=>{
+        if(result == null){       
+         curr.page =  login.e(log, curr.store)
+         main.c(curr.page)
+         if(document.getElementById("loader"))document.getElementById("loader").remove();
+         }else{
+          login.auto(log,curr.store,result.username,result.password,()=>{
+            curr.page =  login.e(log, curr.store)
+            main.c(curr.page)
+           })
+       } 
       })
-    }else{
-      curr.page = home.e(ui, log, curr.store)
-      main.c(curr.page)
-    } 
+     }else{
+       curr.page = home.e(ui, log, curr.store)
+       main.c(curr.page)
+     } 
   })
 
 }
