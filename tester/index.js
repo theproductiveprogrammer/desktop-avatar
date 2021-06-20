@@ -42,6 +42,11 @@ app.post('/dapp/v2/tasks', (req, res) => {
   else res.send(tasks.getFor(users.map(u => u.id)))
 })
 
+app.post('dapp/v2/status', (req, res) => {
+  o('updating status', req.body)
+  res.end()
+})
+
 app.use('/', (req, res, next) => {
   console.log('UNHANDLED REQUEST:', `${req.originalUrl} ${req.method}`)
   console.log(req.body)
