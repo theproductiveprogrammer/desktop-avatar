@@ -38,7 +38,7 @@ function main() {
         } else {
           setUsers(store)
           avatar.start(log, store)
-          login(store, err => {
+          login(log, store, err => {
             if(err) chat.say.loginFailed(err, () => process.exit(1))
           })
         }
