@@ -195,7 +195,9 @@ async function linkedInPage(cfg, auth, browser) {
       return true
 
     } catch(e) {
-      await page.waitForSelector('.error-code')
+      // Check for Cookie Error, If not present, continue
+      try{
+        await page.waitForSelector('.error-code')
         let text = await page.evaluate(()=>{
           const e = document.querySelector('.error-code')
           return e ? e.innerText : null
@@ -203,6 +205,7 @@ async function linkedInPage(cfg, auth, browser) {
         if(text.includes('ERR_TOO_MANY_REDIRECTS')){
           throw COOKIE_EXP
         }
+       }catch(e) {}      
     }
 
     try {
