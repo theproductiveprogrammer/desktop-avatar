@@ -33,3 +33,9 @@ contextBridge.exposeInMainWorld("add", {
   tasks: t => ipcRenderer.invoke("add-tasks", t),
   sent: tasks => ipcRenderer.invoke("add-sent", tasks),
 })
+contextBridge.exposeInMainWorld("login", {
+  saveInfo: (u,p) => ipcRenderer.invoke("save-logininfo",{u,p})
+})
+contextBridge.exposeInMainWorld("autologin", {
+  getLoginInfo: () => ipcRenderer.invoke("get-logininfo")
+})
