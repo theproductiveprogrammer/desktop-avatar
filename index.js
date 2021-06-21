@@ -145,7 +145,7 @@ function setupIPC(log) {
         resolve(data);
       });
     }).then((result) => {
-      return JSON.parse(result);
+      return result;
     });
   })
 }

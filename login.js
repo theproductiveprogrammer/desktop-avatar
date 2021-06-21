@@ -27,8 +27,13 @@ function getUserLoginInfo(cb){
       var bytes = CryptoJS.AES.decrypt(loginInfo.password, "secret key 123");
       var pwd = bytes.toString(CryptoJS.enc.Utf8);
       loginInfo.password = pwd;
-      loginInfo = JSON.stringify(loginInfo);
-      cb(loginInfo);
+      try{
+        loginInfo = JSON.parse(JSON.stringify(loginInfo));
+      }catch(err){
+        loginInfo=null
+        console.error(err)
+      }
+      cb(loginInfo); 
     });
   }
     else cb(null)
