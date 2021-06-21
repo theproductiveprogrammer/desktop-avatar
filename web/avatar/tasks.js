@@ -264,7 +264,7 @@ function sendToServer({vars, store, say, log}, cb) {
   const tasks = store.get("user.tasks")
   const ts = tasks.map(t => store.getTaskStatus(t.id))
   const status = ts.filter(s => s && s.code >= 200 && s.code != 202)
-  
+
   const statusUpdates = status.map(s => {
     const status = s.code == 200 ? "success" : "failed"
     let updt = { id: s.id, status }
@@ -272,29 +272,31 @@ function sendToServer({vars, store, say, log}, cb) {
     if(s.notifydata) updt.notifydata = s.notifydata
     return updt
   })
-  
+
   if(!status.length) return {}
   log("sendToServer/statusUpdates", { num: status.length })
-  
+
   const ui = store.get("user.ui")
   const p = `${vars.serverURL}/dapp/v2/status`
-  
+
   const users = store.get("user.users")
   users.push(ui)
-  for(let i=0;i<statusUpdates.length;i++) {
-    const task = getTaskById(statusUpdates[i].id) 
-    const user = getUserById(task.userId)
+  for(let i=0; i < users.length;i++) {
+    const user = users[i]
+    const status_s = statusUpdates.filter(s => store.getTask(s.id).userId == user.id)
+    if(!status_s || !status_s.length) continue
+
     req.post(p, {
       id: user.id,
       seed: user.seed,
       authKey: user.authKey,
-      statusUpdates:[statusUpdates[i]],
+      statusUpdates: status_s
     }, (err, resp) => {
       if(err) {
         log("err/sendToServer", err)
         cb(chat.errSendingStatus())
       } else {
-        const tasks = statusUpdates.map(s => store.getTask(s.id))
+        const tasks = status_s.map(s => store.getTask(s.id))
         say({
           from: -1,
           chat: chat.gotStatus(tasks),
@@ -309,21 +311,6 @@ function sendToServer({vars, store, say, log}, cb) {
       }
     })
   }
-  function getUserById(id) {
-    for(let i=0; i < users.length; i++) {
-      if(users[i].id==id){
-          return users[i]
-      }
-    }
-  }
-  function getTaskById(id) {
-    for(let i=0;i<tasks.length;i++){
-      if(tasks[i].id==id) {
-        return tasks[i];
-      }
-    }
-  }
-  
 
 }
 
