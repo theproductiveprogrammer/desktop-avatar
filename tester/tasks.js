@@ -9,11 +9,13 @@ const taskdb = bdb('tasks.json')
 taskdb.on('error', err => console.error(err))
 taskdb.on('rec', rec => {
   if(!rec.id) throw `Missing id ${JSON.stringify(rec)}`
-  if(!rec.action) throw `Missing action: ${JSON.stringify(rec)}`
-  if(!rec.userId) throw `Missing userId: ${JSON.stringify(rec)}`
   if(rec.id > maxid) maxid = rec.id
   if(TASKS[rec.id]) Object.assign(TASKS[rec.id], rec)
-  else TASKS[rec.id] = rec
+  else {
+    if(!rec.action) throw `Missing action: ${JSON.stringify(rec)}`
+    if(!rec.userId) throw `Missing userId: ${JSON.stringify(rec)}`
+    TASKS[rec.id] = rec
+  }
 })
 taskdb.on('done', () => {
   console.log('Task DB loaded...')
@@ -39,8 +41,13 @@ function getFor(users) {
   }
 }
 
+function updateStatus(statusUpdates) {
+  statusUpdates.map(s => taskdb.add(s))
+}
+
 module.exports = {
   add,
   getFor,
+  updateStatus,
   ondone: cb => ondone_ = cb,
 }

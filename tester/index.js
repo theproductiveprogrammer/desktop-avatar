@@ -42,9 +42,14 @@ app.post('/dapp/v2/tasks', (req, res) => {
   else res.send(tasks.getFor(users.map(u => u.id)))
 })
 
-app.post('dapp/v2/status', (req, res) => {
+app.post('/dapp/v2/status', (req, res) => {
   o('updating status', req.body)
-  res.end()
+  const statusUpdates = req.body.statusUpdates
+  if(!statusUpdates) res.status(400).end()
+  else {
+    tasks.updateStatus(statusUpdates)
+    res.end()
+  }
 })
 
 app.use('/', (req, res, next) => {
