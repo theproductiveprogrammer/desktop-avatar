@@ -30,7 +30,9 @@ function add(task) {
 function getFor(users) {
   const ret = []
   for(let k in TASKS) {
-    if(belongs_1(users, TASKS[k])) ret.push(TASKS[k])
+    const task = TASKS[k]
+    if(task.status && task.status !== "new") continue
+    if(belongs_1(users, task)) ret.push(task)
   }
   return ret
 
