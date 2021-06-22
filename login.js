@@ -39,7 +39,15 @@ function getUserLoginInfo(cb){
     else cb(null)
   }
 
+function removeLoginInfo(){
+  const f = path.join(loc.home(), "logininfo.json");
+  fs.unlink(f, function (err) {
+    if (err) throw err;
+});
+}
+
 module.exports = {
     saveLoginInfo,
-    getUserLoginInfo
+    getUserLoginInfo,
+    removeLoginInfo
 }

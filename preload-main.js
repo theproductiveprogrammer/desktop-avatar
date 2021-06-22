@@ -39,3 +39,6 @@ contextBridge.exposeInMainWorld("login", {
 contextBridge.exposeInMainWorld("autologin", {
   getLoginInfo: () => ipcRenderer.invoke("get-logininfo")
 })
+contextBridge.exposeInMainWorld("logout", {
+  removeInfo: () => ipcRenderer.invoke("remove-logininfo")
+})
