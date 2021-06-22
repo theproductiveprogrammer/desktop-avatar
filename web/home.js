@@ -336,9 +336,10 @@ function e(ui, log, store) {
     let logout = h('.logout.btn', {
       onclick: () => {
         page.classList.add("bye")
+        window.logout.removeInfo()
         setTimeout(() => window.x.it(), 350)
       }
-    }, "Exit")
+    }, "Logout and Exit")
 
 
     cont.c(icon, name, tz,

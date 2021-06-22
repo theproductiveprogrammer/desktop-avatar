@@ -147,6 +147,10 @@ function setupIPC(log) {
       return result;
     });
   })
+
+  ipcMain.handle("remove-logininfo", async () => {
+    login.removeLoginInfo()
+  })
 }
 
 /*    way/
