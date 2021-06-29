@@ -29,11 +29,10 @@ function getTaskname(action) {
 function e(ui, log, store) {
   if(document.getElementById("loader"))document.getElementById("loader").remove()
   let page = h('.page')
-  let tbl;
-  let workreportArr=[];
   let header = h('.header')
   let reports = h(".reports")
   let worktable = h(".worktable")
+  let filterBox = h('.filter')
   let workreports = h(".workreports").c(
     h(".title", [
       "Work Report Details",
@@ -41,33 +40,7 @@ function e(ui, log, store) {
         onclick: () => workreports.classList.remove("visible"),
       }, "X")
     ]),
-    h(".container",[
-      "From:",
-      h('input',{
-        id="fromDate",
-        type: "date",
-        name: "",
-        min:""
-        }),
-        "To:",
-      h('input',{
-        id="toDate",
-        type: "date",
-        name: "",
-        max:""
-        }),
-        h("span",[
-          h('input.btn.btn-info"',{
-            type="submit",
-            value="apply",
-            id="submitBtn",
-            onclick: () => dateFilterData()
-          }), 
-          h("button#rmbtn", {
-            onclick: () => removeFilter(),
-          }, "X")
-        ])
-    ]),
+    filterBox,
     worktable
   )
   let reportpane = h('.reportpane').c(
@@ -101,19 +74,35 @@ function e(ui, log, store) {
   function load_work_table_1() {
     if(wstore) wstore.destroy()
     wstore = store.ffork()
-     tbl = h("table")
-    const hdr = h("tr", [
-      h("th", "On"),
-      h("th", "Id"),
-      h("th", "User Id"),
-      h("th", "Action"),
-      h("th", "Details"),
-      h("th", "Status"),
-      h("th.action", "Action"),
-    ])
-    worktable.c(
-      tbl.c(hdr)
-    )
+    let workreportArr=[];
+    filterBox.c(h(".container",[
+      " From:",
+      h('input',{
+        id="fromDate",
+        type: "date",
+        name: "",
+        min:""
+        }),
+        " To:",
+      h('input',{
+        id="toDate",
+        type: "date",
+        name: "",
+        max:""
+        }),
+        h("span",[
+          h('input.btn.btn-info"',{
+            type="submit",
+            value="apply",
+            id="submitBtn",
+            onclick: () => dateFilterData()
+          }), 
+          h("button#rmbtn", {
+            onclick: () => removeFilter(),
+          },"X")
+        ])
+    ]))
+    let tbl = h("table")
     const tasks = wstore.get("user.tasks")
     tasks.forEach(task => {
       let status = store.getTaskStatus(task.id, 202)
@@ -150,15 +139,6 @@ function e(ui, log, store) {
           },
         }, "retry")
       }
-      tbl.add(h("tr", [
-        h("td.on", status.t.replace("T", "<br/>")),
-        h("td", task.id),
-        h("td", task.userId),
-        h("td", task.action),
-        h("td.details", details),
-        h("td", statusmsg),
-        action,
-      ]))
       let task_rw={
         date:  status.t,
         id:task.id,
@@ -170,152 +150,74 @@ function e(ui, log, store) {
       }
       workreportArr.push(task_rw)
     })
-  }
-  function dateFilterData(){
-    document.getElementById('rmbtn').style.visibility='visible'
-    let startDate=new Date(document.getElementById('fromDate').value).toISOString();
-    let endDate=new Date(document.getElementById('toDate').value).toISOString(); 
-    const tasks = wstore.get("user.tasks")
-    tasks.forEach(task => {
-      let status = store.getTaskStatus(task.id, 202)
-      if(!status) status = {
-        t: (new Date()).toISOString(),
-        msg: "task/new",
-      }
-      let statusmsg = status.err ? "task/FAILED" : status.msg
-      if(!statusmsg) statusmsg = ""
-      else statusmsg = statusmsg.replace("/dummy", "")
-      const details = JSON.stringify(task, (k, v) => {
-        const ignore = [ "id", "userId", "action" ]
-        if(ignore.indexOf(k) !== -1) return undefined
-        if(!v) return undefined
-        if(k === "linkedInURL") {
-          v = v.split('/')
-          v = v[v.length-1] || v[v.length-2] || v
-        }
-        return v
-      }, 2)
-      let action = h("td.action", "")
-      if(status.code > 299) {
-        action = h("td.action", {
-          onclick: () => {
-            window.x.cute2(task)
-              .then(() => 1)
-              .catch(err => console.error(err))
-            store.event("status/add", {
-              t: (new Date()).toISOString(),
-              id: task.id,
-              msg: "task/retry/dummy",
-              code: 0,
-            })
-          },
-        }, "retry")
-      }
-    if(tbl){
-      tbl.remove();
-      tbl = h("table")
-      const hdr = h("tr", [
-        h("th", "On"),
-        h("th", "Id"),
-        h("th", "User Id"),
-        h("th", "Action"),
-        h("th", "Details"),
-        h("th", "Status"),
-        h("th.action", "Action")
-      ])
-      worktable.c(
-        tbl.c(hdr)
-      )
-      if(startDate !='' && endDate !=''){
-        let result=workreportArr.filter((obj)=>{
-          return obj.date >= startDate && obj.date <= endDate
-        })
-        result.forEach(el => {
-          tbl.add(h("tr", [
-            h("td.on", el.date.replace("T", "<br/>")),
-            h("td", el.id),
-            h("td", el.userid),
-            h("td", el.taction),
-            h("td.details", el.details),
-            h("td", el.statmsg),
-             action
-          ]))
-        })
-      }
-    } 
-    })
-  }
-
-  function removeFilter(){
-    const tasks = wstore.get("user.tasks")
-    tasks.forEach(task => {
-      let status = store.getTaskStatus(task.id, 202)
-      if(!status) status = {
-        t: (new Date()).toISOString(),
-        msg: "task/new",
-      }
-      let statusmsg = status.err ? "task/FAILED" : status.msg
-      if(!statusmsg) statusmsg = ""
-      else statusmsg = statusmsg.replace("/dummy", "")
-      const details = JSON.stringify(task, (k, v) => {
-        const ignore = [ "id", "userId", "action" ]
-        if(ignore.indexOf(k) !== -1) return undefined
-        if(!v) return undefined
-        if(k === "linkedInURL") {
-          v = v.split('/')
-          v = v[v.length-1] || v[v.length-2] || v
-        }
-        return v
-      }, 2)
-      let action = h("td.action", "")
-      if(status.code > 299) {
-        action = h("td.action", {
-          onclick: () => {
-            window.x.cute2(task)
-              .then(() => 1)
-              .catch(err => console.error(err))
-            store.event("status/add", {
-              t: (new Date()).toISOString(),
-              id: task.id,
-              msg: "task/retry/dummy",
-              code: 0,
-            })
-          },
-        }, "retry")
-      }  
-    if(tbl){
-      tbl.remove();
-      tbl = h("table")
-      const hdr = h("tr", [
-        h("th", "On"),
-        h("th", "Id"),
-        h("th", "User Id"),
-        h("th", "Action"),
-        h("th", "Details"),
-        h("th", "Status"),
-        h("th.action", "Action")
-      ])
-      worktable.c(
-        tbl.c(hdr)
-      )
-      workreportArr.forEach(el => {
-         tbl.add(h("tr", [
-           h("td.on", el.date.replace("T", "<br/>")),
-           h("td", el.id),
-           h("td", el.userid),
-           h("td", el.taction),
-           h("td.details", el.details),
-           h("td", el.statmsg),
-           action
-         ]))
-       })
+    if(workreportArr.length>0){
+      writeTable(workreportArr,tbl)
     }
-    document.getElementById('fromDate').value=''
-    document.getElementById('toDate').value=''
-    document.getElementById('rmbtn').style.visibility='hidden'
-  })
-  }
 
+    function dateFilterData(){
+      document.getElementById('rmbtn').style.visibility='visible'
+      let startDate=new Date(document.getElementById('fromDate').value).toISOString();
+      let endDate=new Date(document.getElementById('toDate').value).toISOString();
+      if(startDate==endDate){
+        endDate = adjustTime(endDate)
+      } 
+        if(startDate !='' && endDate !=''){
+          // endDate = adjustTime(endDate)
+          if(workreportArr.length>0){
+           let workreportArrFiltered =[... workreportArr.filter((obj)=>{
+            return obj.date >= startDate && obj.date <= endDate
+          })]
+          writeTable(workreportArrFiltered,tbl) 
+        }
+      } 
+    }
+  
+    function adjustTime(endDate){
+      var date= new Date(endDate)
+      date.setHours(date.getHours() + 23)
+      date.setMinutes(date.getMinutes()+59)
+      date.setSeconds(date.getSeconds()+59)
+      endDate = date.toISOString()
+      return endDate
+    }
+    function writeTable(inpArr,tbl){
+      if(tbl){
+        tbl.remove();
+        tbl = h("table")
+        const hdr = h("tr", [
+          h("th", "On"),
+          h("th", "Id"),
+          h("th", "User Id"),
+          h("th", "Action"),
+          h("th", "Details"),
+          h("th", "Status"),
+          h("th.action", "Action")
+        ])
+        worktable.c(
+          tbl.c(hdr)
+        )
+      inpArr.forEach(el => {
+          
+        tbl.add(h("tr", [
+          h("td.on", el.date.replace("T", "<br/>")),
+          h("td", el.id),
+          h("td", el.userid),
+          h("td", el.taction),
+          h("td.details", el.details),
+          h("td", el.statmsg),
+           el.action
+        ]))
+      })
+      }
+    }
+    function removeFilter(){
+      writeTable(workreportArr,tbl) 
+      document.getElementById('fromDate').value=''
+      document.getElementById('toDate').value=''
+      document.getElementById('rmbtn').style.visibility='hidden'
+    }
+  }
+  
   function show_users_1() {
     if(ustore) ustore.destroy()
     ustore = store.ffork()
@@ -536,27 +438,6 @@ function e(ui, log, store) {
     if(ui.pic) return h('img.usericon', { src: ui.pic })
     else return h('.usericon', dh.userName(ui)[0])
   }
-
-//   function dateFilter(){
-//     var startDate = new Date("2015-08-04");
-//     var endDate = new Date("2015-08-12");
-
-//     var resultProductData = product_data.filter(function (a) {
-//         var hitDates = a.ProductHits || {};
-//         // extract all date strings
-//         hitDates = Object.keys(hitDates);
-//         // improvement: use some. this is an improment because .map()
-//         // and .filter() are walking through all elements.
-//         // .some() stops this process if one item is found that returns true in the callback function and returns true for the whole expression
-//         hitDateMatchExists = hitDates.some(function(dateStr) {
-//             var date = new Date(dateStr);
-//             return date >= startDate && date <= endDate
-//         });
-//         return hitDateMatchExists;
-//     });
-//     console.log(resultProductData);
-//   }
-
  }
 
 module.exports = {
