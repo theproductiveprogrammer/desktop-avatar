@@ -42,8 +42,8 @@ function build_docker() {
 
   docker build . -t desktop-avatar:latest
   docker tag desktop-avatar:latest desktop-avatar:$VERSION
-  docker tag desktop-avatar:latest charleslobo77/desktop-avatar:$VERSION
-  docker tag desktop-avatar:latest charleslobo77/desktop-avatar:latest
+  docker tag desktop-avatar:latest salesboxai/desktop-avatar:$VERSION
+  docker tag desktop-avatar:latest salesboxai/desktop-avatar:latest
 }
 
 
