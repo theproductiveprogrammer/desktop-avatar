@@ -33,6 +33,7 @@ function e(ui, log, store) {
   let reports = h(".reports")
   let worktable = h(".worktable")
   let filterBox = h('.filter')
+  let appliedDateFilter =[];
   let workreports = h(".workreports").c(
     h(".title", [
       "Work Report Details",
@@ -75,6 +76,7 @@ function e(ui, log, store) {
     if(wstore) wstore.destroy()
     wstore = store.ffork()
     let workreportArr=[];
+    let removed=false
     filterBox.c(h(".container",[
       " From:",
       h('input',{
@@ -151,25 +153,20 @@ function e(ui, log, store) {
       workreportArr.push(task_rw)
     })
     if(workreportArr.length>0){
-      writeTable(workreportArr,tbl)
+      writeTable(workreportArr,tbl,appliedDateFilter)
     }
 
     function dateFilterData(){
+      removed=false
       document.getElementById('rmbtn').style.visibility='visible'
       let startDate=new Date(document.getElementById('fromDate').value).toISOString();
       let endDate=new Date(document.getElementById('toDate').value).toISOString();
+      appliedDateFilter[0]=startDate     
       if(startDate==endDate){
         endDate = adjustTime(endDate)
       } 
-        if(startDate !='' && endDate !=''){
-          // endDate = adjustTime(endDate)
-          if(workreportArr.length>0){
-           let workreportArrFiltered =[... workreportArr.filter((obj)=>{
-            return obj.date >= startDate && obj.date <= endDate
-          })]
-          writeTable(workreportArrFiltered,tbl) 
-        }
-      } 
+      appliedDateFilter[1]=endDate   
+      writeTable(workreportArr,tbl,appliedDateFilter) 
     }
   
     function adjustTime(endDate){
@@ -180,7 +177,21 @@ function e(ui, log, store) {
       endDate = date.toISOString()
       return endDate
     }
-    function writeTable(inpArr,tbl){
+    function writeTable(inpArr,tbl,appliedDateFilter){
+      if(!removed){
+      if(appliedDateFilter.length>0){
+        if(appliedDateFilter[0] !='' && appliedDateFilter[1] !=''){
+          // endDate = adjustTime(endDate)
+          if(inpArr.length>0){
+            inpArr =[... inpArr.filter((obj)=>{
+            return obj.date >= appliedDateFilter[0] && obj.date <= appliedDateFilter[1]
+          })]
+          }
+           document.getElementById('fromDate').value=isotoDate(appliedDateFilter[0])
+           document.getElementById('toDate').value=isotoDate(appliedDateFilter[1])
+        }
+      }
+    }
       if(tbl){
         tbl.remove();
         tbl = h("table")
@@ -195,9 +206,8 @@ function e(ui, log, store) {
         ])
         worktable.c(
           tbl.c(hdr)
-        )
+        )        
       inpArr.forEach(el => {
-          
         tbl.add(h("tr", [
           h("td.on", el.date.replace("T", "<br/>")),
           h("td", el.id),
@@ -210,8 +220,20 @@ function e(ui, log, store) {
       })
       }
     }
+
+   function isotoDate(dt){
+    date = new Date(dt);
+    year = date.getFullYear();
+    month = date.getMonth()+1;
+    dt = date.getDate();
+    if (dt < 10)  dt = '0' + dt;
+    if (month < 10)  month = '0' + month;
+    return year+'-' + month + '-'+dt
+   }
+
     function removeFilter(){
-      writeTable(workreportArr,tbl) 
+      removed=true
+      writeTable(workreportArr,tbl,appliedDateFilter) 
       document.getElementById('fromDate').value=''
       document.getElementById('toDate').value=''
       document.getElementById('rmbtn').style.visibility='hidden'
