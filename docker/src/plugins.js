@@ -262,7 +262,7 @@ function performTask(auth, task, cb) {
 
       })
       .catch(err => {
-        if(err === users.NEEDS_CAPCHA) {
+        if(err === users.NEEDS_CAPTCHA) {
           status_capcha_1("err/task/capcha")
           notifier.notify({
             title: 'CAPTCHA Error',
@@ -310,9 +310,20 @@ function performTask(auth, task, cb) {
           })
           return cb(`Cookie expired for User ${task.userId}. Please add new cookie string.`)
         }
+        if(err === users.VC_ERR) {
+          status_baduser_1("err/task/verification_code")
+          notifier.notify({
+            title: 'Verifcation Code',
+            message: `Linkedin detected suspicious activity. Check your mail and enter verification code`,
+            icon: path.join(__dirname, './build/icon.iconset/icon_16x16@2x.png'),
+            sound: true,
+            wait: true,
+            appName: "Salesbox Desktop Avatar"
+          })
+          return cb(`Linkedin detected suspicious activity for User ${task.userId}. Check respective mail and enter verification code`)
+        }
         return cb(err.stack? err.stack : err)
       })
-
     })
     .catch(err => {
       status_servererr_1(err)

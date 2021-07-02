@@ -14,10 +14,11 @@ let TIMEOUT = DEFAULT_TIMEOUT
 /*    understand/
  * keep unique objects to track errors
  */
-const NEEDS_CAPCHA = {}
-const LOGIN_ERR = {}
-const PREMIUM_ERR = {}
-const COOKIE_EXP = {}
+const NEEDS_CAPTCHA = { err: 1 }
+const LOGIN_ERR = { err: 2 }
+const PREMIUM_ERR = { err :3 }
+const COOKIE_EXP = { err: 4 }
+const VC_ERR = { err: 5 }
 
 function setPuppetShow(show) { PUPPET_SHOW = show }
 function setTimeout(tm) {
@@ -146,7 +147,7 @@ async function linkedInPage(cfg, auth, browser) {
     await save_login_cookie_1(page, auth)
   }
   //TODO: re-enable this check after QA cycle
-  //if(!process.env.DEBUG) await check_premium_enabled_1(page)
+  // if(!process.env.DEBUG) await check_premium_enabled_1(page)
   await randomly_scroll_sometimes_1()
   await check_capcha_1()
 
@@ -157,13 +158,15 @@ async function linkedInPage(cfg, auth, browser) {
     if(call == 8) await autoScroll(page)
   }
 
+  // Captcha Check
   async function check_capcha_1() {
     try {
       await page.waitForSelector('#rc-anchor-container')
-      throw NEEDS_CAPCHA
+      throw NEEDS_CAPTCHA
     } catch(e) {}
   }
 
+ 
   /*    outcome/
    * We check if we have an element (li-icon) with type
    * "premium-wordmark" which would indicate that we have premium
@@ -195,17 +198,8 @@ async function linkedInPage(cfg, auth, browser) {
       return true
 
     } catch(e) {
-      // Check for Cookie Error, If not present, continue
-      try{
-        await page.waitForSelector('.error-code')
-        let text = await page.evaluate(()=>{
-          const e = document.querySelector('.error-code')
-          return e ? e.innerText : null
-        })
-        if(text.includes('ERR_TOO_MANY_REDIRECTS')){
-          throw COOKIE_EXP
-        }
-       }catch(e) {}      
+      let cookie_expired = await cookie_exp_check()
+      if(cookie_expired) throw COOKIE_EXP
     }
 
     try {
@@ -215,6 +209,21 @@ async function linkedInPage(cfg, auth, browser) {
     } catch (e) {}
 
     return false
+  }
+
+  async function cookie_exp_check(){
+    try{
+      await page.waitForSelector('.error-code')
+      let text = await page.evaluate(()=>{
+        const e = document.querySelector('.error-code')
+        return e ? e.innerText : null
+      })
+
+      if(text.includes('ERR_TOO_MANY_REDIRECTS') || text.includes('HTTP ERROR 429')){
+        return true
+      }
+     }catch(e) {}
+     return false      
   }
 
   async function save_login_cookie_1(page, auth) {
@@ -245,10 +254,62 @@ async function linkedInPage(cfg, auth, browser) {
       await page.waitForSelector(submitButton)
       await page.click(submitButton)
 
-      await page.waitFor('input[role=combobox]',{timeout:200000})
+      await page.waitFor('input[role=combobox]',{timeout:90000})
     } catch(e) {
-      throw LOGIN_ERR
+      if(e.name == 'TimeoutError'){
+        let ver_code = await check_email_vc_1(page)
+        if(ver_code) throw VC_ERR
+        let login_err = await invalid_cred_check(page)
+        if(login_err) throw LOGIN_ERR
+        if(!ver_code && !login_err) console.log(e)
+      }else{
+        console.log(e)
+      }
     }
+  }
+  
+
+   // Email Verification Code Check
+   async function check_email_vc_1() {
+    try{
+      await page.waitForSelector('.form__subtitle')
+      let veri_text = await page.evaluate(async () => {
+        const e = document.querySelector('.form__subtitle')
+        return e ? e.innerText : null
+      })
+      if(veri_text.includes('suspicious')){
+        return true
+      }
+    }catch(e) {}
+    return false
+  }
+
+
+
+   // Check if login failed or not
+   async function invalid_cred_check(page1){
+    try{
+      let login_err_ele = await ele_check(['#error-for-username','#error-for-password'],page1)
+      if(login_err_ele) return true
+    }catch(e) {}
+
+    return false
+  }
+  
+  //Checks if an element or list of elements is present in a page or not 
+  async function ele_check(sel_list,activepage){
+    
+    const jsHandle = await activepage.waitForFunction((selectors) => {
+        for (const selector of selectors) {
+          if (document.querySelector(selector) !== null) {
+            return selector;
+          }
+        }
+        return false;
+      }, {}, sel_list)
+    const selector = await jsHandle.jsonValue()
+    if(selector == sel_list[0] || selector == sel_list[1]) return true
+    return false
   }
 
 }
@@ -359,8 +420,9 @@ module.exports = {
   info,
   saveCookieFile,
 
-  NEEDS_CAPCHA,
+  NEEDS_CAPTCHA,
   LOGIN_ERR,
   PREMIUM_ERR,
-  COOKIE_EXP
+  COOKIE_EXP,
+  VC_ERR
 }
