@@ -29,10 +29,11 @@ function getTaskname(action) {
 function e(ui, log, store) {
   if(document.getElementById("loader"))document.getElementById("loader").remove()
   let page = h('.page')
-
   let header = h('.header')
   let reports = h(".reports")
   let worktable = h(".worktable")
+  let filterBox = h('.filter')
+  let appliedDateFilter =[];
   let workreports = h(".workreports").c(
     h(".title", [
       "Work Report Details",
@@ -40,6 +41,7 @@ function e(ui, log, store) {
         onclick: () => workreports.classList.remove("visible"),
       }, "X")
     ]),
+    filterBox,
     worktable
   )
   let reportpane = h('.reportpane').c(
@@ -61,7 +63,6 @@ function e(ui, log, store) {
     reportpane,
     workreports,
   )
-
   let ustore
   store.react("user.ui", show_users_1)
   store.react("user.users", show_users_1)
@@ -74,19 +75,36 @@ function e(ui, log, store) {
   function load_work_table_1() {
     if(wstore) wstore.destroy()
     wstore = store.ffork()
+    let workreportArr=[];
+    let removed=false
+    filterBox.c(h(".container",[
+      " From:",
+      h('input',{
+        id="fromDate",
+        type: "date",
+        name: "",
+        min:""
+        }),
+        " To:",
+      h('input',{
+        id="toDate",
+        type: "date",
+        name: "",
+        max:""
+        }),
+        h("span",[
+          h('input.btn.btn-info"',{
+            type="submit",
+            value="apply",
+            id="submitBtn",
+            onclick: () => dateFilterData()
+          }), 
+          h("button#rmbtn", {
+            onclick: () => removeFilter(),
+          },"X")
+        ])
+    ]))
     let tbl = h("table")
-    const hdr = h("tr", [
-      h("th", "On"),
-      h("th", "Id"),
-      h("th", "User Id"),
-      h("th", "Action"),
-      h("th", "Details"),
-      h("th", "Status"),
-      h("th.action", "Action"),
-    ])
-    worktable.c(
-      tbl.c(hdr)
-    )
     const tasks = wstore.get("user.tasks")
     tasks.forEach(task => {
       let status = store.getTaskStatus(task.id, 202)
@@ -123,18 +141,105 @@ function e(ui, log, store) {
           },
         }, "retry")
       }
-      tbl.add(h("tr", [
-        h("td.on", status.t.replace("T", "<br/>")),
-        h("td", task.id),
-        h("td", task.userId),
-        h("td", task.action),
-        h("td.details", details),
-        h("td", statusmsg),
-        action,
-      ]))
+      let task_rw={
+        date:  status.t,
+        id:task.id,
+        userid:task.userId,
+        taction:task.action,
+        details:details,
+        statmsg:statusmsg,
+        action:action
+      }
+      workreportArr.push(task_rw)
     })
-  }
+    if(workreportArr.length>0){
+      writeTable(workreportArr,tbl,appliedDateFilter)
+    }
 
+    function dateFilterData(){
+      removed=false
+      document.getElementById('rmbtn').style.visibility='visible'
+      let startDate=new Date(document.getElementById('fromDate').value).toISOString();
+      let endDate=new Date(document.getElementById('toDate').value).toISOString();
+      appliedDateFilter[0]=startDate     
+      if(startDate==endDate){
+        endDate = adjustTime(endDate)
+      } 
+      appliedDateFilter[1]=endDate   
+      writeTable(workreportArr,tbl,appliedDateFilter) 
+    }
+  
+    function adjustTime(endDate){
+      var date= new Date(endDate)
+      date.setHours(date.getHours() + 23)
+      date.setMinutes(date.getMinutes()+59)
+      date.setSeconds(date.getSeconds()+59)
+      endDate = date.toISOString()
+      return endDate
+    }
+    function writeTable(inpArr,tbl,appliedDateFilter){
+      if(!removed){
+      if(appliedDateFilter.length>0){
+        if(appliedDateFilter[0] !='' && appliedDateFilter[1] !=''){
+          // endDate = adjustTime(endDate)
+          if(inpArr.length>0){
+            inpArr =[... inpArr.filter((obj)=>{
+            return obj.date >= appliedDateFilter[0] && obj.date <= appliedDateFilter[1]
+          })]
+          }
+           document.getElementById('fromDate').value=isotoDate(appliedDateFilter[0])
+           document.getElementById('toDate').value=isotoDate(appliedDateFilter[1])
+        }
+      }
+    }
+      if(tbl){
+        tbl.remove();
+        tbl = h("table")
+        const hdr = h("tr", [
+          h("th", "On"),
+          h("th", "Id"),
+          h("th", "User Id"),
+          h("th", "Action"),
+          h("th", "Details"),
+          h("th", "Status"),
+          h("th.action", "Action")
+        ])
+        worktable.c(
+          tbl.c(hdr)
+        )        
+      inpArr.forEach(el => {
+        tbl.add(h("tr", [
+          h("td.on", el.date.replace("T", "<br/>")),
+          h("td", el.id),
+          h("td", el.userid),
+          h("td", el.taction),
+          h("td.details", el.details),
+          h("td", el.statmsg),
+           el.action
+        ]))
+      })
+      }
+    }
+
+   function isotoDate(dt){
+    date = new Date(dt);
+    year = date.getFullYear();
+    month = date.getMonth()+1;
+    dt = date.getDate();
+    if (dt < 10)  dt = '0' + dt;
+    if (month < 10)  month = '0' + month;
+    return year+'-' + month + '-'+dt
+   }
+
+    function removeFilter(){
+      removed=true
+      writeTable(workreportArr,tbl,appliedDateFilter) 
+      document.getElementById('fromDate').value=''
+      document.getElementById('toDate').value=''
+      document.getElementById('rmbtn').style.visibility='hidden'
+    }
+  }
+  
   function show_users_1() {
     if(ustore) ustore.destroy()
     ustore = store.ffork()
@@ -355,8 +460,7 @@ function e(ui, log, store) {
     if(ui.pic) return h('img.usericon', { src: ui.pic })
     else return h('.usericon', dh.userName(ui)[0])
   }
-
-}
+ }
 
 module.exports = {
   e
