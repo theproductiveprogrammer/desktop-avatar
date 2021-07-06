@@ -271,7 +271,7 @@ async function linkedInPage(cfg, auth, browser) {
   //Handling linkedin remember now page
     async function checkNotNow(page){
       try{
-        const notNowSelector = "button.btn__secondary--large-muted"
+        const notNowSelector = '[data-cie-control-urn="checkpoint_remember_me_save_info_no"]'
         await page.waitForSelector(notNowSelector)
         await page.click(notNowSelector)
       }catch(e) {}
