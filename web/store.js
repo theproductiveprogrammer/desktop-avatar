@@ -155,7 +155,13 @@ function enrich(store) {
   store.getUsers = () => {
     const ui = store.get("user.ui")
     const users = store.get("user.users")
-    return users.concat(ui)
+    // Filtering duplicates if any
+    if (users.length != 0){
+      for(let i=0;i<users.length;i++){
+        if(users[i].id != ui.id) users.concat(ui)
+      }
+    }else users.concat(ui)
+    return users
   }
 
   store.getActiveUsers = () => {
