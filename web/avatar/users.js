@@ -37,6 +37,7 @@ function getUsers({vars,log,store}, cb) {
               allowedUsers.includes(users[i]['userName'].toLowerCase())) t.push(users[i])
           }
       }
+      t = userDuplicateRemoval(t)
       log("avatar/gotusers", { num: t.length })
       log.trace("avatar/gotusers", t)
       store.event("users/set", t)
@@ -53,7 +54,17 @@ function getUsers({vars,log,store}, cb) {
     return userList.toLowerCase().trim().replace(/\r?\n|\r/g,'').split(",")
   }
 }
-
+  function userDuplicateRemoval(userList){
+    let uniqueUserList = []
+    let idList = []
+    for(let i = 0;i<userList.length;i++){
+      if(!idList.includes(userList[i].id)){
+        idList.push(userList[i].id)
+        uniqueUserList.push(userList[i])
+      }
+    }
+    return uniqueUserList
+  }
 /*    way/
  * get all new statuses and talk about them. If nothing has
  * been done tell the user we're lazing around.

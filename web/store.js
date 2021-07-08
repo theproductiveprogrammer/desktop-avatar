@@ -144,6 +144,18 @@ function expectReducer(state, type, payload) {
   }
 }
 
+function userDuplicateRemoval(userList){
+  let uniqueUserList = []
+  let idList = []
+  for(let i = 0;i<userList.length;i++){
+    if(!idList.includes(userList[i].id)){
+      idList.push(userList[i].id)
+      uniqueUserList.push(userList[i])
+    }
+  }
+  return uniqueUserList
+}
+
 /*    understand/
  * it is useful to have some utility methods on the store
  * to get values that are combinations. That way it
@@ -151,15 +163,17 @@ function expectReducer(state, type, payload) {
  */
 function enrich(store) {
   store.ffork = () => enrich(store.fork())
-
   store.getUsers = () => {
     const ui = store.get("user.ui")
-    const users = store.get("user.users")
+    let users = store.get("user.users")
     // Filtering duplicates if any
-    if (users.length != 0){
-      for(let i=0;i<users.length;i++){
-        if(users[i].id != ui.id) users.concat(ui)
+    users = userDuplicateRemoval(users)
+    if(users.length>0) {
+      let ids = []
+      for(let i = 0;i<users.lenth;i++){
+        ids.push(users[i].id)
       }
+      if(!ids.includes(ui.id)) users.concat(ui)
     }else users.concat(ui)
     return users
   }
