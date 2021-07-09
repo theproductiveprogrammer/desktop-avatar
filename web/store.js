@@ -170,11 +170,11 @@ function enrich(store) {
     users = userDuplicateRemoval(users)
     if(users.length>0) {
       let ids = []
-      for(let i = 0;i<users.lenth;i++){
+      for(let i = 0;i<users.length;i++){
         ids.push(users[i].id)
       }
-      if(!ids.includes(ui.id)) users.concat(ui)
-    }else users.concat(ui)
+      if(!ids.includes(ui.id)) users.push(ui)
+    }else users.push(ui)
     return users
   }
 
